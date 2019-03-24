@@ -1,0 +1,22 @@
+[package]
+name = "koji"
+description = "koji XML-RPC API client"
+license = "MIT OR Apache-2.0"
+
+version = "0.0.0"
+edition = "2018"
+
+authors = ["Fabio Valentini"]
+readme = "README.md"
+categories = ["api-bindings"]
+keywords = ["fedora", "koji", "XMLRPC", "client"]
+repository = "https://github.com/ironthree/koji-rs"
+
+
+[dependencies]
+xmlrpc = "^0.13.1"
+
+
+[profile.release]
+lto = true
+
