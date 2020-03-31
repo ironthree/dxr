@@ -2,15 +2,15 @@
 name = "koji"
 description = "koji XML-RPC API client"
 license = "MIT OR Apache-2.0"
+repository = "https://pagure.io/ironthree/koji-rs"
 
 version = "0.0.0"
 edition = "2018"
 
-authors = ["Fabio Valentini"]
+authors = ["Fabio Valentini <decathorpe@gmail.com>"]
 readme = "README.md"
 categories = ["api-bindings"]
 keywords = ["fedora", "koji", "XMLRPC", "client"]
-repository = "https://github.com/ironthree/koji-rs"
 
 
 [dependencies]
