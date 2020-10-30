@@ -2,21 +2,22 @@
 name = "koji"
 description = "koji XML-RPC API client"
 license = "MIT OR Apache-2.0"
-repository = "https://pagure.io/ironthree/koji-rs"
 
 version = "0.0.0"
 edition = "2018"
 
 authors = ["Fabio Valentini <decathorpe@gmail.com>"]
 readme = "README.md"
+exclude = ["/.github/", "/rustfmt.toml"]
 categories = ["api-bindings"]
 keywords = ["fedora", "koji", "XMLRPC", "client"]
-
+repository = "https://github.com/ironthree/koji-rs"
 
 [dependencies]
-xmlrpc = "^0.13.1"
-
+xmlrpc = "^0.14.0"
 
 [profile.release]
+codegen-units = 1
 lto = true
+opt-level = 3
 

@@ -1,7 +1,6 @@
-extern crate xmlrpc;
+use std::collections::btree_map::BTreeMap;
 
 use xmlrpc::Request;
-use std::collections::btree_map::BTreeMap;
 
 const SERVER_URL: &str = "https://koji.fedoraproject.org/kojihub/";
 
@@ -74,7 +73,9 @@ impl Build {
             Ok(value) => {
                 let data: &BTreeMap<String, xmlrpc::Value> = match value.as_struct() {
                     Some(data) => data,
-                    None => { return Err(String::from("Empty response.")); }
+                    None => {
+                        return Err(String::from("Empty response."));
+                    },
                 };
 
                 Ok(Build {
@@ -102,8 +103,10 @@ impl Build {
                     volume_id: i32_from_struct(data, "volume_id")?,
                     volume_name: string_from_struct(data, "volume_name")?,
                 })
-            }
-            Err(error) => { return Err(format!("{:?}", error)); }
+            },
+            Err(error) => {
+                return Err(format!("{:?}", error));
+            },
         }
     }
 }
