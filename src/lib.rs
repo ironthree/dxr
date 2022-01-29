@@ -1,5 +1,5 @@
 //#![warn(missing_docs)]
-//#![warn(missing_debug_implementations)]
+#![warn(missing_debug_implementations)]
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -107,7 +107,7 @@ pub struct Struct {
 }
 
 impl Struct {
-    fn from_members(members: Vec<Member>) -> Struct {
+    pub fn new(members: Vec<Member>) -> Struct {
         Struct { members }
     }
 }
@@ -127,7 +127,7 @@ struct MemberName {
 }
 
 impl Member {
-    fn new(name: String, value: Value) -> Member {
+    pub fn new(name: String, value: Value) -> Member {
         Member {
             name: MemberName { name },
             value,
@@ -143,7 +143,7 @@ pub struct Array {
 }
 
 impl Array {
-    fn from_elements(values: Vec<Value>) -> Array {
+    pub fn new(values: Vec<Value>) -> Array {
         Array {
             data: ArrayData { values },
         }
@@ -166,7 +166,7 @@ pub struct MethodCall {
 }
 
 impl MethodCall {
-    fn new(name: String, parameters: Vec<Value>) -> MethodCall {
+    pub fn new(name: String, parameters: Vec<Value>) -> MethodCall {
         MethodCall {
             name: MethodName { name },
             params: Parameters {
@@ -184,8 +184,90 @@ struct MethodName {
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "methodResponse")]
+pub struct MethodResponse {
+    params: Parameters,
+}
+
+impl MethodResponse {
+    pub fn new(parameters: Vec<Value>) -> MethodResponse {
+        MethodResponse {
+            params: Parameters {
+                params: ParameterData { params: parameters },
+            },
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "methodResponse")]
+pub struct FaultResponse {
+    fault: FaultStruct,
+}
+
+impl FaultResponse {
+    pub fn new(value: Fault) -> FaultResponse {
+        FaultResponse {
+            fault: FaultStruct {
+                value: FaultValue {
+                    value: Struct::new(vec![
+                        Member::new(String::from("faultCode"), Value::i4(value.code)),
+                        Member::new(String::from("faultString"), Value::string(value.string)),
+                    ]),
+                },
+            },
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "fault")]
+pub struct FaultStruct {
+    value: FaultValue,
+}
+
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "value")]
+pub struct FaultValue {
+    #[serde(rename = "struct")]
+    value: Struct,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Fault {
+    code: i32,
+    string: String,
+}
+
+impl Fault {
+    pub fn new(code: i32, string: String) -> Fault {
+        Fault { code, string }
+    }
+}
+
+impl From<FaultResponse> for Fault {
+    fn from(f: FaultResponse) -> Self {
+        let mut members = f.fault.value.value.members;
+
+        let code = if let Type::Integer(code) = members.remove(0).value.value {
+            code
+        } else {
+            unreachable!()
+        };
+
+        let string = if let Type::String(string) = members.remove(0).value.value {
+            string
+        } else {
+            unreachable!()
+        };
+
+        Fault { code, string }
+    }
+}
+
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "params")]
-struct Parameters {
+pub struct Parameters {
     #[serde(rename = "param")]
     params: ParameterData,
 }

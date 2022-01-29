@@ -1,8 +1,18 @@
 use chrono::{SubsecRound, Utc};
-//use serde_xml_rs::{from_str, to_string};
 use quick_xml::{de::from_str, se::to_string};
 
-use crate::{Array, Member, MethodCall, Struct, Type, Value, XML_RPC_DATE_FORMAT};
+use crate::{
+    Array,
+    Fault,
+    FaultResponse,
+    Member,
+    MethodCall,
+    MethodResponse,
+    Struct,
+    Type,
+    Value,
+    XML_RPC_DATE_FORMAT,
+};
 
 #[test]
 fn to_i4() {
@@ -290,7 +300,7 @@ fn from_member() {
 
 #[test]
 fn to_struct_empty() {
-    let value = Struct::from_members(vec![]);
+    let value = Struct::new(vec![]);
     let expected = "<struct/>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -299,19 +309,19 @@ fn to_struct_empty() {
 #[test]
 fn from_struct_empty() {
     let value = "<struct/>";
-    let expected = Struct::from_members(vec![]);
+    let expected = Struct::new(vec![]);
 
     assert_eq!(from_str::<Struct>(value).unwrap(), expected);
 
     let value = "<struct></struct>";
-    let expected = Struct::from_members(vec![]);
+    let expected = Struct::new(vec![]);
 
     assert_eq!(from_str::<Struct>(value).unwrap(), expected);
 }
 
 #[test]
 fn to_struct_one() {
-    let value = Struct::from_members(vec![Member::new(String::from("answer"), Value::i4(42))]);
+    let value = Struct::new(vec![Member::new(String::from("answer"), Value::i4(42))]);
     let expected = "<struct><member><name>answer</name><value><i4>42</i4></value></member></struct>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -320,14 +330,14 @@ fn to_struct_one() {
 #[test]
 fn from_struct_one() {
     let value = "<struct><member><name>answer</name><value><i4>42</i4></value></member></struct>";
-    let expected = Struct::from_members(vec![Member::new(String::from("answer"), Value::i4(42))]);
+    let expected = Struct::new(vec![Member::new(String::from("answer"), Value::i4(42))]);
 
     assert_eq!(from_str::<Struct>(value).unwrap(), expected);
 }
 
 #[test]
 fn to_struct_two() {
-    let value = Struct::from_members(vec![
+    let value = Struct::new(vec![
         Member::new(String::from("answer"), Value::i4(42)),
         Member::new(
             String::from("question"),
@@ -342,7 +352,7 @@ fn to_struct_two() {
 #[test]
 fn from_struct_two() {
     let value = "<struct><member><name>answer</name><value><i4>42</i4></value></member><member><name>question</name><value><string>The answer to life, the the universe, and everything</string></value></member></struct>";
-    let expected = Struct::from_members(vec![
+    let expected = Struct::new(vec![
         Member::new(String::from("answer"), Value::i4(42)),
         Member::new(
             String::from("question"),
@@ -355,10 +365,7 @@ fn from_struct_two() {
 
 #[test]
 fn to_value_struct() {
-    let value = Value::structure(Struct::from_members(vec![Member::new(
-        String::from("answer"),
-        Value::i4(42),
-    )]));
+    let value = Value::structure(Struct::new(vec![Member::new(String::from("answer"), Value::i4(42))]));
     let expected = "<value><struct><member><name>answer</name><value><i4>42</i4></value></member></struct></value>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -367,17 +374,14 @@ fn to_value_struct() {
 #[test]
 fn from_value_struct() {
     let value = "<value><struct><member><name>answer</name><value><i4>42</i4></value></member></struct></value>";
-    let expected = Value::structure(Struct::from_members(vec![Member::new(
-        String::from("answer"),
-        Value::i4(42),
-    )]));
+    let expected = Value::structure(Struct::new(vec![Member::new(String::from("answer"), Value::i4(42))]));
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
 
 #[test]
 fn to_array_empty() {
-    let value = Array::from_elements(vec![]);
+    let value = Array::new(vec![]);
     let expected = "<array><data/></array>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -386,19 +390,19 @@ fn to_array_empty() {
 #[test]
 fn from_array_empty() {
     let value = "<array><data/></array>";
-    let expected = Array::from_elements(vec![]);
+    let expected = Array::new(vec![]);
 
     assert_eq!(from_str::<Array>(value).unwrap(), expected);
 
     let value = "<array><data></data></array>";
-    let expected = Array::from_elements(vec![]);
+    let expected = Array::new(vec![]);
 
     assert_eq!(from_str::<Array>(value).unwrap(), expected);
 }
 
 #[test]
 fn to_array_one() {
-    let value = Array::from_elements(vec![Value::i4(-12)]);
+    let value = Array::new(vec![Value::i4(-12)]);
     let expected = "<array><data><value><i4>-12</i4></value></data></array>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -407,14 +411,14 @@ fn to_array_one() {
 #[test]
 fn from_array_one() {
     let value = "<array><data><value><i4>-12</i4></value></data></array>";
-    let expected = Array::from_elements(vec![Value::i4(-12)]);
+    let expected = Array::new(vec![Value::i4(-12)]);
 
     assert_eq!(from_str::<Array>(value).unwrap(), expected);
 }
 
 #[test]
 fn to_array_two() {
-    let value = Array::from_elements(vec![Value::i4(-12), Value::string(String::from("minus twelve"))]);
+    let value = Array::new(vec![Value::i4(-12), Value::string(String::from("minus twelve"))]);
     let expected =
         "<array><data><value><i4>-12</i4></value><value><string>minus twelve</string></value></data></array>";
 
@@ -424,14 +428,14 @@ fn to_array_two() {
 #[test]
 fn from_array_two() {
     let value = "<array><data><value><i4>-12</i4></value><value><string>minus twelve</string></value></data></array>";
-    let expected = Array::from_elements(vec![Value::i4(-12), Value::string(String::from("minus twelve"))]);
+    let expected = Array::new(vec![Value::i4(-12), Value::string(String::from("minus twelve"))]);
 
     assert_eq!(from_str::<Array>(value).unwrap(), expected);
 }
 
 #[test]
 fn to_value_array() {
-    let value = Value::array(Array::from_elements(vec![Value::i4(-12)]));
+    let value = Value::array(Array::new(vec![Value::i4(-12)]));
     let expected = "<value><array><data><value><i4>-12</i4></value></data></array></value>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -440,7 +444,7 @@ fn to_value_array() {
 #[test]
 fn from_value_array() {
     let value = "<value><array><data><value><i4>-12</i4></value></data></array></value>";
-    let expected = Value::array(Array::from_elements(vec![Value::i4(-12)]));
+    let expected = Value::array(Array::new(vec![Value::i4(-12)]));
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
@@ -495,4 +499,38 @@ fn from_method_call() {
     let expected = MethodCall::new(String::from("hello"), vec![Value::string(String::from("xmlrpc"))]);
 
     assert_eq!(from_str::<MethodCall>(value).unwrap(), expected);
+}
+
+#[test]
+fn to_method_response_success() {
+    let value = MethodResponse::new(vec![Value::string(String::from("Success!"))]);
+    let expected =
+        "<methodResponse><params><param><value><string>Success!</string></value></param></params></methodResponse>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_method_response_success() {
+    let value =
+        "<methodResponse><params><param><value><string>Success!</string></value></param></params></methodResponse>";
+    let expected = MethodResponse::new(vec![Value::string(String::from("Success!"))]);
+
+    assert_eq!(from_str::<MethodResponse>(value).unwrap(), expected);
+}
+
+#[test]
+fn to_method_response_fault() {
+    let value = FaultResponse::new(Fault::new(4, String::from("Too many parameters.")));
+    let expected = "<methodResponse><fault><value><struct><member><name>faultCode</name><value><i4>4</i4></value></member><member><name>faultString</name><value><string>Too many parameters.</string></value></member></struct></value></fault></methodResponse>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_method_response_fault() {
+    let value = "<methodResponse><fault><value><struct><member><name>faultCode</name><value><i4>4</i4></value></member><member><name>faultString</name><value><string>Too many parameters.</string></value></member></struct></value></fault></methodResponse>";
+    let expected = FaultResponse::new(Fault::new(4, String::from("Too many parameters.")));
+
+    assert_eq!(from_str::<FaultResponse>(value).unwrap(), expected);
 }
