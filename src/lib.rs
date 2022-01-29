@@ -162,6 +162,7 @@ pub struct ArrayData {
 pub struct MethodCall {
     #[serde(rename = "methodName")]
     name: MethodName,
+    #[serde(default, skip_serializing_if = "Parameters::is_empty")]
     params: Parameters,
 }
 
@@ -265,14 +266,20 @@ impl From<FaultResponse> for Fault {
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "params")]
 pub struct Parameters {
-    #[serde(rename = "param")]
+    #[serde(default, rename = "param")]
     params: ParameterData,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+impl Parameters {
+    fn is_empty(&self) -> bool {
+        self.params.params.is_empty()
+    }
+}
+
+#[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "param")]
 struct ParameterData {
     #[serde(rename = "value")]

@@ -20,7 +20,12 @@ async fn main() -> Result<(), String> {
     );
 
     // construct HTTP body and content-length header from request
-    let body = quick_xml::se::to_string(&request).unwrap();
+    let body = [
+        r#"<?xml version="1.0"?>"#,
+        quick_xml::se::to_string(&request).unwrap().as_str(),
+        "",
+    ]
+    .join("\n");
     let content_length = body.as_bytes().len();
 
     // FIXME: figure out why response is always:
