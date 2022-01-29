@@ -107,7 +107,7 @@ pub struct Struct {
 }
 
 impl Struct {
-    pub fn from_members(members: Vec<Member>) -> Struct {
+    fn from_members(members: Vec<Member>) -> Struct {
         Struct { members }
     }
 }
@@ -127,7 +127,7 @@ struct MemberName {
 }
 
 impl Member {
-    pub fn new(name: String, value: Value) -> Member {
+    fn new(name: String, value: Value) -> Member {
         Member {
             name: MemberName { name },
             value,
@@ -143,7 +143,7 @@ pub struct Array {
 }
 
 impl Array {
-    pub fn from_elements(values: Vec<Value>) -> Array {
+    fn from_elements(values: Vec<Value>) -> Array {
         Array {
             data: ArrayData { values },
         }
@@ -155,6 +155,46 @@ impl Array {
 pub struct ArrayData {
     #[serde(default, rename = "value")]
     values: Vec<Value>,
+}
+
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "methodCall")]
+pub struct MethodCall {
+    #[serde(rename = "methodName")]
+    name: MethodName,
+    params: Parameters,
+}
+
+impl MethodCall {
+    fn new(name: String, parameters: Vec<Value>) -> MethodCall {
+        MethodCall {
+            name: MethodName { name },
+            params: Parameters {
+                params: ParameterData { params: parameters },
+            },
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "methodName")]
+struct MethodName {
+    #[serde(rename = "$value")]
+    name: String,
+}
+
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "params")]
+struct Parameters {
+    #[serde(rename = "param")]
+    params: ParameterData,
+}
+
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "param")]
+struct ParameterData {
+    #[serde(rename = "value")]
+    params: Vec<Value>,
 }
 
 #[cfg(test)]

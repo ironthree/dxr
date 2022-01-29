@@ -1,10 +1,8 @@
 use chrono::{SubsecRound, Utc};
-
-use crate::XML_RPC_DATE_FORMAT;
-use crate::{Array, Member, Struct, Type, Value};
-
 //use serde_xml_rs::{from_str, to_string};
 use quick_xml::{de::from_str, se::to_string};
+
+use crate::{Array, Member, MethodCall, Struct, Type, Value, XML_RPC_DATE_FORMAT};
 
 #[test]
 fn to_i4() {
@@ -481,4 +479,20 @@ fn from_value_nil() {
     let expected = Value::nil();
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
+}
+
+#[test]
+fn to_method_call() {
+    let value = MethodCall::new(String::from("hello"), vec![Value::string(String::from("xmlrpc"))]);
+    let expected = "<methodCall><methodName>hello</methodName><params><param><value><string>xmlrpc</string></value></param></params></methodCall>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_method_call() {
+    let value = "<methodCall><methodName>hello</methodName><params><param><value><string>xmlrpc</string></value></param></params></methodCall>";
+    let expected = MethodCall::new(String::from("hello"), vec![Value::string(String::from("xmlrpc"))]);
+
+    assert_eq!(from_str::<MethodCall>(value).unwrap(), expected);
 }
