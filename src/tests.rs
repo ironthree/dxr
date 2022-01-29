@@ -175,7 +175,7 @@ fn from_struct_empty() {
 }
 
 #[test]
-fn to_struct() {
+fn to_struct_one() {
     let value = Struct::from_members(vec![Member::new(String::from("answer"), Value::i4(42))]);
     let expected = "<struct><member><name>answer</name><value><i4>42</i4></value></member></struct>";
 
@@ -183,9 +183,37 @@ fn to_struct() {
 }
 
 #[test]
-fn from_struct() {
+fn from_struct_one() {
     let value = "<struct><member><name>answer</name><value><i4>42</i4></value></member></struct>";
     let expected = Struct::from_members(vec![Member::new(String::from("answer"), Value::i4(42))]);
+
+    assert_eq!(from_str::<Struct>(value).unwrap(), expected);
+}
+
+#[test]
+fn to_struct_two() {
+    let value = Struct::from_members(vec![
+        Member::new(String::from("answer"), Value::i4(42)),
+        Member::new(
+            String::from("question"),
+            Value::string(String::from("The answer to life, the the universe, and everything")),
+        ),
+    ]);
+    let expected = "<struct><member><name>answer</name><value><i4>42</i4></value></member><member><name>question</name><value><string>The answer to life, the the universe, and everything</string></value></member></struct>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_struct_two() {
+    let value = "<struct><member><name>answer</name><value><i4>42</i4></value></member><member><name>question</name><value><string>The answer to life, the the universe, and everything</string></value></member></struct>";
+    let expected = Struct::from_members(vec![
+        Member::new(String::from("answer"), Value::i4(42)),
+        Member::new(
+            String::from("question"),
+            Value::string(String::from("The answer to life, the the universe, and everything")),
+        ),
+    ]);
 
     assert_eq!(from_str::<Struct>(value).unwrap(), expected);
 }
@@ -205,31 +233,3 @@ fn from_member() {
 
     assert_eq!(from_str::<Member>(value).unwrap(), expected);
 }
-
-/*
-#[test]
-fn to_struct_empty() {
-    assert_eq!(Struct { members: vec![] }.to_string().unwrap(), "<struct/>");
-}
-
-#[test]
-fn from_struct_empty() {
-    assert_eq!(Struct::from_str("<struct/>").unwrap(), Struct {members: vec![] } );
-}
-
-#[test]
-fn to_struct() {
-    assert_eq!(
-        Struct { members: vec![Member { name: Cow::Borrowed("answer"), value: Value { value: Values::Int(Int { value: 42}) } }] }.to_string().unwrap(),
-        "<struct><member><value><i4>42</i4></value><name>answer</name></member></struct>"
-    )
-}
-
-#[test]
-fn from_struct() {
-    assert_eq!(
-        Struct::from_str("<struct><member><value><i4>42</i4></value><name>answer</name></member></struct>").unwrap(),
-        Struct { members: vec![Member { name: Cow::Borrowed("answer"), value: Value { value: Values::Int(Int { value: 42}) } }] }
-    )
-}
-*/
