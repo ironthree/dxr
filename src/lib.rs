@@ -12,7 +12,7 @@ pub const XML_RPC_DATE_FORMAT: &str = "%Y%m%dT%H:%M:%S";
 #[serde(rename = "value")]
 pub struct Value {
     #[serde(rename = "$value")]
-    pub value: Type,
+    value: Type,
 }
 
 impl Value {
@@ -65,8 +65,18 @@ impl Value {
 
     #[cfg(feature = "nil")]
     pub fn nil() -> Value {
+        Value { value: Type::Nil }
+    }
+
+    pub fn structure(value: Struct) -> Value {
         Value {
-            value: Type::Nil,
+            value: Type::Struct(value),
+        }
+    }
+
+    pub fn array(value: Array) -> Value {
+        Value {
+            value: Type::Array(value),
         }
     }
 }
@@ -98,27 +108,64 @@ pub enum Type {
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "struct")]
 pub struct Struct {
-    #[serde(rename = "$value")]
-    pub members: Vec<Member>,
+    #[serde(rename = "member", default)]
+    members: Vec<Member>,
+}
+
+impl Struct {
+    pub fn from_members(members: Vec<Member>) -> Struct {
+        Struct { members }
+    }
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "member")]
 pub struct Member {
-    pub name: String,
-    pub value: Value,
+    name: MemberName,
+    value: Value,
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "name")]
+struct MemberName {
+    #[serde(rename = "$value")]
+    name: String,
+}
+
+impl Member {
+    pub fn new(name: String, value: Value) -> Member {
+        Member {
+            name: MemberName { name },
+            value,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "array")]
 pub struct Array {
     #[serde(rename = "$value")]
     pub data: Vec<Element>,
 }
 
+impl Array {
+    pub fn from_elements(elements: Vec<Element>) -> Array {
+        Array { data: elements }
+    }
+}
+
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
 pub struct Element {
     #[serde(rename = "$value")]
-    pub value: Value,
+    value: Value,
+}
+
+impl Element {
+    pub fn from_value(value: Value) -> Element {
+        Element { value }
+    }
 }
 
 #[cfg(test)]

@@ -5,16 +5,16 @@ pub mod datetime {
     use crate::XML_RPC_DATE_FORMAT;
 
     pub fn serialize<S>(datetime: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: Serializer,
+    where
+        S: Serializer,
     {
         let string = datetime.format(XML_RPC_DATE_FORMAT).to_string();
         serializer.serialize_str(&string)
     }
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
-        where
-            D: Deserializer<'de>,
+    where
+        D: Deserializer<'de>,
     {
         let string = String::deserialize(deserializer)?;
 
@@ -29,8 +29,8 @@ pub mod boolean {
     use serde::{Deserialize, Deserializer, Serializer};
 
     pub fn serialize<S>(boolean: &bool, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: Serializer,
+    where
+        S: Serializer,
     {
         let string = match boolean {
             true => "1",
@@ -40,8 +40,8 @@ pub mod boolean {
     }
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<bool, D::Error>
-        where
-            D: Deserializer<'de>,
+    where
+        D: Deserializer<'de>,
     {
         let string = String::deserialize(deserializer)?;
 
@@ -56,14 +56,17 @@ pub mod boolean {
 pub mod base64 {
     use serde::{Deserialize, Deserializer, Serializer};
 
-    pub fn serialize<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+    pub fn serialize<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
         let string = base64::encode(bytes);
         serializer.serialize_str(&string)
     }
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<Vec<u8>, D::Error>
-        where
-            D: Deserializer<'de>,
+    where
+        D: Deserializer<'de>,
     {
         let string = String::deserialize(deserializer)?;
 
