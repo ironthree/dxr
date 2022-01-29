@@ -96,7 +96,7 @@ pub enum Type {
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "struct")]
 pub struct Struct {
-    #[serde(rename = "member", default)]
+    #[serde(default, rename = "member")]
     members: Vec<Member>,
 }
 
@@ -132,26 +132,21 @@ impl Member {
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "array")]
 pub struct Array {
-    #[serde(rename = "$value")]
-    pub data: Vec<Element>,
+    #[serde(default)]
+    data: ArrayData,
 }
 
 impl Array {
-    pub fn from_elements(elements: Vec<Element>) -> Array {
-        Array { data: elements }
+    pub fn from_elements(values: Vec<Value>) -> Array {
+        Array { data: ArrayData { values } }
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
-pub struct Element {
-    #[serde(rename = "$value")]
-    value: Value,
-}
-
-impl Element {
-    pub fn from_value(value: Value) -> Element {
-        Element { value }
-    }
+#[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "data")]
+struct ArrayData {
+    #[serde(default, rename = "value")]
+    values: Vec<Value>,
 }
 
 #[cfg(test)]

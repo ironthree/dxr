@@ -1,7 +1,7 @@
 use chrono::{SubsecRound, Utc};
 
 use crate::XML_RPC_DATE_FORMAT;
-use crate::{Member, Struct, Value};
+use crate::{Array, Member, Struct, Value};
 
 //use serde_xml_rs::{from_str, to_string};
 use quick_xml::{de::from_str, se::to_string};
@@ -140,24 +140,6 @@ fn from_value_base64() {
     assert_eq!(from_str::<Value>(&value).unwrap(), expected);
 }
 
-#[cfg(feature = "nil")]
-#[test]
-fn to_value_nil() {
-    let value = Value::nil();
-    let expected = "<value><nil/></value>";
-
-    assert_eq!(to_string(&value).unwrap(), expected);
-}
-
-#[cfg(feature = "nil")]
-#[test]
-fn from_value_nil() {
-    let value = "<value><nil/></value>";
-    let expected = Value::nil();
-
-    assert_eq!(from_str::<Value>(value).unwrap(), expected);
-}
-
 #[test]
 fn to_struct_empty() {
     let value = Struct::from_members(vec![]);
@@ -169,6 +151,11 @@ fn to_struct_empty() {
 #[test]
 fn from_struct_empty() {
     let value = "<struct/>";
+    let expected = Struct::from_members(vec![]);
+
+    assert_eq!(from_str::<Struct>(value).unwrap(), expected);
+
+    let value = "<struct></struct>";
     let expected = Struct::from_members(vec![]);
 
     assert_eq!(from_str::<Struct>(value).unwrap(), expected);
@@ -232,4 +219,85 @@ fn from_member() {
     let expected = Member::new(String::from("answer"), Value::i4(42));
 
     assert_eq!(from_str::<Member>(value).unwrap(), expected);
+}
+
+#[test]
+fn to_array_empty() {
+    let value = Array::from_elements(vec![]);
+    let expected = "<array><data/></array>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_array_empty() {
+    let value = "<array><data/></array>";
+    let expected = Array::from_elements(vec![]);
+
+    assert_eq!(from_str::<Array>(value).unwrap(), expected);
+
+    let value = "<array><data></data></array>";
+    let expected = Array::from_elements(vec![]);
+
+    assert_eq!(from_str::<Array>(value).unwrap(), expected);
+}
+
+#[test]
+fn to_array_one() {
+    let value = Array::from_elements(vec![
+        Value::i4(-12),
+    ]);
+    let expected = "<array><data><value><i4>-12</i4></value></data></array>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_array_one() {
+    let value = "<array><data><value><i4>-12</i4></value></data></array>";
+    let expected = Array::from_elements(vec![
+        Value::i4(-12),
+    ]);
+
+    assert_eq!(from_str::<Array>(value).unwrap(), expected);
+}
+
+#[test]
+fn to_array_two() {
+    let value = Array::from_elements(vec![
+        Value::i4(-12),
+        Value::string(String::from("minus twelve")),
+    ]);
+    let expected = "<array><data><value><i4>-12</i4></value><value><string>minus twelve</string></value></data></array>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_array_two() {
+    let value = "<array><data><value><i4>-12</i4></value><value><string>minus twelve</string></value></data></array>";
+    let expected = Array::from_elements(vec![
+        Value::i4(-12),
+        Value::string(String::from("minus twelve")),
+    ]);
+
+    assert_eq!(from_str::<Array>(value).unwrap(), expected);
+}
+
+#[cfg(feature = "nil")]
+#[test]
+fn to_value_nil() {
+    let value = Value::nil();
+    let expected = "<value><nil/></value>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[cfg(feature = "nil")]
+#[test]
+fn from_value_nil() {
+    let value = "<value><nil/></value>";
+    let expected = Value::nil();
+
+    assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
