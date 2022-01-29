@@ -54,11 +54,11 @@ impl Value {
     }
 
     pub fn structure(value: Struct) -> Value {
-        Value::new(Type::Struct(value))
+        Value::new(Type::Struct { members: value.members })
     }
 
     pub fn array(value: Array) -> Value {
-        Value::new(Type::Array(value))
+        Value::new(Type::Array { data: value.data })
     }
 
     #[cfg(feature = "nil")]
@@ -85,9 +85,15 @@ pub enum Type {
     #[serde(rename = "base64", with = "crate::ser_de::base64")]
     Base64(#[serde(rename = "$value")] Vec<u8>),
     #[serde(rename = "struct")]
-    Struct(#[serde(rename = "$value")] Struct),
+    Struct {
+        #[serde(default, rename = "member")]
+        members: Vec<Member>,
+    },
     #[serde(rename = "array")]
-    Array(#[serde(rename = "$value")] Array),
+    Array {
+        #[serde(default)]
+        data: ArrayData,
+    },
     #[cfg(feature = "nil")]
     #[serde(rename = "nil")]
     Nil,
@@ -138,13 +144,15 @@ pub struct Array {
 
 impl Array {
     pub fn from_elements(values: Vec<Value>) -> Array {
-        Array { data: ArrayData { values } }
+        Array {
+            data: ArrayData { values },
+        }
     }
 }
 
 #[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "data")]
-struct ArrayData {
+pub struct ArrayData {
     #[serde(default, rename = "value")]
     values: Vec<Value>,
 }

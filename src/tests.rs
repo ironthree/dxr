@@ -141,6 +141,22 @@ fn from_value_base64() {
 }
 
 #[test]
+fn to_member() {
+    let value = Member::new(String::from("answer"), Value::i4(42));
+    let expected = "<member><name>answer</name><value><i4>42</i4></value></member>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_member() {
+    let value = "<member><name>answer</name><value><i4>42</i4></value></member>";
+    let expected = Member::new(String::from("answer"), Value::i4(42));
+
+    assert_eq!(from_str::<Member>(value).unwrap(), expected);
+}
+
+#[test]
 fn to_struct_empty() {
     let value = Struct::from_members(vec![]);
     let expected = "<struct/>";
@@ -206,19 +222,25 @@ fn from_struct_two() {
 }
 
 #[test]
-fn to_member() {
-    let value = Member::new(String::from("answer"), Value::i4(42));
-    let expected = "<member><name>answer</name><value><i4>42</i4></value></member>";
+fn to_value_struct() {
+    let value = Value::structure(Struct::from_members(vec![Member::new(
+        String::from("answer"),
+        Value::i4(42),
+    )]));
+    let expected = "<value><struct><member><name>answer</name><value><i4>42</i4></value></member></struct></value>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
 }
 
 #[test]
-fn from_member() {
-    let value = "<member><name>answer</name><value><i4>42</i4></value></member>";
-    let expected = Member::new(String::from("answer"), Value::i4(42));
+fn from_value_struct() {
+    let value = "<value><struct><member><name>answer</name><value><i4>42</i4></value></member></struct></value>";
+    let expected = Value::structure(Struct::from_members(vec![Member::new(
+        String::from("answer"),
+        Value::i4(42),
+    )]));
 
-    assert_eq!(from_str::<Member>(value).unwrap(), expected);
+    assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
 
 #[test]
@@ -244,9 +266,7 @@ fn from_array_empty() {
 
 #[test]
 fn to_array_one() {
-    let value = Array::from_elements(vec![
-        Value::i4(-12),
-    ]);
+    let value = Array::from_elements(vec![Value::i4(-12)]);
     let expected = "<array><data><value><i4>-12</i4></value></data></array>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -255,20 +275,16 @@ fn to_array_one() {
 #[test]
 fn from_array_one() {
     let value = "<array><data><value><i4>-12</i4></value></data></array>";
-    let expected = Array::from_elements(vec![
-        Value::i4(-12),
-    ]);
+    let expected = Array::from_elements(vec![Value::i4(-12)]);
 
     assert_eq!(from_str::<Array>(value).unwrap(), expected);
 }
 
 #[test]
 fn to_array_two() {
-    let value = Array::from_elements(vec![
-        Value::i4(-12),
-        Value::string(String::from("minus twelve")),
-    ]);
-    let expected = "<array><data><value><i4>-12</i4></value><value><string>minus twelve</string></value></data></array>";
+    let value = Array::from_elements(vec![Value::i4(-12), Value::string(String::from("minus twelve"))]);
+    let expected =
+        "<array><data><value><i4>-12</i4></value><value><string>minus twelve</string></value></data></array>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
 }
@@ -276,12 +292,25 @@ fn to_array_two() {
 #[test]
 fn from_array_two() {
     let value = "<array><data><value><i4>-12</i4></value><value><string>minus twelve</string></value></data></array>";
-    let expected = Array::from_elements(vec![
-        Value::i4(-12),
-        Value::string(String::from("minus twelve")),
-    ]);
+    let expected = Array::from_elements(vec![Value::i4(-12), Value::string(String::from("minus twelve"))]);
 
     assert_eq!(from_str::<Array>(value).unwrap(), expected);
+}
+
+#[test]
+fn to_value_array() {
+    let value = Value::array(Array::from_elements(vec![Value::i4(-12)]));
+    let expected = "<value><array><data><value><i4>-12</i4></value></data></array></value>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_value_array() {
+    let value = "<value><array><data><value><i4>-12</i4></value></data></array></value>";
+    let expected = Value::array(Array::from_elements(vec![Value::i4(-12)]));
+
+    assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
 
 #[cfg(feature = "nil")]
