@@ -1,10 +1,4 @@
-use std::collections::btree_map::BTreeMap;
-
-use xmlrpc::Request;
-
-const SERVER_URL: &str = "https://koji.fedoraproject.org/kojihub/";
-
-
+/*
 #[derive(Debug)]
 struct Build {
     build_id: i32,
@@ -138,3 +132,7 @@ fn main() {
 
     println!("{:#?}", build);
 }
+
+*/
+
+fn main() {}

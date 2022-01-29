@@ -4,7 +4,7 @@ description = "koji XML-RPC API client"
 license = "MIT OR Apache-2.0"
 
 version = "0.0.0"
-edition = "2018"
+edition = "2021"
 
 authors = ["Fabio Valentini <decathorpe@gmail.com>"]
 readme = "README.md"
@@ -14,10 +14,21 @@ keywords = ["fedora", "koji", "XMLRPC", "client"]
 repository = "https://github.com/ironthree/koji-rs"
 
 [dependencies]
-xmlrpc = "^0.14.0"
+base64 = "0.13"
+chrono = "0.4.19"
+#reqwest = { version = "0.11", features = ["cookies"] }
+serde = { version = "1.0.104", features = ["derive"] }
+quick-xml = { version = "0.22.0" , features = ["serialize"] }
+
+[dev-dependencies]
+quickcheck = "1.0.0"
+
+[features]
+default = ["i8", "nil"]
+i8 = []
+nil = []
 
 [profile.release]
 codegen-units = 1
-lto = true
 opt-level = 3
 
