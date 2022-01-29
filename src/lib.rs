@@ -3,6 +3,7 @@
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
 
 mod ser_de;
 
@@ -243,6 +244,12 @@ pub struct Fault {
 impl Fault {
     pub fn new(code: i32, string: String) -> Fault {
         Fault { code, string }
+    }
+}
+
+impl Display for Fault {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        write!(f, "Fault {}: {}", self.code, self.string)
     }
 }
 
