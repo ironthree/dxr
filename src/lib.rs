@@ -16,10 +16,12 @@ pub struct Value {
 }
 
 impl Value {
+    pub fn new(value: Type) -> Value {
+        Value { value }
+    }
+
     pub fn i4(value: i32) -> Value {
-        Value {
-            value: Type::Integer(value),
-        }
+        Value::new(Type::Integer(value))
     }
 
     pub fn int(value: i32) -> Value {
@@ -28,56 +30,40 @@ impl Value {
 
     #[cfg(feature = "i8")]
     pub fn i8(value: i64) -> Value {
-        Value {
-            value: Type::Long(value),
-        }
+        Value::new(Type::Long(value))
     }
 
     pub fn boolean(value: bool) -> Value {
-        Value {
-            value: Type::Boolean(value),
-        }
+        Value::new(Type::Boolean(value))
     }
 
     pub fn string(value: String) -> Value {
-        Value {
-            value: Type::String(value),
-        }
+        Value::new(Type::String(value))
     }
 
     pub fn double(value: f64) -> Value {
-        Value {
-            value: Type::Double(value),
-        }
+        Value::new(Type::Double(value))
     }
 
     pub fn datetime(value: DateTime<Utc>) -> Value {
-        Value {
-            value: Type::DateTime(value),
-        }
+        Value::new(Type::DateTime(value))
     }
 
     pub fn base64(value: Vec<u8>) -> Value {
-        Value {
-            value: Type::Base64(value),
-        }
+        Value::new(Type::Base64(value))
+    }
+
+    pub fn structure(value: Struct) -> Value {
+        Value::new(Type::Struct(value))
+    }
+
+    pub fn array(value: Array) -> Value {
+        Value::new(Type::Array(value))
     }
 
     #[cfg(feature = "nil")]
     pub fn nil() -> Value {
-        Value { value: Type::Nil }
-    }
-
-    pub fn structure(value: Struct) -> Value {
-        Value {
-            value: Type::Struct(value),
-        }
-    }
-
-    pub fn array(value: Array) -> Value {
-        Value {
-            value: Type::Array(value),
-        }
+        Value::new(Type::Nil)
     }
 }
 
