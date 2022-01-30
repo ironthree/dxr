@@ -16,8 +16,11 @@ pub const XML_RPC_DATE_FORMAT: &str = "%Y%m%dT%H:%M:%S";
 
 mod ser_de;
 
-mod impls;
-pub use impls::*;
+mod from;
+pub use from::*;
+
+mod to;
+pub use to::*;
 
 mod types;
 pub use types::*;
@@ -29,6 +32,15 @@ pub trait FromValue<T> {
     /// If the value contains a type that is not compatible with the target type, the conversion
     /// will fail.
     fn from_value(value: &Value) -> Result<T, ValueError>;
+}
+
+/// conversion trait from primitives, `Option`, `HashMap`, and user-defined types to XML-RPC values
+pub trait ToValue<T> {
+    /// conversion method from types into XML-RPC values
+    ///
+    /// The resulting XML-RPC value will automatically have a compatible type, so this conversion
+    /// cannot fail, as this trait can only implemented for applicable types.
+    fn to_value(value: &T) -> Value;
 }
 
 #[derive(Debug, Error)]
