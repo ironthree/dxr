@@ -7,7 +7,7 @@
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
 
-pub use dxr_derive::{FromValue, ToValue};
+pub use dxr_derive::{FromDXR, ToDXR};
 pub use dxr_shared::*;
 
 #[cfg(test)]

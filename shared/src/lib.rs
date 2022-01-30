@@ -29,21 +29,21 @@ mod types;
 pub use types::*;
 
 /// conversion trait from XML-RPC values to primitives, `Option`, `HashMap`, and user-defined types
-pub trait FromValue<T> {
+pub trait FromDXR<T> {
     /// fallible conversion method from an XML-RPC value into the target type
     ///
     /// If the value contains a type that is not compatible with the target type, the conversion
     /// will fail.
-    fn from_value(value: &Value) -> Result<T, ValueError>;
+    fn from_dxr(value: &Value) -> Result<T, ValueError>;
 }
 
 /// conversion trait from primitives, `Option`, `HashMap`, and user-defined types to XML-RPC values
-pub trait ToValue<T> {
+pub trait ToDXR<T> {
     /// conversion method from types into XML-RPC values
     ///
     /// The resulting XML-RPC value will automatically have a compatible type, so this conversion
     /// cannot fail, as this trait can only implemented for applicable types.
-    fn to_value(value: &T) -> Value;
+    fn to_dxr(value: &T) -> Value;
 }
 
 #[derive(Debug, Error)]

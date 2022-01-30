@@ -7,9 +7,9 @@ use reqwest::header::{HeaderMap, HeaderValue, CONTENT_LENGTH, CONTENT_TYPE};
 use reqwest::Client;
 use url::Url;
 
-use dxr::{Fault, FaultResponse, FromValue, MethodCall, MethodResponse, ToValue, Value};
+use dxr::{Fault, FaultResponse, FromDXR, MethodCall, MethodResponse, ToDXR, Value};
 
-#[derive(Debug, FromValue, ToValue)]
+#[derive(Debug, FromDXR, ToDXR)]
 pub struct Build {
     pub build_id: i32,
     //cg_id: Option<?>,
@@ -102,7 +102,7 @@ async fn main() -> Result<(), String> {
     };
 
     let values = response.into_values();
-    let build = Build::from_value(values.first().expect("Failed to get one value from the response."))
+    let build = Build::from_dxr(values.first().expect("Failed to get one value from the response."))
         .expect("Failed to deserialize XML-RPC response into a Build.");
 
     // print query result

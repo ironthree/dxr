@@ -2,16 +2,16 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 
-use crate::{FromValue, Type, Value, ValueError};
+use crate::{FromDXR, Type, Value, ValueError};
 
-impl FromValue<Value> for Value {
-    fn from_value(value: &Value) -> Result<Value, ValueError> {
+impl FromDXR<Value> for Value {
+    fn from_dxr(value: &Value) -> Result<Value, ValueError> {
         Ok(value.clone())
     }
 }
 
-impl FromValue<i32> for i32 {
-    fn from_value(value: &Value) -> Result<i32, ValueError> {
+impl FromDXR<i32> for i32 {
+    fn from_dxr(value: &Value) -> Result<i32, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "i4");
 
         match value.inner() {
@@ -32,8 +32,8 @@ impl FromValue<i32> for i32 {
 }
 
 #[cfg(feature = "i8")]
-impl FromValue<i64> for i64 {
-    fn from_value(value: &Value) -> Result<i64, ValueError> {
+impl FromDXR<i64> for i64 {
+    fn from_dxr(value: &Value) -> Result<i64, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "i8");
 
         match value.inner() {
@@ -52,8 +52,8 @@ impl FromValue<i64> for i64 {
     }
 }
 
-impl FromValue<bool> for bool {
-    fn from_value(value: &Value) -> Result<bool, ValueError> {
+impl FromDXR<bool> for bool {
+    fn from_dxr(value: &Value) -> Result<bool, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "boolean");
 
         match value.inner() {
@@ -73,8 +73,8 @@ impl FromValue<bool> for bool {
     }
 }
 
-impl FromValue<String> for String {
-    fn from_value(value: &Value) -> Result<String, ValueError> {
+impl FromDXR<String> for String {
+    fn from_dxr(value: &Value) -> Result<String, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "string");
 
         match value.inner() {
@@ -94,8 +94,8 @@ impl FromValue<String> for String {
     }
 }
 
-impl FromValue<f64> for f64 {
-    fn from_value(value: &Value) -> Result<f64, ValueError> {
+impl FromDXR<f64> for f64 {
+    fn from_dxr(value: &Value) -> Result<f64, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "double");
 
         match value.inner() {
@@ -115,8 +115,8 @@ impl FromValue<f64> for f64 {
     }
 }
 
-impl FromValue<DateTime<Utc>> for DateTime<Utc> {
-    fn from_value(value: &Value) -> Result<DateTime<Utc>, ValueError> {
+impl FromDXR<DateTime<Utc>> for DateTime<Utc> {
+    fn from_dxr(value: &Value) -> Result<DateTime<Utc>, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "dateTime.iso8861");
 
         match value.inner() {
@@ -136,8 +136,8 @@ impl FromValue<DateTime<Utc>> for DateTime<Utc> {
     }
 }
 
-impl FromValue<Vec<u8>> for Vec<u8> {
-    fn from_value(value: &Value) -> Result<Vec<u8>, ValueError> {
+impl FromDXR<Vec<u8>> for Vec<u8> {
+    fn from_dxr(value: &Value) -> Result<Vec<u8>, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "base64");
 
         match value.inner() {
@@ -158,24 +158,24 @@ impl FromValue<Vec<u8>> for Vec<u8> {
 }
 
 #[cfg(feature = "nil")]
-impl<T> FromValue<Option<T>> for Option<T>
+impl<T> FromDXR<Option<T>> for Option<T>
 where
-    T: FromValue<T>,
+    T: FromDXR<T>,
 {
-    fn from_value(value: &Value) -> Result<Option<T>, ValueError> {
+    fn from_dxr(value: &Value) -> Result<Option<T>, ValueError> {
         if let Type::Nil = value.inner() {
             Ok(None)
         } else {
-            Ok(Some(T::from_value(value)?))
+            Ok(Some(T::from_dxr(value)?))
         }
     }
 }
 
-impl<T> FromValue<Vec<T>> for Vec<T>
+impl<T> FromDXR<Vec<T>> for Vec<T>
 where
-    T: FromValue<T>,
+    T: FromDXR<T>,
 {
-    fn from_value(value: &Value) -> Result<Vec<T>, ValueError> {
+    fn from_dxr(value: &Value) -> Result<Vec<T>, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "array");
 
         let values = match value.inner() {
@@ -193,15 +193,15 @@ where
             Type::Nil => Err(err("nil")),
         };
 
-        values?.iter().map(|value| T::from_value(value)).collect()
+        values?.iter().map(|value| T::from_dxr(value)).collect()
     }
 }
 
-impl<T> FromValue<HashMap<String, T>> for HashMap<String, T>
+impl<T> FromDXR<HashMap<String, T>> for HashMap<String, T>
 where
-    T: FromValue<T>,
+    T: FromDXR<T>,
 {
-    fn from_value(value: &Value) -> Result<HashMap<String, T>, ValueError> {
+    fn from_dxr(value: &Value) -> Result<HashMap<String, T>, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "array");
 
         let values = match value.inner() {
@@ -223,7 +223,7 @@ where
             .iter()
             .map(|v| {
                 let name = v.name().to_string();
-                match T::from_value(v.inner()) {
+                match T::from_dxr(v.inner()) {
                     Ok(value) => Ok((name, value)),
                     Err(error) => Err(error),
                 }
