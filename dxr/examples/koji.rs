@@ -7,9 +7,9 @@ use reqwest::header::{HeaderMap, HeaderValue, CONTENT_LENGTH, CONTENT_TYPE};
 use reqwest::Client;
 use url::Url;
 
-use dxr::{Fault, FaultResponse, FromValue, MethodCall, MethodResponse, Value};
+use dxr::{Fault, FaultResponse, FromValue, MethodCall, MethodResponse, ToValue, Value};
 
-#[derive(Debug, FromValue)]
+#[derive(Debug, FromValue, ToValue)]
 pub struct Build {
     pub build_id: i32,
     //cg_id: Option<?>,

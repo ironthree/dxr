@@ -73,3 +73,64 @@ pub fn from_value(input: TokenStream) -> TokenStream {
 
     proc_macro::TokenStream::from(impl_block)
 }
+
+/// procedural macro for deriving the `ToValue` trait for structs
+#[proc_macro_derive(ToValue)]
+pub fn to_value(input: TokenStream) -> TokenStream {
+    let mut input = parse_macro_input!(input as DeriveInput);
+
+    let name = input.ident;
+
+    for param in &mut input.generics.params {
+        if let GenericParam::Type(ref mut type_param) = *param {
+            type_param.bounds.push(parse_quote!(dxr::FromValue));
+        }
+    }
+
+    let generics = input.generics;
+    let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
+
+    let mut field_impls = Vec::new();
+
+    match &input.data {
+        Data::Struct(data) => match &data.fields {
+            Fields::Named(fields) => {
+                for field in &fields.named {
+                    let ident = field.ident.as_ref().expect("Failed to get struct field identifier.");
+                    let stype = match &field.ty {
+                        Type::Path(v) => v,
+                        _ => unimplemented!("Deriving FromValue not possible for field: {}", ident),
+                    };
+                    let ident_str = ident.to_string();
+                    field_impls.push(quote! {
+                        map.insert(String::from(#ident_str), <#stype as ToValue<#stype>>::to_value(&value.#ident));
+                    });
+                }
+            },
+            Fields::Unnamed(_) => unimplemented!("Cannot derive FromValue for tuple structs."),
+            Fields::Unit => unimplemented!("Cannot derive FromValue for unit structs."),
+        },
+        _ => unimplemented!("FromValue can not be derived for enums and unions."),
+    }
+
+    let mut fields = proc_macro2::TokenStream::new();
+    fields.extend(field_impls.into_iter());
+
+    let impl_block = quote! {
+        impl #impl_generics dxr::ToValue<#name> for #name #ty_generics #where_clause {
+            fn to_value(value: &#name) -> Value {
+                use ::std::collections::HashMap;
+                use ::std::string::String;
+                use ::dxr_shared::Value;
+
+                let mut map: HashMap<String, Value> = HashMap::new();
+
+                #fields
+
+                HashMap::to_value(&map)
+            }
+        }
+    };
+
+    proc_macro::TokenStream::from(impl_block)
+}
