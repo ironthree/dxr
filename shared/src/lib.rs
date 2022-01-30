@@ -7,6 +7,9 @@
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
 
+pub use base64;
+pub use chrono;
+
 use std::borrow::Cow;
 
 use thiserror::Error;

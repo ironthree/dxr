@@ -9,3 +9,6 @@
 
 pub use dxr_derive::{FromValue, ToValue};
 pub use dxr_shared::*;
+
+#[cfg(test)]
+mod tests;

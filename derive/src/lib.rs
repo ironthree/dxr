@@ -55,7 +55,7 @@ pub fn from_value(input: TokenStream) -> TokenStream {
     fields.extend(field_impls.into_iter());
 
     let impl_block = quote! {
-        impl #impl_generics dxr::FromValue<#name> for #name #ty_generics #where_clause {
+        impl #impl_generics ::dxr_shared::FromValue<#name> for #name #ty_generics #where_clause {
             fn from_value(value: &::dxr_shared::Value) -> Result<#name, ::dxr_shared::ValueError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
@@ -117,7 +117,7 @@ pub fn to_value(input: TokenStream) -> TokenStream {
     fields.extend(field_impls.into_iter());
 
     let impl_block = quote! {
-        impl #impl_generics dxr::ToValue<#name> for #name #ty_generics #where_clause {
+        impl #impl_generics ::dxr_shared::ToValue<#name> for #name #ty_generics #where_clause {
             fn to_value(value: &#name) -> Value {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
