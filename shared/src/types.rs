@@ -3,7 +3,7 @@ use std::fmt::{Display, Formatter};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "value")]
 pub struct Value {
     #[serde(rename = "$value")]
@@ -66,7 +66,7 @@ impl Value {
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Type {
     #[serde(rename = "i4", alias = "int")]
     Integer(#[serde(rename = "$value")] i32),
@@ -98,7 +98,7 @@ pub enum Type {
     Nil,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "struct")]
 pub struct Struct {
     #[serde(default, rename = "member")]
@@ -111,14 +111,14 @@ impl Struct {
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "member")]
 pub struct Member {
     name: MemberName,
     value: Value,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "name")]
 struct MemberName {
     #[serde(rename = "$value")]
@@ -132,9 +132,17 @@ impl Member {
             value,
         }
     }
+
+    pub fn name(&self) -> &str {
+        self.name.name.as_str()
+    }
+
+    pub fn inner(&self) -> &Value {
+        &self.value
+    }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "array")]
 pub struct Array {
     #[serde(default)]
@@ -149,7 +157,7 @@ impl Array {
     }
 }
 
-#[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "data")]
 pub struct ArrayData {
     #[serde(default, rename = "value")]
@@ -162,7 +170,7 @@ impl ArrayData {
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodCall")]
 pub struct MethodCall {
     #[serde(rename = "methodName")]
@@ -182,14 +190,14 @@ impl MethodCall {
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodName")]
 struct MethodName {
     #[serde(rename = "$value")]
     name: String,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodResponse")]
 pub struct MethodResponse {
     params: Parameters,
@@ -205,7 +213,7 @@ impl MethodResponse {
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodResponse")]
 pub struct FaultResponse {
     fault: FaultStruct,
@@ -226,20 +234,20 @@ impl FaultResponse {
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "fault")]
 pub struct FaultStruct {
     value: FaultValue,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "value")]
 pub struct FaultValue {
     #[serde(rename = "struct")]
     value: Struct,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Fault {
     code: i32,
     string: String,
@@ -277,7 +285,7 @@ impl From<FaultResponse> for Fault {
     }
 }
 
-#[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "params")]
 pub struct Parameters {
     #[serde(default, rename = "param")]
@@ -290,7 +298,7 @@ impl Parameters {
     }
 }
 
-#[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "param")]
 struct ParameterData {
     #[serde(rename = "value")]

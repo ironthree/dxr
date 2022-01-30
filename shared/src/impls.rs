@@ -1,5 +1,14 @@
-use crate::{FromValue, Type, Value};
+use std::collections::HashMap;
+
 use chrono::{DateTime, Utc};
+
+use crate::{FromValue, Type, Value};
+
+impl FromValue<Value> for Value {
+    fn from_value(value: &Value) -> Result<Value, ()> {
+        Ok(value.clone())
+    }
+}
 
 impl FromValue<i32> for i32 {
     fn from_value(value: &Value) -> Result<i32, ()> {
@@ -90,5 +99,28 @@ where
         };
 
         values.iter().map(|value| T::from_value(value)).collect()
+    }
+}
+
+impl<T> FromValue<HashMap<String, T>> for HashMap<String, T>
+where
+    T: FromValue<T>,
+{
+    fn from_value(value: &Value) -> Result<HashMap<String, T>, ()> {
+        let values = match value.inner() {
+            Type::Struct { members } => members,
+            _ => return Err(()),
+        };
+
+        values
+            .iter()
+            .map(|v| {
+                let name = v.name().to_string();
+                match T::from_value(v.inner()) {
+                    Ok(value) => Ok((name, value)),
+                    Err(error) => Err(error),
+                }
+            })
+            .collect()
     }
 }
