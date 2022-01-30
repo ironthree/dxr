@@ -2,74 +2,157 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 
-use crate::{FromValue, Type, Value};
+use crate::{FromValue, Type, Value, ValueError};
 
 impl FromValue<Value> for Value {
-    fn from_value(value: &Value) -> Result<Value, ()> {
+    fn from_value(value: &Value) -> Result<Value, ValueError> {
         Ok(value.clone())
     }
 }
 
 impl FromValue<i32> for i32 {
-    fn from_value(value: &Value) -> Result<i32, ()> {
+    fn from_value(value: &Value) -> Result<i32, ValueError> {
+        let err = |t: &'static str| ValueError::wrong_type(t, "i4");
+
         match value.inner() {
             Type::Integer(int) => Ok(*int),
-            _ => Err(()),
+            #[cfg(feature = "i8")]
+            Type::Long(_) => Err(err("i8")),
+            Type::Boolean(_) => Err(err("boolean")),
+            Type::String(_) => Err(err("string")),
+            Type::Double(_) => Err(err("double")),
+            Type::DateTime(_) => Err(err("dateTime.iso8861")),
+            Type::Base64(_) => Err(err("base64")),
+            Type::Struct { .. } => Err(err("struct")),
+            Type::Array { .. } => Err(err("array")),
+            #[cfg(feature = "nil")]
+            Type::Nil => Err(err("nil")),
         }
     }
 }
 
 #[cfg(feature = "i8")]
 impl FromValue<i64> for i64 {
-    fn from_value(value: &Value) -> Result<i64, ()> {
+    fn from_value(value: &Value) -> Result<i64, ValueError> {
+        let err = |t: &'static str| ValueError::wrong_type(t, "i8");
+
         match value.inner() {
+            Type::Integer(_) => Err(err("i4")),
             Type::Long(long) => Ok(*long),
-            _ => Err(()),
+            Type::Boolean(_) => Err(err("boolean")),
+            Type::String(_) => Err(err("string")),
+            Type::Double(_) => Err(err("double")),
+            Type::DateTime(_) => Err(err("dateTime.iso8861")),
+            Type::Base64(_) => Err(err("base64")),
+            Type::Struct { .. } => Err(err("struct")),
+            Type::Array { .. } => Err(err("array")),
+            #[cfg(feature = "nil")]
+            Type::Nil => Err(err("nil")),
         }
     }
 }
 
 impl FromValue<bool> for bool {
-    fn from_value(value: &Value) -> Result<bool, ()> {
+    fn from_value(value: &Value) -> Result<bool, ValueError> {
+        let err = |t: &'static str| ValueError::wrong_type(t, "boolean");
+
         match value.inner() {
+            Type::Integer(_) => Err(err("i4")),
+            #[cfg(feature = "i8")]
+            Type::Long(_) => Err(err("i8")),
             Type::Boolean(boo) => Ok(*boo),
-            _ => Err(()),
+            Type::String(_) => Err(err("string")),
+            Type::Double(_) => Err(err("double")),
+            Type::DateTime(_) => Err(err("dateTime.iso8861")),
+            Type::Base64(_) => Err(err("base64")),
+            Type::Struct { .. } => Err(err("struct")),
+            Type::Array { .. } => Err(err("array")),
+            #[cfg(feature = "nil")]
+            Type::Nil => Err(err("nil")),
         }
     }
 }
 
 impl FromValue<String> for String {
-    fn from_value(value: &Value) -> Result<String, ()> {
+    fn from_value(value: &Value) -> Result<String, ValueError> {
+        let err = |t: &'static str| ValueError::wrong_type(t, "string");
+
         match value.inner() {
+            Type::Integer(_) => Err(err("i4")),
+            #[cfg(feature = "i8")]
+            Type::Long(_) => Err(err("i8")),
+            Type::Boolean(_) => Err(err("boolean")),
             Type::String(string) => Ok(string.clone()),
-            _ => Err(()),
+            Type::Double(_) => Err(err("double")),
+            Type::DateTime(_) => Err(err("dateTime.iso8861")),
+            Type::Base64(_) => Err(err("base64")),
+            Type::Struct { .. } => Err(err("struct")),
+            Type::Array { .. } => Err(err("array")),
+            #[cfg(feature = "nil")]
+            Type::Nil => Err(err("nil")),
         }
     }
 }
 
 impl FromValue<f64> for f64 {
-    fn from_value(value: &Value) -> Result<f64, ()> {
+    fn from_value(value: &Value) -> Result<f64, ValueError> {
+        let err = |t: &'static str| ValueError::wrong_type(t, "double");
+
         match value.inner() {
+            Type::Integer(_) => Err(err("i4")),
+            #[cfg(feature = "i8")]
+            Type::Long(_) => Err(err("i8")),
+            Type::Boolean(_) => Err(err("boolean")),
+            Type::String(_) => Err(err("string")),
             Type::Double(double) => Ok(*double),
-            _ => Err(()),
+            Type::DateTime(_) => Err(err("dateTime.iso8861")),
+            Type::Base64(_) => Err(err("base64")),
+            Type::Struct { .. } => Err(err("struct")),
+            Type::Array { .. } => Err(err("array")),
+            #[cfg(feature = "nil")]
+            Type::Nil => Err(err("nil")),
         }
     }
 }
 
 impl FromValue<DateTime<Utc>> for DateTime<Utc> {
-    fn from_value(value: &Value) -> Result<DateTime<Utc>, ()> {
+    fn from_value(value: &Value) -> Result<DateTime<Utc>, ValueError> {
+        let err = |t: &'static str| ValueError::wrong_type(t, "dateTime.iso8861");
+
         match value.inner() {
+            Type::Integer(_) => Err(err("i4")),
+            #[cfg(feature = "i8")]
+            Type::Long(_) => Err(err("i8")),
+            Type::Boolean(_) => Err(err("boolean")),
+            Type::String(_) => Err(err("string")),
+            Type::Double(_) => Err(err("double")),
             Type::DateTime(date) => Ok(*date),
-            _ => Err(()),
+            Type::Base64(_) => Err(err("base64")),
+            Type::Struct { .. } => Err(err("struct")),
+            Type::Array { .. } => Err(err("array")),
+            #[cfg(feature = "nil")]
+            Type::Nil => Err(err("nil")),
         }
     }
 }
 
 impl FromValue<Vec<u8>> for Vec<u8> {
-    fn from_value(value: &Value) -> Result<Vec<u8>, ()> {
+    fn from_value(value: &Value) -> Result<Vec<u8>, ValueError> {
+        let err = |t: &'static str| ValueError::wrong_type(t, "base64");
+
         match value.inner() {
+            Type::Integer(_) => Err(err("i4")),
+            #[cfg(feature = "i8")]
+            Type::Long(_) => Err(err("i8")),
+            Type::Boolean(_) => Err(err("boolean")),
+            Type::String(_) => Err(err("string")),
+            Type::Double(_) => Err(err("double")),
+            Type::DateTime(_) => Err(err("dateTime.iso8861")),
             Type::Base64(bytes) => Ok(bytes.clone()),
-            _ => Err(()),
+            Type::Struct { .. } => Err(err("struct")),
+            Type::Array { .. } => Err(err("array")),
+            #[cfg(feature = "nil")]
+            Type::Nil => Err(err("nil")),
         }
     }
 }
@@ -79,7 +162,7 @@ impl<T> FromValue<Option<T>> for Option<T>
 where
     T: FromValue<T>,
 {
-    fn from_value(value: &Value) -> Result<Option<T>, ()> {
+    fn from_value(value: &Value) -> Result<Option<T>, ValueError> {
         if let Type::Nil = value.inner() {
             Ok(None)
         } else {
@@ -92,13 +175,25 @@ impl<T> FromValue<Vec<T>> for Vec<T>
 where
     T: FromValue<T>,
 {
-    fn from_value(value: &Value) -> Result<Vec<T>, ()> {
+    fn from_value(value: &Value) -> Result<Vec<T>, ValueError> {
+        let err = |t: &'static str| ValueError::wrong_type(t, "array");
+
         let values = match value.inner() {
-            Type::Array { data } => data.inner(),
-            _ => return Err(()),
+            Type::Integer(_) => Err(err("i4")),
+            #[cfg(feature = "i8")]
+            Type::Long(_) => Err(err("i8")),
+            Type::Boolean(_) => Err(err("boolean")),
+            Type::String(_) => Err(err("string")),
+            Type::Double(_) => Err(err("double")),
+            Type::DateTime(_) => Err(err("dateTime.iso8861")),
+            Type::Base64(_) => Err(err("base64")),
+            Type::Struct { .. } => Err(err("struct")),
+            Type::Array { data } => Ok(data.inner()),
+            #[cfg(feature = "nil")]
+            Type::Nil => Err(err("nil")),
         };
 
-        values.iter().map(|value| T::from_value(value)).collect()
+        values?.iter().map(|value| T::from_value(value)).collect()
     }
 }
 
@@ -106,13 +201,25 @@ impl<T> FromValue<HashMap<String, T>> for HashMap<String, T>
 where
     T: FromValue<T>,
 {
-    fn from_value(value: &Value) -> Result<HashMap<String, T>, ()> {
+    fn from_value(value: &Value) -> Result<HashMap<String, T>, ValueError> {
+        let err = |t: &'static str| ValueError::wrong_type(t, "array");
+
         let values = match value.inner() {
-            Type::Struct { members } => members,
-            _ => return Err(()),
+            Type::Integer(_) => Err(err("i4")),
+            #[cfg(feature = "i8")]
+            Type::Long(_) => Err(err("i8")),
+            Type::Boolean(_) => Err(err("boolean")),
+            Type::String(_) => Err(err("string")),
+            Type::Double(_) => Err(err("double")),
+            Type::DateTime(_) => Err(err("dateTime.iso8861")),
+            Type::Base64(_) => Err(err("base64")),
+            Type::Struct { members } => Ok(members),
+            Type::Array { .. } => Err(err("array")),
+            #[cfg(feature = "nil")]
+            Type::Nil => Err(err("nil")),
         };
 
-        values
+        values?
             .iter()
             .map(|v| {
                 let name = v.name().to_string();

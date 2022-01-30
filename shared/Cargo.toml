@@ -17,6 +17,7 @@ repository = "https://github.com/ironthree/dxr"
 base64 = "0.13"
 chrono = "0.4.19"
 serde = { version = "1.0.104", features = ["derive"] }
+thiserror = "1.0.30"
 
 [dev-dependencies]
 quick-xml = { version = "0.22" , features = ["serialize"] }

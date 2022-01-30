@@ -39,14 +39,13 @@ pub fn from_value(input: TokenStream) -> TokenStream {
                         _ => unimplemented!("Deriving FromValue not possible for field: {}", ident),
                     };
                     let ident_str = ident.to_string();
-                    field_impls.push(
-                        // FIXME: replace ? with nice error message about wrong type
-                        quote! { #ident: <#stype as FromValue<#stype>>::from_value(map.get(#ident_str).expect(&format!("No value found for field '{}'", #ident_str)))?,
-                        },
-                    );
+                    field_impls.push(quote! {
+                        #ident: <#stype as FromValue<#stype>>::from_value(map.get(#ident_str)
+                            .ok_or_else(|| ValueError::missing_field(#ident_str))?)?,
+                    });
                 }
             },
-            Fields::Unnamed(_) => unimplemented!("Cannot derive FromValue for unit structs."),
+            Fields::Unnamed(_) => unimplemented!("Cannot derive FromValue for tuple structs."),
             Fields::Unit => unimplemented!("Cannot derive FromValue for unit structs."),
         },
         _ => unimplemented!("FromValue can not be derived for enums and unions."),
@@ -57,10 +56,11 @@ pub fn from_value(input: TokenStream) -> TokenStream {
 
     let impl_block = quote! {
         impl #impl_generics dxr::FromValue<#name> for #name #ty_generics #where_clause {
-            fn from_value(value: &::dxr_shared::Value) -> Result<#name, ()> {
+            fn from_value(value: &::dxr_shared::Value) -> Result<#name, ::dxr_shared::ValueError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
                 use ::dxr_shared::Value;
+                use ::dxr_shared::ValueError;
 
                 let map: HashMap<String, Value> = HashMap::from_value(value)?;
 
