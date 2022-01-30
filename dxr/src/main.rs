@@ -1,8 +1,10 @@
+// TODO: move code from this file to koji-rs
+
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_LENGTH, CONTENT_TYPE};
 use reqwest::Client;
 use url::Url;
 
-use koji::{Fault, FaultResponse, MethodCall, MethodResponse, Value};
+use dxr_shared::{Fault, FaultResponse, MethodCall, MethodResponse, Value};
 
 #[tokio::main]
 async fn main() -> Result<(), String> {

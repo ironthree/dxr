@@ -1,0 +1,29 @@
+[package]
+name = "dxr_shared"
+description = "Shared implementation details of DXR"
+license = "MIT OR Apache-2.0"
+
+version = "0.0.0"
+edition = "2021"
+
+authors = ["Fabio Valentini <decathorpe@gmail.com>"]
+#readme = "README.md"
+#exclude = ["/.github/", "/rustfmt.toml"]
+#categories = ["api-bindings"]
+#keywords = ["fedora", "koji", "XMLRPC", "client"]
+repository = "https://github.com/ironthree/dxr"
+
+[dependencies]
+base64 = "0.13"
+chrono = "0.4.19"
+serde = { version = "1.0.104", features = ["derive"] }
+
+[dev-dependencies]
+quick-xml = { version = "0.22" , features = ["serialize"] }
+#quickcheck = "1.0"
+#quickcheck_macros = "1.0"
+
+[features]
+default = ["i8", "nil"]
+i8 = []
+nil = []

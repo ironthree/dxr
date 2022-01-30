@@ -1,13 +1,7 @@
-//#![warn(missing_docs)]
-#![warn(missing_debug_implementations)]
+use std::fmt::{Display, Formatter};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::fmt::{Display, Formatter};
-
-mod ser_de;
-
-pub const XML_RPC_DATE_FORMAT: &str = "%Y%m%dT%H:%M:%S";
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "value")]
@@ -19,6 +13,10 @@ pub struct Value {
 impl Value {
     pub fn new(value: Type) -> Value {
         Value { value }
+    }
+
+    pub fn inner(&self) -> &Type {
+        &self.value
     }
 
     pub fn i4(value: i32) -> Value {
@@ -158,6 +156,12 @@ pub struct ArrayData {
     values: Vec<Value>,
 }
 
+impl ArrayData {
+    pub fn inner(&self) -> &Vec<Value> {
+        &self.values
+    }
+}
+
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodCall")]
 pub struct MethodCall {
@@ -292,6 +296,3 @@ struct ParameterData {
     #[serde(rename = "value")]
     params: Vec<Value>,
 }
-
-#[cfg(test)]
-mod tests;

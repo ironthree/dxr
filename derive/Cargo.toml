@@ -1,0 +1,30 @@
+[package]
+name = "dxr_derive"
+description = "Macro implementations for DXR"
+license = "MIT OR Apache-2.0"
+
+version = "0.0.0"
+edition = "2021"
+
+authors = ["Fabio Valentini <decathorpe@gmail.com>"]
+#readme = "README.md"
+#exclude = ["/.github/", "/rustfmt.toml"]
+#categories = ["api-bindings"]
+#keywords = ["fedora", "koji", "XMLRPC", "client"]
+repository = "https://github.com/ironthree/dxr"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+dxr_shared = { path = "../shared", default-features = false }
+syn = "1.0.86"
+quote = "1.0.15"
+
+[dev-dependencies]
+
+[features]
+default = ["dxr_shared/default", "i8", "nil"]
+i8 = ["dxr_shared/i8"]
+nil = ["dxr_shared/nil"]
+
