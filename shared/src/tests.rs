@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+
 use chrono::{SubsecRound, Utc};
 use quick_xml::{de::from_str, se::to_string};
 

@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 use std::fmt::{Display, Formatter};
 
 use chrono::{DateTime, Utc};

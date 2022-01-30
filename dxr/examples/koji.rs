@@ -1,5 +1,8 @@
 // TODO: move code from this file to koji-rs
 
+#![warn(missing_debug_implementations)]
+#![warn(clippy::unwrap_used)]
+
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_LENGTH, CONTENT_TYPE};
 use reqwest::Client;
 use url::Url;
@@ -15,7 +18,7 @@ pub struct Build {
     pub creation_event_id: i32,
     pub creation_time: String,
     pub creation_ts: f64,
-    //pub epoch: Option<i32>, FIXME
+    pub epoch: Option<i32>,
     //extra: HashMap<String, Value>,
     pub id: i32,
     pub name: String,
@@ -40,10 +43,16 @@ pub struct Build {
 async fn main() -> Result<(), String> {
     // default headers for xml-rpc calls
     let mut headers = HeaderMap::new();
-    headers.insert(CONTENT_TYPE, HeaderValue::from_str("text/xml").unwrap());
+    headers.insert(
+        CONTENT_TYPE,
+        HeaderValue::from_str("text/xml").expect("Failed to parse hardcoded Content-Type header."),
+    );
 
-    let client = Client::builder().default_headers(headers).build().unwrap();
-    let url = Url::parse("https://koji.fedoraproject.org/kojihub/").unwrap();
+    let client = Client::builder()
+        .default_headers(headers)
+        .build()
+        .expect("Failed to initialize reqwest client.");
+    let url = Url::parse("https://koji.fedoraproject.org/kojihub/").expect("Failed to parse hardcoded URL.");
 
     // construct getBuild(nvr) method call
     let request = MethodCall::new(
@@ -54,7 +63,9 @@ async fn main() -> Result<(), String> {
     // construct HTTP body and content-length header from request
     let body = [
         r#"<?xml version="1.0"?>"#,
-        quick_xml::se::to_string(&request).unwrap().as_str(),
+        quick_xml::se::to_string(&request)
+            .expect("Failed to serialize XML-RPC request.")
+            .as_str(),
         "",
     ]
     .join("\n");
@@ -66,12 +77,12 @@ async fn main() -> Result<(), String> {
         .body(body)
         .header(CONTENT_LENGTH, HeaderValue::from(content_length))
         .build()
-        .unwrap();
+        .expect("Failed to construct POST request.");
 
-    let response = client.execute(request).await.unwrap();
+    let response = client.execute(request).await.expect("Network request failed.");
 
     // deserialize xml-rpc method response
-    let contents = response.text().await.unwrap();
+    let contents = response.text().await.expect("Failed to decode response body.");
 
     let response: MethodResponse = match quick_xml::de::from_str(&contents) {
         Ok(build) => build,
@@ -91,7 +102,8 @@ async fn main() -> Result<(), String> {
     };
 
     let values = response.into_values();
-    let build = Build::from_value(values.first().unwrap()).unwrap();
+    let build = Build::from_value(values.first().expect("Failed to get one value from the response."))
+        .expect("Failed to deserialize XML-RPC response into a Build.");
 
     // print query result
     println!("{:#?}", build);
