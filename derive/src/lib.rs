@@ -41,7 +41,7 @@ pub fn from_value(input: TokenStream) -> TokenStream {
                     let ident_str = ident.to_string();
                     field_impls.push(
                         // FIXME: replace ? with nice error message about wrong type
-                        quote! { #ident: <#stype>::from_value(map.get(#ident_str).expect(&format!("No value found for field '{}'", #ident_str)))?,
+                        quote! { #ident: <#stype as FromValue<#stype>>::from_value(map.get(#ident_str).expect(&format!("No value found for field '{}'", #ident_str)))?,
                         },
                     );
                 }
