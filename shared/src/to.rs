@@ -2,7 +2,8 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 
-use crate::{Array, Member, Struct, ToDXR, Value};
+use crate::types::{Array, Member, Struct, Value};
+use crate::ToDXR;
 
 impl ToDXR<Value> for Value {
     fn to_dxr(value: &Value) -> Value {

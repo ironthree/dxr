@@ -8,7 +8,11 @@
 #![warn(clippy::unwrap_used)]
 
 pub use dxr_derive::{FromDXR, ToDXR};
-pub use dxr_shared::*;
+
+pub use dxr_shared::{types, FromDXR, ToDXR, ValueError, XML_RPC_DATE_FORMAT};
+
+/// re-export of chrono, since it is part of the public API
+pub use dxr_shared::chrono;
 
 #[cfg(test)]
 mod tests;

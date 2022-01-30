@@ -56,10 +56,10 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
 
     let impl_block = quote! {
         impl #impl_generics ::dxr_shared::FromDXR<#name> for #name #ty_generics #where_clause {
-            fn from_dxr(value: &::dxr_shared::Value) -> Result<#name, ::dxr_shared::ValueError> {
+            fn from_dxr(value: &::dxr_shared::types::Value) -> Result<#name, ::dxr_shared::ValueError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
-                use ::dxr_shared::Value;
+                use ::dxr_shared::types::Value;
                 use ::dxr_shared::ValueError;
 
                 let map: HashMap<String, Value> = HashMap::from_dxr(value)?;
@@ -121,7 +121,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
             fn to_dxr(value: &#name) -> Value {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
-                use ::dxr_shared::Value;
+                use ::dxr_shared::types::Value;
 
                 let mut map: HashMap<String, Value> = HashMap::new();
 

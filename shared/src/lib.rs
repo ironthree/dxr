@@ -7,7 +7,7 @@
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
 
-pub use base64;
+/// re-export of chrono, since it is part of the public API
 pub use chrono;
 
 use std::borrow::Cow;
@@ -25,8 +25,8 @@ pub use from::*;
 mod to;
 pub use to::*;
 
-mod types;
-pub use types::*;
+pub mod types;
+use types::Value;
 
 /// conversion trait from XML-RPC values to primitives, `Option`, `HashMap`, and user-defined types
 pub trait FromDXR<T> {

@@ -2,7 +2,8 @@
 
 use super::chrono::{DateTime, Utc};
 
-use super::{Array, Member, Struct, ToDXR, Value};
+use super::types::{Array, Member, Struct, Value};
+use super::ToDXR;
 
 #[test]
 fn to_value_i32() {

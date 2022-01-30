@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 
-use crate::{FromDXR, Type, Value, ValueError};
+use crate::{types::Type, FromDXR, Value, ValueError};
 
 impl FromDXR<Value> for Value {
     fn from_dxr(value: &Value) -> Result<Value, ValueError> {

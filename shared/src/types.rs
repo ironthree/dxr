@@ -1,3 +1,5 @@
+//! definitions of XML-RPC data types with (de)serialization implementations
+
 #![allow(missing_docs)]
 
 use std::fmt::{Display, Formatter};
