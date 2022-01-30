@@ -211,6 +211,10 @@ impl MethodResponse {
             },
         }
     }
+
+    pub fn into_values(self) -> Vec<Value> {
+        self.params.params.params
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]

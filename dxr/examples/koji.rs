@@ -4,7 +4,37 @@ use reqwest::header::{HeaderMap, HeaderValue, CONTENT_LENGTH, CONTENT_TYPE};
 use reqwest::Client;
 use url::Url;
 
-use dxr_shared::{Fault, FaultResponse, MethodCall, MethodResponse, Value};
+use dxr::{Fault, FaultResponse, FromValue, MethodCall, MethodResponse, Value};
+
+#[derive(Debug, FromValue)]
+pub struct Build {
+    pub build_id: i32,
+    //cg_id: Option<?>,
+    pub completion_time: String,
+    pub completion_ts: f64,
+    pub creation_event_id: i32,
+    pub creation_time: String,
+    pub creation_ts: f64,
+    //pub epoch: Option<i32>, FIXME
+    //extra: HashMap<String, Value>,
+    pub id: i32,
+    pub name: String,
+    pub nvr: String,
+    pub owner_id: i32,
+    pub owner_name: String,
+    pub package_id: i32,
+    pub package_name: String,
+    pub release: String,
+    pub source: String,
+    pub start_time: String,
+    pub start_ts: f64,
+    pub state: i32,
+    pub task_id: i32,
+    pub version: String,
+    pub volume_id: i32,
+    pub volume_name: String,
+    //cg_name: Option<?>,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), String> {
@@ -43,7 +73,7 @@ async fn main() -> Result<(), String> {
     // deserialize xml-rpc method response
     let contents = response.text().await.unwrap();
 
-    let build: MethodResponse = match quick_xml::de::from_str(&contents) {
+    let response: MethodResponse = match quick_xml::de::from_str(&contents) {
         Ok(build) => build,
         Err(error1) => {
             let fault: Fault = match quick_xml::de::from_str(&contents) {
@@ -59,6 +89,9 @@ async fn main() -> Result<(), String> {
             return Err(fault.to_string());
         },
     };
+
+    let values = response.into_values();
+    let build = Build::from_value(values.first().unwrap()).unwrap();
 
     // print query result
     println!("{:#?}", build);

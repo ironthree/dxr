@@ -18,6 +18,7 @@ proc-macro = true
 
 [dependencies]
 dxr_shared = { path = "../shared", default-features = false }
+proc-macro2 = "1.0.36"
 syn = "1.0.86"
 quote = "1.0.15"
 
