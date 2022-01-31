@@ -19,8 +19,8 @@ thiserror = "1.0.30"
 
 [dev-dependencies]
 quick-xml = { version = "0.22" , features = ["serialize"] }
-#quickcheck = "1.0"
-#quickcheck_macros = "1.0"
+quickcheck = "1.0"
+quickcheck_macros = "1.0"
 
 [features]
 default = ["i8", "nil"]

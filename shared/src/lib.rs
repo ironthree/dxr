@@ -83,4 +83,7 @@ impl ValueError {
 }
 
 #[cfg(test)]
+mod checks;
+
+#[cfg(test)]
 mod tests;
