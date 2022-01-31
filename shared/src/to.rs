@@ -32,6 +32,7 @@ impl ToDXR<bool> for bool {
 
 impl ToDXR<String> for String {
     fn to_dxr(value: &String) -> Value {
+        // FIXME: XML-escape strings
         Value::string(value.clone())
     }
 }

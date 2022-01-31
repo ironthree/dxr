@@ -82,6 +82,7 @@ impl FromDXR<String> for String {
             #[cfg(feature = "i8")]
             Type::Long(_) => Err(err("i8")),
             Type::Boolean(_) => Err(err("boolean")),
+            // FIXME: XML-unescape strings
             Type::String(string) => Ok(string.clone()),
             Type::Double(_) => Err(err("double")),
             Type::DateTime(_) => Err(err("dateTime.iso8861")),
