@@ -5,13 +5,13 @@ use quick_xml::escape::unescape;
 
 use crate::{types::Type, FromDXR, Value, ValueError};
 
-impl FromDXR<Value> for Value {
+impl FromDXR for Value {
     fn from_dxr(value: &Value) -> Result<Value, ValueError> {
         Ok(value.clone())
     }
 }
 
-impl FromDXR<i32> for i32 {
+impl FromDXR for i32 {
     fn from_dxr(value: &Value) -> Result<i32, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "i4");
 
@@ -33,7 +33,7 @@ impl FromDXR<i32> for i32 {
 }
 
 #[cfg(feature = "i8")]
-impl FromDXR<i64> for i64 {
+impl FromDXR for i64 {
     fn from_dxr(value: &Value) -> Result<i64, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "i8");
 
@@ -53,7 +53,7 @@ impl FromDXR<i64> for i64 {
     }
 }
 
-impl FromDXR<bool> for bool {
+impl FromDXR for bool {
     fn from_dxr(value: &Value) -> Result<bool, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "boolean");
 
@@ -74,7 +74,7 @@ impl FromDXR<bool> for bool {
     }
 }
 
-impl FromDXR<String> for String {
+impl FromDXR for String {
     fn from_dxr(value: &Value) -> Result<String, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "string");
 
@@ -98,7 +98,7 @@ impl FromDXR<String> for String {
     }
 }
 
-impl FromDXR<f64> for f64 {
+impl FromDXR for f64 {
     fn from_dxr(value: &Value) -> Result<f64, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "double");
 
@@ -119,7 +119,7 @@ impl FromDXR<f64> for f64 {
     }
 }
 
-impl FromDXR<DateTime<Utc>> for DateTime<Utc> {
+impl FromDXR for DateTime<Utc> {
     fn from_dxr(value: &Value) -> Result<DateTime<Utc>, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "dateTime.iso8861");
 
@@ -140,7 +140,7 @@ impl FromDXR<DateTime<Utc>> for DateTime<Utc> {
     }
 }
 
-impl FromDXR<Vec<u8>> for Vec<u8> {
+impl FromDXR for Vec<u8> {
     fn from_dxr(value: &Value) -> Result<Vec<u8>, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "base64");
 
@@ -162,9 +162,9 @@ impl FromDXR<Vec<u8>> for Vec<u8> {
 }
 
 #[cfg(feature = "nil")]
-impl<T> FromDXR<Option<T>> for Option<T>
+impl<T> FromDXR for Option<T>
 where
-    T: FromDXR<T>,
+    T: FromDXR,
 {
     fn from_dxr(value: &Value) -> Result<Option<T>, ValueError> {
         if let Type::Nil = value.inner() {
@@ -175,9 +175,9 @@ where
     }
 }
 
-impl<T> FromDXR<Vec<T>> for Vec<T>
+impl<T> FromDXR for Vec<T>
 where
-    T: FromDXR<T>,
+    T: FromDXR,
 {
     fn from_dxr(value: &Value) -> Result<Vec<T>, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "array");
@@ -201,9 +201,9 @@ where
     }
 }
 
-impl<T> FromDXR<HashMap<String, T>> for HashMap<String, T>
+impl<T> FromDXR for HashMap<String, T>
 where
-    T: FromDXR<T>,
+    T: FromDXR,
 {
     fn from_dxr(value: &Value) -> Result<HashMap<String, T>, ValueError> {
         let err = |t: &'static str| ValueError::wrong_type(t, "array");

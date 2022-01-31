@@ -40,7 +40,7 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
                     };
                     let ident_str = ident.to_string();
                     field_impls.push(quote! {
-                        #ident: <#stype as FromDXR<#stype>>::from_dxr(map.get(#ident_str)
+                        #ident: <#stype as FromDXR>::from_dxr(map.get(#ident_str)
                             .ok_or_else(|| ValueError::missing_field(#ident_str))?)?,
                     });
                 }
@@ -55,7 +55,7 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
     fields.extend(field_impls.into_iter());
 
     let impl_block = quote! {
-        impl #impl_generics ::dxr_shared::FromDXR<#name> for #name #ty_generics #where_clause {
+        impl #impl_generics ::dxr_shared::FromDXR for #name #ty_generics #where_clause {
             fn from_dxr(value: &::dxr_shared::types::Value) -> Result<#name, ::dxr_shared::ValueError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
@@ -103,7 +103,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
                     };
                     let ident_str = ident.to_string();
                     field_impls.push(quote! {
-                        map.insert(String::from(#ident_str), <#stype as ToDXR<#stype>>::to_dxr(&value.#ident)?);
+                        map.insert(String::from(#ident_str), <#stype as ToDXR>::to_dxr(&self.#ident)?);
                     });
                 }
             },
@@ -117,8 +117,8 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
     fields.extend(field_impls.into_iter());
 
     let impl_block = quote! {
-        impl #impl_generics ::dxr_shared::ToDXR<#name> for #name #ty_generics #where_clause {
-            fn to_dxr(value: &#name) -> Result<Value, ::dxr_shared::ValueError> {
+        impl #impl_generics ::dxr_shared::ToDXR for #name #ty_generics #where_clause {
+            fn to_dxr(&self) -> Result<Value, ::dxr_shared::ValueError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
                 use ::dxr_shared::types::Value;
