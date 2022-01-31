@@ -12,6 +12,12 @@ impl ToDXR for Value {
     }
 }
 
+impl ToDXR for &Value {
+    fn to_dxr(&self) -> Result<Value, ValueError> {
+        Ok(Value::clone(self))
+    }
+}
+
 impl ToDXR for i32 {
     fn to_dxr(&self) -> Result<Value, ValueError> {
         Ok(Value::i4(*self))
@@ -33,6 +39,12 @@ impl ToDXR for bool {
 
 impl ToDXR for String {
     fn to_dxr(&self) -> Result<Value, ValueError> {
+        ToDXR::to_dxr(&self.as_str())
+    }
+}
+
+impl ToDXR for &str {
+    fn to_dxr(&self) -> Result<Value, ValueError> {
         let string =
             String::from_utf8(escape(self.trim().as_bytes()).to_vec()).map_err(|_| ValueError::InvalidContents)?;
         Ok(Value::string(string))
@@ -53,7 +65,19 @@ impl ToDXR for DateTime<Utc> {
 
 impl ToDXR for Vec<u8> {
     fn to_dxr(&self) -> Result<Value, ValueError> {
-        Ok(Value::base64(self.clone()))
+        ToDXR::to_dxr(&self.as_slice())
+    }
+}
+
+impl<const N: usize> ToDXR for [u8; N] {
+    fn to_dxr(&self) -> Result<Value, ValueError> {
+        ToDXR::to_dxr(&self.as_slice())
+    }
+}
+
+impl ToDXR for &[u8] {
+    fn to_dxr(&self) -> Result<Value, ValueError> {
+        Ok(Value::base64(self.to_vec()))
     }
 }
 
@@ -70,7 +94,38 @@ where
     }
 }
 
+impl<T> ToDXR for &Option<T>
+where
+    T: ToDXR,
+{
+    fn to_dxr(&self) -> Result<Value, ValueError> {
+        if let Some(value) = self {
+            T::to_dxr(value)
+        } else {
+            Ok(Value::nil())
+        }
+    }
+}
+
 impl<T> ToDXR for Vec<T>
+where
+    T: ToDXR,
+{
+    fn to_dxr(&self) -> Result<Value, ValueError> {
+        ToDXR::to_dxr(&self.as_slice())
+    }
+}
+
+impl<T, const N: usize> ToDXR for [T; N]
+where
+    T: ToDXR,
+{
+    fn to_dxr(&self) -> Result<Value, ValueError> {
+        ToDXR::to_dxr(&self.as_slice())
+    }
+}
+
+impl<T> ToDXR for &[T]
 where
     T: ToDXR,
 {
@@ -92,6 +147,20 @@ where
         let members = self
             .iter()
             .map(|(k, v)| T::to_dxr(v).map(|v| Member::new(k.to_owned(), v)))
+            .collect::<Result<Vec<Member>, ValueError>>();
+
+        Ok(Value::structure(Struct::new(members?)))
+    }
+}
+
+impl<T> ToDXR for HashMap<&str, T>
+where
+    T: ToDXR,
+{
+    fn to_dxr(&self) -> Result<Value, ValueError> {
+        let members = self
+            .iter()
+            .map(|(k, v)| T::to_dxr(v).map(|v| Member::new((*k).to_owned(), v)))
             .collect::<Result<Vec<Member>, ValueError>>();
 
         Ok(Value::structure(Struct::new(members?)))
