@@ -7,25 +7,15 @@ version = "0.0.0"
 edition = "2021"
 
 authors = ["Fabio Valentini <decathorpe@gmail.com>"]
-#readme = "README.md"
-#exclude = ["/.github/", "/rustfmt.toml"]
-#categories = ["api-bindings"]
-#keywords = ["fedora", "koji", "XMLRPC", "client"]
+keywords = ["derive", "XML-RPC"]
 repository = "https://github.com/ironthree/dxr"
 
 [lib]
 proc-macro = true
 
 [dependencies]
-dxr_shared = { path = "../shared", default-features = false }
 proc-macro2 = "1.0.36"
 syn = "1.0.86"
 quote = "1.0.15"
 
 [dev-dependencies]
-
-[features]
-default = ["dxr_shared/default", "i8", "nil"]
-i8 = ["dxr_shared/i8"]
-nil = ["dxr_shared/nil"]
-

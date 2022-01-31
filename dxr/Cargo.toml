@@ -7,10 +7,8 @@ version = "0.0.0"
 edition = "2021"
 
 authors = ["Fabio Valentini <decathorpe@gmail.com>"]
-#readme = "README.md"
-#exclude = ["/.github/", "/rustfmt.toml"]
-#categories = ["api-bindings"]
-#keywords = ["fedora", "koji", "XMLRPC", "client"]
+categories = ["network-programming", "web-programming::http-client", "encoding"]
+keywords = ["XML-RPC", "client", "derive"]
 repository = "https://github.com/ironthree/dxr"
 
 [dependencies]
@@ -22,7 +20,7 @@ tokio = { version = "1.14", features = ["macros", "rt-multi-thread"] }
 url = "2.2"
 
 [features]
-default = ["dxr_derive/default", "dxr_shared/default", "i8", "nil"]
-i8 = ["dxr_derive/i8", "dxr_shared/i8"]
-nil = ["dxr_derive/nil", "dxr_shared/nil"]
+default = ["dxr_shared/default", "i8", "nil"]
+i8 = ["dxr_shared/i8"]
+nil = ["dxr_shared/nil"]
 

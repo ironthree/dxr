@@ -7,10 +7,8 @@ version = "0.0.0"
 edition = "2021"
 
 authors = ["Fabio Valentini <decathorpe@gmail.com>"]
-#readme = "README.md"
-#exclude = ["/.github/", "/rustfmt.toml"]
-#categories = ["api-bindings"]
-#keywords = ["fedora", "koji", "XMLRPC", "client"]
+categories = ["network-programming", "encoding"]
+keywords = ["XML-RPC"]
 repository = "https://github.com/ironthree/dxr"
 
 [dependencies]
