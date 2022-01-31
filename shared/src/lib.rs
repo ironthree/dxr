@@ -26,6 +26,7 @@ mod to;
 pub use to::*;
 
 pub mod types;
+use crate::types::Fault;
 use types::Value;
 
 /// conversion trait from XML-RPC values to primitives, `Option`, `HashMap`, and user-defined types
@@ -34,7 +35,7 @@ pub trait FromDXR: Sized {
     ///
     /// If the value contains a type that is not compatible with the target type, the conversion
     /// will fail.
-    fn from_dxr(value: &Value) -> Result<Self, ValueError>;
+    fn from_dxr(value: &Value) -> Result<Self, DxrError>;
 }
 
 /// conversion trait from primitives, `Option`, `HashMap`, and user-defined types to XML-RPC values
@@ -43,20 +44,29 @@ pub trait ToDXR {
     ///
     /// The resulting XML-RPC value will automatically have a compatible type, so this conversion
     /// can only fail if strings cannot un-escaped from XML correctly.
-    fn to_dxr(&self) -> Result<Value, ValueError>;
+    fn to_dxr(&self) -> Result<Value, DxrError>;
 }
 
 #[derive(Debug, Error)]
 /// error type used for conversion errors between XML-RPC values and Rust values
-pub enum ValueError {
-    /// error variant describing XML un-escaping errors
-    #[error("Failed to un-escape XML into a valid string")]
-    InvalidContents,
+pub enum DxrError {
+    /// error variant describing XML parser errors
+    #[error("Failed to parse XML data: {}", .error)]
+    InvalidData {
+        /// description of the parsing error
+        error: String,
+    },
     /// error variant describing a missing struct field
     #[error("Missing struct field: {}", .name)]
     MissingField {
         /// name of the missing struct field
         name: Cow<'static, str>,
+    },
+    /// error variant describing a server fault
+    #[error("{}", .fault)]
+    ServerFault {
+        /// fault data returned by the server
+        fault: Fault,
     },
     /// error variant describing a type mismatch between XML-RPC value and a Rust struct field
     #[error("Type mismatch: got {}, expected {}", .argument, .expected)]
@@ -68,17 +78,27 @@ pub enum ValueError {
     },
 }
 
-impl ValueError {
-    /// construct a [`ValueError`] for a missing struct field
-    pub fn missing_field(name: &'static str) -> ValueError {
-        ValueError::MissingField {
+impl DxrError {
+    /// construct a [`DxrError`] for invalid input data
+    pub fn invalid_data(error: String) -> DxrError {
+        DxrError::InvalidData { error }
+    }
+
+    /// construct a [`DxrError`] for a missing struct field
+    pub fn missing_field(name: &'static str) -> DxrError {
+        DxrError::MissingField {
             name: Cow::Borrowed(name),
         }
     }
 
-    /// construct a [`ValueError`] for a type mismatch
-    pub fn wrong_type(argument: &'static str, expected: &'static str) -> ValueError {
-        ValueError::WrongType {
+    /// construct a [`DxrError`] for a server fault
+    pub fn server_fault(fault: Fault) -> DxrError {
+        DxrError::ServerFault { fault }
+    }
+
+    /// construct a [`DxrError`] for a type mismatch
+    pub fn wrong_type(argument: &'static str, expected: &'static str) -> DxrError {
+        DxrError::WrongType {
             argument: Cow::Borrowed(argument),
             expected: Cow::Borrowed(expected),
         }

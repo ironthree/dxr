@@ -41,7 +41,7 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
                     let ident_str = ident.to_string();
                     field_impls.push(quote! {
                         #ident: <#stype as FromDXR>::from_dxr(map.get(#ident_str)
-                            .ok_or_else(|| ValueError::missing_field(#ident_str))?)?,
+                            .ok_or_else(|| DxrError::missing_field(#ident_str))?)?,
                     });
                 }
             },
@@ -56,11 +56,11 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
 
     let impl_block = quote! {
         impl #impl_generics ::dxr_shared::FromDXR for #name #ty_generics #where_clause {
-            fn from_dxr(value: &::dxr_shared::types::Value) -> Result<#name, ::dxr_shared::ValueError> {
+            fn from_dxr(value: &::dxr_shared::types::Value) -> Result<#name, ::dxr_shared::DxrError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
                 use ::dxr_shared::types::Value;
-                use ::dxr_shared::ValueError;
+                use ::dxr_shared::DxrError;
 
                 let map: HashMap<String, Value> = HashMap::from_dxr(value)?;
 
@@ -118,7 +118,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
 
     let impl_block = quote! {
         impl #impl_generics ::dxr_shared::ToDXR for #name #ty_generics #where_clause {
-            fn to_dxr(&self) -> Result<Value, ::dxr_shared::ValueError> {
+            fn to_dxr(&self) -> Result<::dxr_shared::types::Value, ::dxr_shared::DxrError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
                 use ::dxr_shared::types::Value;

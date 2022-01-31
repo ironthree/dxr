@@ -14,6 +14,7 @@ repository = "https://github.com/ironthree/dxr"
 [dependencies]
 dxr_derive = { path = "../derive" }
 dxr_shared = { path = "../shared" }
+log = "0.4.13"
 quick-xml = { version = "0.22" , features = ["serialize"] }
 reqwest = { version = "0.11", features = ["cookies"] }
 tokio = { version = "1.14", features = ["macros", "rt-multi-thread"] }
