@@ -103,7 +103,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
                     };
                     let ident_str = ident.to_string();
                     field_impls.push(quote! {
-                        map.insert(String::from(#ident_str), <#stype as ToDXR<#stype>>::to_dxr(&value.#ident));
+                        map.insert(String::from(#ident_str), <#stype as ToDXR<#stype>>::to_dxr(&value.#ident)?);
                     });
                 }
             },
@@ -118,7 +118,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
 
     let impl_block = quote! {
         impl #impl_generics ::dxr_shared::ToDXR<#name> for #name #ty_generics #where_clause {
-            fn to_dxr(value: &#name) -> Value {
+            fn to_dxr(value: &#name) -> Result<Value, ::dxr_shared::ValueError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
                 use ::dxr_shared::types::Value;

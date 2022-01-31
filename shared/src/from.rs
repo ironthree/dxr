@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
+use quick_xml::escape::unescape;
 
 use crate::{types::Type, FromDXR, Value, ValueError};
 
@@ -82,8 +83,10 @@ impl FromDXR<String> for String {
             #[cfg(feature = "i8")]
             Type::Long(_) => Err(err("i8")),
             Type::Boolean(_) => Err(err("boolean")),
-            // FIXME: XML-unescape strings
-            Type::String(string) => Ok(string.clone()),
+            Type::String(string) => match unescape(string.as_bytes()) {
+                Ok(bytes) => String::from_utf8(bytes.to_vec()).map_err(|_| ValueError::InvalidContents),
+                Err(_) => Err(ValueError::InvalidContents),
+            },
             Type::Double(_) => Err(err("double")),
             Type::DateTime(_) => Err(err("dateTime.iso8861")),
             Type::Base64(_) => Err(err("base64")),

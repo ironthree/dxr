@@ -42,13 +42,16 @@ pub trait ToDXR<T> {
     /// conversion method from types into XML-RPC values
     ///
     /// The resulting XML-RPC value will automatically have a compatible type, so this conversion
-    /// cannot fail, as this trait can only implemented for applicable types.
-    fn to_dxr(value: &T) -> Value;
+    /// can only fail if strings cannot un-escaped from XML correctly.
+    fn to_dxr(value: &T) -> Result<Value, ValueError>;
 }
 
 #[derive(Debug, Error)]
 /// error type used for conversion errors between XML-RPC values and Rust values
 pub enum ValueError {
+    /// error variant describing XML un-escaping errors
+    #[error("Failed to un-escape XML into a valid string")]
+    InvalidContents,
     /// error variant describing a missing struct field
     #[error("Missing struct field: {}", .name)]
     MissingField {

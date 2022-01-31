@@ -40,6 +40,7 @@ impl Value {
         Value::new(Type::Boolean(value))
     }
 
+    // FIXME: this does no XML escaping
     pub fn string(value: String) -> Value {
         Value::new(Type::String(value))
     }
