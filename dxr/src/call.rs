@@ -11,7 +11,7 @@ where
 {
     method: String,
     params: Vec<P>,
-    retype: PhantomData<R>,
+    retype: PhantomData<*const R>,
 }
 
 impl<P, R> Call<P, R>
