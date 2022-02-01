@@ -41,7 +41,13 @@ async fn main() -> Result<(), String> {
     let url = Url::parse("https://koji.fedoraproject.org/kojihub/").expect("Failed to parse hardcoded URL.");
     let client = Client::new(url);
 
-    let request: Call<_, Build> = Call::new(String::from("getBuild"), vec![String::from("syncthing-1.1.0-1.fc30")]);
+    let request: Call<_, Build> = Call::new(String::from("getBuild"), "syncthing-1.1.0-1.fc30");
+    let result = client.call(request).await.map_err(|error| error.to_string())?;
+
+    // print query result
+    println!("{:#?}", result);
+
+    let request: Call<_, dxr::Value> = Call::new(String::from("getPackage"), ("syncthing", true));
     let result = client.call(request).await.map_err(|error| error.to_string())?;
 
     // print query result

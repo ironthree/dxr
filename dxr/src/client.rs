@@ -3,7 +3,7 @@ use url::Url;
 
 use crate::call::Call;
 use crate::types::{Fault, FaultResponse, MethodResponse};
-use crate::{DxrError, FromDXR, ToDXR};
+use crate::{DxrError, FromDXR, ToParams};
 
 #[derive(Debug)]
 pub struct Client {
@@ -17,7 +17,7 @@ impl Client {
 }
 
 impl Client {
-    pub async fn call<P: ToDXR, R: FromDXR>(&self, call: Call<P, R>) -> Result<R, DxrError> {
+    pub async fn call<P: ToParams, R: FromDXR>(&self, call: Call<P, R>) -> Result<R, DxrError> {
         // default headers for xml-rpc calls
         let mut headers = HeaderMap::new();
         headers.insert(
@@ -31,7 +31,7 @@ impl Client {
             .expect("Failed to initialize reqwest client.");
 
         //let url = Url::parse("https://koji.fedoraproject.org/kojihub/").expect("Failed to parse hardcoded URL.");
-        let request = call.params_to_dxr()?;
+        let request = call.as_xml_rpc()?;
 
         // construct HTTP body and content-length header from request
         let body = [
