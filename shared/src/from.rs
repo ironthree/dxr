@@ -178,10 +178,10 @@ where
 
             match values.len() {
                 2 => {
-                    let v0 = values.get(0).unwrap();
-                    let v1 = values.get(1).unwrap();
+                    let a = values.get(0).unwrap();
+                    let b = values.get(1).unwrap();
 
-                    Ok((A::from_dxr(v0)?, B::from_dxr(v1)?))
+                    Ok((A::from_dxr(a)?, B::from_dxr(b)?))
                 },
                 n => Err(DxrError::return_mismatch(n, 2)),
             }
@@ -203,11 +203,11 @@ where
 
             match values.len() {
                 3 => {
-                    let v0 = values.get(0).unwrap();
-                    let v1 = values.get(1).unwrap();
-                    let v2 = values.get(2).unwrap();
+                    let a = values.get(0).unwrap();
+                    let b = values.get(1).unwrap();
+                    let c = values.get(2).unwrap();
 
-                    Ok((A::from_dxr(v0)?, B::from_dxr(v1)?, C::from_dxr(v2)?))
+                    Ok((A::from_dxr(a)?, B::from_dxr(b)?, C::from_dxr(c)?))
                 },
                 n => Err(DxrError::return_mismatch(n, 3)),
             }
@@ -230,12 +230,12 @@ where
 
             match values.len() {
                 4 => {
-                    let v0 = values.get(0).unwrap();
-                    let v1 = values.get(1).unwrap();
-                    let v2 = values.get(2).unwrap();
-                    let v3 = values.get(3).unwrap();
+                    let a = values.get(0).unwrap();
+                    let b = values.get(1).unwrap();
+                    let c = values.get(2).unwrap();
+                    let d = values.get(3).unwrap();
 
-                    Ok((A::from_dxr(v0)?, B::from_dxr(v1)?, C::from_dxr(v2)?, D::from_dxr(v3)?))
+                    Ok((A::from_dxr(a)?, B::from_dxr(b)?, C::from_dxr(c)?, D::from_dxr(d)?))
                 },
                 n => Err(DxrError::return_mismatch(n, 4)),
             }
@@ -244,3 +244,167 @@ where
         }
     }
 }
+
+impl<A, B, C, D, E> FromDXR for (A, B, C, D, E)
+where
+    A: FromDXR,
+    B: FromDXR,
+    C: FromDXR,
+    D: FromDXR,
+    E: FromDXR,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        if let Type::Array { data } = value.inner() {
+            let values = data.inner();
+
+            match values.len() {
+                5 => {
+                    let a = values.get(0).unwrap();
+                    let b = values.get(1).unwrap();
+                    let c = values.get(2).unwrap();
+                    let d = values.get(3).unwrap();
+                    let e = values.get(4).unwrap();
+
+                    Ok((
+                        A::from_dxr(a)?,
+                        B::from_dxr(b)?,
+                        C::from_dxr(c)?,
+                        D::from_dxr(d)?,
+                        E::from_dxr(e)?,
+                    ))
+                },
+                n => Err(DxrError::return_mismatch(n, 5)),
+            }
+        } else {
+            Err(DxrError::wrong_type(value.inner().name(), "array"))
+        }
+    }
+}
+
+impl<A, B, C, D, E, F> FromDXR for (A, B, C, D, E, F)
+where
+    A: FromDXR,
+    B: FromDXR,
+    C: FromDXR,
+    D: FromDXR,
+    E: FromDXR,
+    F: FromDXR,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        if let Type::Array { data } = value.inner() {
+            let values = data.inner();
+
+            match values.len() {
+                6 => {
+                    let a = values.get(0).unwrap();
+                    let b = values.get(1).unwrap();
+                    let c = values.get(2).unwrap();
+                    let d = values.get(3).unwrap();
+                    let e = values.get(4).unwrap();
+                    let f = values.get(5).unwrap();
+
+                    Ok((
+                        A::from_dxr(a)?,
+                        B::from_dxr(b)?,
+                        C::from_dxr(c)?,
+                        D::from_dxr(d)?,
+                        E::from_dxr(e)?,
+                        F::from_dxr(f)?,
+                    ))
+                },
+                n => Err(DxrError::return_mismatch(n, 6)),
+            }
+        } else {
+            Err(DxrError::wrong_type(value.inner().name(), "array"))
+        }
+    }
+}
+
+impl<A, B, C, D, E, F, G> FromDXR for (A, B, C, D, E, F, G)
+where
+    A: FromDXR,
+    B: FromDXR,
+    C: FromDXR,
+    D: FromDXR,
+    E: FromDXR,
+    F: FromDXR,
+    G: FromDXR,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        if let Type::Array { data } = value.inner() {
+            let values = data.inner();
+
+            match values.len() {
+                7 => {
+                    let a = values.get(0).unwrap();
+                    let b = values.get(1).unwrap();
+                    let c = values.get(2).unwrap();
+                    let d = values.get(3).unwrap();
+                    let e = values.get(4).unwrap();
+                    let f = values.get(5).unwrap();
+                    let g = values.get(6).unwrap();
+
+                    Ok((
+                        A::from_dxr(a)?,
+                        B::from_dxr(b)?,
+                        C::from_dxr(c)?,
+                        D::from_dxr(d)?,
+                        E::from_dxr(e)?,
+                        F::from_dxr(f)?,
+                        G::from_dxr(g)?,
+                    ))
+                },
+                n => Err(DxrError::return_mismatch(n, 7)),
+            }
+        } else {
+            Err(DxrError::wrong_type(value.inner().name(), "array"))
+        }
+    }
+}
+
+impl<A, B, C, D, E, F, G, H> FromDXR for (A, B, C, D, E, F, G, H)
+where
+    A: FromDXR,
+    B: FromDXR,
+    C: FromDXR,
+    D: FromDXR,
+    E: FromDXR,
+    F: FromDXR,
+    G: FromDXR,
+    H: FromDXR,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        if let Type::Array { data } = value.inner() {
+            let values = data.inner();
+
+            match values.len() {
+                8 => {
+                    let a = values.get(0).unwrap();
+                    let b = values.get(1).unwrap();
+                    let c = values.get(2).unwrap();
+                    let d = values.get(3).unwrap();
+                    let e = values.get(4).unwrap();
+                    let f = values.get(5).unwrap();
+                    let g = values.get(6).unwrap();
+                    let h = values.get(7).unwrap();
+
+                    Ok((
+                        A::from_dxr(a)?,
+                        B::from_dxr(b)?,
+                        C::from_dxr(c)?,
+                        D::from_dxr(d)?,
+                        E::from_dxr(e)?,
+                        F::from_dxr(f)?,
+                        G::from_dxr(g)?,
+                        H::from_dxr(h)?,
+                    ))
+                },
+                n => Err(DxrError::return_mismatch(n, 8)),
+            }
+        } else {
+            Err(DxrError::wrong_type(value.inner().name(), "array"))
+        }
+    }
+}
+
+// if needed, implementations for more arguments can be implemented
