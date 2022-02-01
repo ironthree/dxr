@@ -6,7 +6,7 @@
 use std::fmt::{Display, Formatter};
 
 use chrono::{DateTime, Utc};
-use quick_xml::escape::escape;
+use quick_xml::escape::{escape, unescape};
 use serde::{Deserialize, Serialize};
 
 use crate::error::DxrError;
@@ -49,6 +49,18 @@ impl Value {
         let string = String::from_utf8(escape(value.trim().as_bytes()).to_vec())
             .map_err(|error| DxrError::invalid_data(error.to_string()))?;
         Ok(Value::string(string))
+    }
+
+    /// associated method un-escaping a [`Value`] of type string
+    pub fn string_unescape(value: &str) -> Result<String, DxrError> {
+        match unescape(value.as_bytes()) {
+            Ok(bytes) => String::from_utf8(bytes.to_vec()).map_err(|error| DxrError::InvalidData {
+                error: error.to_string(),
+            }),
+            Err(error) => Err(DxrError::InvalidData {
+                error: error.to_string(),
+            }),
+        }
     }
 
     pub fn double(value: f64) -> Value {
