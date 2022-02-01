@@ -33,7 +33,7 @@ fn to_value_boolean() {
 #[test]
 fn to_value_string() {
     let value = String::from("Hello, World!");
-    let expected = Value::string(String::from("Hello, World!"));
+    let expected = Value::string_escape("Hello, World!").unwrap();
 
     assert_eq!(String::to_dxr(&value).unwrap(), expected);
 }
