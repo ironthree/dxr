@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 use quick_xml::escape::unescape;
 
-use crate::{types::Type, DxrError, FromDXR, Value};
+use crate::error::DxrError;
+use crate::traits::FromDXR;
+use crate::types::{Type, Value};
 
 impl FromDXR for Value {
     fn from_dxr(value: &Value) -> Result<Value, DxrError> {
@@ -13,21 +15,9 @@ impl FromDXR for Value {
 
 impl FromDXR for i32 {
     fn from_dxr(value: &Value) -> Result<i32, DxrError> {
-        let err = |t: &'static str| DxrError::wrong_type(t, "i4");
-
         match value.inner() {
             Type::Integer(int) => Ok(*int),
-            #[cfg(feature = "i8")]
-            Type::Long(_) => Err(err("i8")),
-            Type::Boolean(_) => Err(err("boolean")),
-            Type::String(_) => Err(err("string")),
-            Type::Double(_) => Err(err("double")),
-            Type::DateTime(_) => Err(err("dateTime.iso8861")),
-            Type::Base64(_) => Err(err("base64")),
-            Type::Struct { .. } => Err(err("struct")),
-            Type::Array { .. } => Err(err("array")),
-            #[cfg(feature = "nil")]
-            Type::Nil => Err(err("nil")),
+            t => Err(DxrError::wrong_type(t.name(), "i4")),
         }
     }
 }

@@ -1,11 +1,15 @@
 //! definitions of XML-RPC data types with (de)serialization implementations
 
+// FIXME: add docs
 #![allow(missing_docs)]
 
 use std::fmt::{Display, Formatter};
 
 use chrono::{DateTime, Utc};
+use quick_xml::escape::escape;
 use serde::{Deserialize, Serialize};
+
+use crate::error::DxrError;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "value")]
@@ -15,20 +19,16 @@ pub struct Value {
 }
 
 impl Value {
-    pub fn new(value: Type) -> Value {
+    fn new(value: Type) -> Value {
         Value { value }
     }
 
-    pub fn inner(&self) -> &Type {
+    pub(crate) fn inner(&self) -> &Type {
         &self.value
     }
 
     pub fn i4(value: i32) -> Value {
         Value::new(Type::Integer(value))
-    }
-
-    pub fn int(value: i32) -> Value {
-        Value::i4(value)
     }
 
     #[cfg(feature = "i8")]
@@ -40,9 +40,15 @@ impl Value {
         Value::new(Type::Boolean(value))
     }
 
-    // FIXME: this does no XML escaping
-    pub fn string(value: String) -> Value {
+    pub(crate) fn string(value: String) -> Value {
         Value::new(Type::String(value))
+    }
+
+    /// constructor for a [`Value`] of type string that handles escaping input for XML
+    pub fn string_escape(value: &str) -> Result<Value, DxrError> {
+        let string = String::from_utf8(escape(value.trim().as_bytes()).to_vec())
+            .map_err(|error| DxrError::invalid_data(error.to_string()))?;
+        Ok(Value::string(string))
     }
 
     pub fn double(value: f64) -> Value {

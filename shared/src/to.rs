@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
-use quick_xml::escape::escape;
 
+use crate::error::DxrError;
+use crate::traits::ToDXR;
 use crate::types::{Array, Member, Struct, Value};
-use crate::{DxrError, ToDXR};
 
 impl ToDXR for Value {
     fn to_dxr(&self) -> Result<Value, DxrError> {
@@ -45,9 +45,7 @@ impl ToDXR for String {
 
 impl ToDXR for &str {
     fn to_dxr(&self) -> Result<Value, DxrError> {
-        let string = String::from_utf8(escape(self.trim().as_bytes()).to_vec())
-            .map_err(|error| DxrError::invalid_data(error.to_string()))?;
-        Ok(Value::string(string))
+        Value::string_escape(self)
     }
 }
 
