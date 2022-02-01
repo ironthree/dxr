@@ -7,15 +7,10 @@
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
 
+// re-exports and modules
+
 /// re-export of chrono, since it is part of the public API
 pub use chrono;
-
-use std::borrow::Cow;
-
-use thiserror::Error;
-
-/// date & time format used by the XML-RPC `dateTime.iso8601` value type
-pub const XML_RPC_DATE_FORMAT: &str = "%Y%m%dT%H:%M:%S";
 
 mod ser_de;
 
@@ -26,8 +21,15 @@ mod to;
 pub use to::*;
 
 pub mod types;
-use crate::types::Fault;
-use types::Value;
+
+// definitions and implementations
+
+use crate::types::{Fault, Value};
+use std::borrow::Cow;
+use thiserror::Error;
+
+/// date & time format used by the XML-RPC `dateTime.iso8601` value type
+pub const XML_RPC_DATE_FORMAT: &str = "%Y%m%dT%H:%M:%S";
 
 /// conversion trait from XML-RPC values to primitives, `Option`, `HashMap`, and user-defined types
 pub trait FromDXR: Sized {
@@ -62,6 +64,14 @@ pub enum DxrError {
         /// name of the missing struct field
         name: Cow<'static, str>,
     },
+    /// error variant describing mismatched return types
+    #[error("Type mismatch: got {} values, expected {}", .argument, .expected)]
+    ReturnMismatch {
+        /// number of returned values
+        argument: usize,
+        /// number of expected values
+        expected: usize,
+    },
     /// error variant describing a server fault
     #[error("{}", .fault)]
     ServerFault {
@@ -89,6 +99,11 @@ impl DxrError {
         DxrError::MissingField {
             name: Cow::Borrowed(name),
         }
+    }
+
+    /// construct a [`DxrError`] for unexpected number of returned values
+    pub fn return_mismatch(argument: usize, expected: usize) -> DxrError {
+        DxrError::ReturnMismatch { argument, expected }
     }
 
     /// construct a [`DxrError`] for a server fault

@@ -1,7 +1,7 @@
-use crate::{FromDXR, ToDXR};
-use dxr_shared::types::{MethodCall, Value};
-use dxr_shared::DxrError;
 use std::marker::PhantomData;
+
+use dxr_shared::types::{MethodCall, Value};
+use dxr_shared::{DxrError, FromDXR, ToDXR};
 
 #[derive(Debug)]
 pub struct Call<P, R>
@@ -29,10 +29,6 @@ where
 
     pub(crate) fn params_to_dxr(&self) -> Result<MethodCall, DxrError> {
         Ok(MethodCall::new(self.method(), self.params()?))
-    }
-
-    pub(crate) fn retval_from_dxr(&self, returned: &Value) -> Result<R, DxrError> {
-        R::from_dxr(returned)
     }
 
     fn method(&self) -> String {

@@ -516,7 +516,7 @@ fn from_method_call() {
 
 #[test]
 fn to_method_response_success() {
-    let value = MethodResponse::new(vec![Value::string(String::from("Success!"))]);
+    let value = MethodResponse::new(Value::string(String::from("Success!")));
     let expected =
         "<methodResponse><params><param><value><string>Success!</string></value></param></params></methodResponse>";
 
@@ -527,7 +527,7 @@ fn to_method_response_success() {
 fn from_method_response_success() {
     let value =
         "<methodResponse><params><param><value><string>Success!</string></value></param></params></methodResponse>";
-    let expected = MethodResponse::new(vec![Value::string(String::from("Success!"))]);
+    let expected = MethodResponse::new(Value::string(String::from("Success!")));
 
     assert_eq!(from_str::<MethodResponse>(value).unwrap(), expected);
 }

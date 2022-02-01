@@ -103,6 +103,25 @@ pub enum Type {
     Nil,
 }
 
+impl Type {
+    pub fn name(&self) -> &'static str {
+        match self {
+            Type::Integer(_) => "i4",
+            #[cfg(feature = "i8")]
+            Type::Long(_) => "i8",
+            Type::Boolean(_) => "boolean",
+            Type::String(_) => "string",
+            Type::Double(_) => "double",
+            Type::DateTime(_) => "dateTime.iso8601",
+            Type::Base64(_) => "base64",
+            Type::Struct { .. } => "struct",
+            Type::Array { .. } => "array",
+            #[cfg(feature = "nil")]
+            Type::Nil => "nil",
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "struct")]
 pub struct Struct {
@@ -180,15 +199,15 @@ impl ArrayData {
 pub struct MethodCall {
     #[serde(rename = "methodName")]
     name: MethodName,
-    #[serde(default, skip_serializing_if = "Parameters::is_empty")]
-    params: Parameters,
+    #[serde(default, skip_serializing_if = "RequestParameters::is_empty")]
+    params: RequestParameters,
 }
 
 impl MethodCall {
     pub fn new(name: String, parameters: Vec<Value>) -> MethodCall {
         MethodCall {
             name: MethodName { name },
-            params: Parameters {
+            params: RequestParameters {
                 params: ParameterData { params: parameters },
             },
         }
@@ -205,20 +224,20 @@ struct MethodName {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodResponse")]
 pub struct MethodResponse {
-    params: Parameters,
+    params: ResponseParameters,
 }
 
 impl MethodResponse {
-    pub fn new(parameters: Vec<Value>) -> MethodResponse {
+    pub fn new(value: Value) -> MethodResponse {
         MethodResponse {
-            params: Parameters {
-                params: ParameterData { params: parameters },
+            params: ResponseParameters {
+                params: ResponseParameter { value },
             },
         }
     }
 
-    pub fn into_values(self) -> Vec<Value> {
-        self.params.params.params
+    pub fn inner(self) -> Value {
+        self.params.params.value
     }
 }
 
@@ -296,12 +315,12 @@ impl From<FaultResponse> for Fault {
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "params")]
-pub struct Parameters {
+pub struct RequestParameters {
     #[serde(default, rename = "param")]
     params: ParameterData,
 }
 
-impl Parameters {
+impl RequestParameters {
     fn is_empty(&self) -> bool {
         self.params.params.is_empty()
     }
@@ -312,4 +331,17 @@ impl Parameters {
 struct ParameterData {
     #[serde(rename = "value")]
     params: Vec<Value>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "params")]
+pub struct ResponseParameters {
+    #[serde(rename = "param")]
+    params: ResponseParameter,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename = "param")]
+pub struct ResponseParameter {
+    value: Value,
 }

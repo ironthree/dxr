@@ -39,15 +39,13 @@ pub struct Build {
 #[tokio::main]
 async fn main() -> Result<(), String> {
     let url = Url::parse("https://koji.fedoraproject.org/kojihub/").expect("Failed to parse hardcoded URL.");
-
     let client = Client::new(url);
 
     let request: Call<_, Build> = Call::new(String::from("getBuild"), vec![String::from("syncthing-1.1.0-1.fc30")]);
-
     let result = client.call(request).await.map_err(|error| error.to_string())?;
 
     // print query result
-    println!("{:?}", result);
+    println!("{:#?}", result);
 
     Ok(())
 }

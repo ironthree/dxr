@@ -239,3 +239,121 @@ where
             .collect()
     }
 }
+
+// some implementations for exact numbers of values (with possibly different types)
+impl FromDXR for () {
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        match value.inner() {
+            Type::Array { data } => {
+                let values = data.inner();
+
+                match values.len() {
+                    0 => Ok(()),
+                    n => Err(DxrError::return_mismatch(n, 0)),
+                }
+            },
+            Type::Nil => Ok(()),
+            other => Err(DxrError::wrong_type(other.name(), "array | nil")),
+        }
+    }
+}
+
+impl<T> FromDXR for (T,)
+where
+    T: FromDXR,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        if let Type::Array { data } = value.inner() {
+            let values = data.inner();
+
+            match values.len() {
+                1 => {
+                    let value = values.get(0).unwrap();
+
+                    Ok((T::from_dxr(value)?,))
+                },
+                n => Err(DxrError::return_mismatch(n, 1)),
+            }
+        } else {
+            Err(DxrError::wrong_type(value.inner().name(), "array"))
+        }
+    }
+}
+
+impl<A, B> FromDXR for (A, B)
+where
+    A: FromDXR,
+    B: FromDXR,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        if let Type::Array { data } = value.inner() {
+            let values = data.inner();
+
+            match values.len() {
+                2 => {
+                    let v0 = values.get(0).unwrap();
+                    let v1 = values.get(1).unwrap();
+
+                    Ok((A::from_dxr(v0)?, B::from_dxr(v1)?))
+                },
+                n => Err(DxrError::return_mismatch(n, 2)),
+            }
+        } else {
+            Err(DxrError::wrong_type(value.inner().name(), "array"))
+        }
+    }
+}
+
+impl<A, B, C> FromDXR for (A, B, C)
+where
+    A: FromDXR,
+    B: FromDXR,
+    C: FromDXR,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        if let Type::Array { data } = value.inner() {
+            let values = data.inner();
+
+            match values.len() {
+                3 => {
+                    let v0 = values.get(0).unwrap();
+                    let v1 = values.get(1).unwrap();
+                    let v2 = values.get(2).unwrap();
+
+                    Ok((A::from_dxr(v0)?, B::from_dxr(v1)?, C::from_dxr(v2)?))
+                },
+                n => Err(DxrError::return_mismatch(n, 3)),
+            }
+        } else {
+            Err(DxrError::wrong_type(value.inner().name(), "array"))
+        }
+    }
+}
+
+impl<A, B, C, D> FromDXR for (A, B, C, D)
+where
+    A: FromDXR,
+    B: FromDXR,
+    C: FromDXR,
+    D: FromDXR,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        if let Type::Array { data } = value.inner() {
+            let values = data.inner();
+
+            match values.len() {
+                4 => {
+                    let v0 = values.get(0).unwrap();
+                    let v1 = values.get(1).unwrap();
+                    let v2 = values.get(2).unwrap();
+                    let v3 = values.get(3).unwrap();
+
+                    Ok((A::from_dxr(v0)?, B::from_dxr(v1)?, C::from_dxr(v2)?, D::from_dxr(v3)?))
+                },
+                n => Err(DxrError::return_mismatch(n, 4)),
+            }
+        } else {
+            Err(DxrError::wrong_type(value.inner().name(), "array"))
+        }
+    }
+}

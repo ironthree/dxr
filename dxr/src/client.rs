@@ -74,12 +74,6 @@ impl Client {
             },
         };
 
-        let values = response.into_values();
-
-        // FIXME: support method calls with more than one return value
-        match values.first() {
-            Some(value) => call.retval_from_dxr(value),
-            None => Err(DxrError::missing_field("Response contained no returned values.")),
-        }
+        R::from_dxr(&response.inner())
     }
 }
