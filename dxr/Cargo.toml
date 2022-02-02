@@ -3,7 +3,7 @@ name = "dxr"
 description = "Declarative XML-RPC"
 license = "MIT OR Apache-2.0"
 
-version = "0.0.0"
+version = "0.1.0"
 edition = "2021"
 rust-version = "1.56.0"
 
@@ -24,8 +24,8 @@ required-features = ["server"]
 
 [dependencies]
 axum = { version = "0.4.5", optional = true }
-dxr_derive = { path = "../dxr_derive", optional = true}
-dxr_shared = { path = "../dxr_shared" }
+dxr_derive = { path = "../dxr_derive", version = "0.1.0", optional = true}
+dxr_shared = { path = "../dxr_shared", version = "0.1.0" }
 log = "0.4.13"
 quick-xml = { version = "0.22" , features = ["serialize"] }
 reqwest = { version = "0.11", features = ["cookies"] }
