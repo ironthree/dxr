@@ -2,6 +2,7 @@
 
 use super::{FromDXR, ToDXR};
 
+#[cfg(feature = "derive")]
 #[test]
 fn roundtrip_struct_empty() {
     #[derive(Debug, PartialEq, FromDXR, ToDXR)]
@@ -11,6 +12,7 @@ fn roundtrip_struct_empty() {
     assert_eq!(Test::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
 }
 
+#[cfg(feature = "derive")]
 #[test]
 fn roundtrip_struct() {
     #[derive(Debug, PartialEq, FromDXR, ToDXR)]

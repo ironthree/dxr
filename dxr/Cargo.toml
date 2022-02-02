@@ -13,13 +13,18 @@ keywords = ["XML-RPC", "client", "derive"]
 repository = "https://github.com/ironthree/dxr"
 
 [[example]]
+name = "koji"
+path = "examples/koji.rs"
+required-features = ["derive"]
+
+[[example]]
 name = "server"
 path = "examples/server.rs"
 required-features = ["server"]
 
 [dependencies]
 axum = { version = "0.4.5", optional = true }
-dxr_derive = { path = "../dxr_derive" }
+dxr_derive = { path = "../dxr_derive", optional = true}
 dxr_shared = { path = "../dxr_shared" }
 log = "0.4.13"
 quick-xml = { version = "0.22" , features = ["serialize"] }
@@ -31,7 +36,8 @@ url = "2.2"
 tokio = { version = "1.14.0", features = ["macros", "rt-multi-thread"] }
 
 [features]
-default = ["dxr_shared/default", "i8", "nil"]
+default = ["dxr_shared/default", "derive", "i8", "nil"]
+derive = ["dxr_derive"]
 server = ["axum"]
 i8 = ["dxr_shared/i8"]
 nil = ["dxr_shared/nil"]

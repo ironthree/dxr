@@ -7,7 +7,9 @@
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
 
+#[cfg(feature = "derive")]
 pub use dxr_derive::{FromDXR, ToDXR};
+
 pub use dxr_shared::{DxrError, FromDXR, ToDXR, ToParams, Value, XML_RPC_DATE_FORMAT};
 
 // re-export of chrono, since it is part of the public API
