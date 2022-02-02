@@ -8,8 +8,22 @@
 
 use proc_macro::TokenStream;
 
+use proc_macro2::{Span, TokenStream as TokenStream2};
+use proc_macro_crate::{crate_name, FoundCrate};
 use quote::quote;
-use syn::{parse_macro_input, parse_quote, Data, DeriveInput, Fields, GenericParam, Type};
+use syn::{parse_macro_input, parse_quote, Data, DeriveInput, Fields, GenericParam, Ident, Type};
+
+fn use_dxr() -> TokenStream2 {
+    let krate = crate_name("dxr").ok().unwrap_or(FoundCrate::Itself);
+
+    match krate {
+        FoundCrate::Itself => quote! { crate },
+        FoundCrate::Name(name) => {
+            let ident = Ident::new(&name, Span::call_site());
+            quote! { #ident }
+        },
+    }
+}
 
 /// procedural macro for deriving the `FromDXR` trait for structs
 #[proc_macro_derive(FromDXR)]
@@ -17,10 +31,11 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
 
     let name = input.ident;
+    let dxr = use_dxr();
 
     for param in &mut input.generics.params {
         if let GenericParam::Type(ref mut type_param) = *param {
-            type_param.bounds.push(parse_quote!(dxr::FromDXR));
+            type_param.bounds.push(parse_quote!(#dxr::FromDXR));
         }
     }
 
@@ -51,16 +66,15 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
         _ => unimplemented!("FromDXR can not be derived for enums and unions."),
     }
 
-    let mut fields = proc_macro2::TokenStream::new();
+    let mut fields = TokenStream2::new();
     fields.extend(field_impls.into_iter());
 
     let impl_block = quote! {
-        impl #impl_generics ::dxr_shared::FromDXR for #name #ty_generics #where_clause {
-            fn from_dxr(value: &::dxr_shared::Value) -> Result<#name, ::dxr_shared::DxrError> {
+        impl #impl_generics #dxr::FromDXR for #name #ty_generics #where_clause {
+            fn from_dxr(value: &#dxr::Value) -> Result<#name, #dxr::DxrError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
-                use ::dxr_shared::Value;
-                use ::dxr_shared::DxrError;
+                use #dxr::{Value, DxrError};
 
                 let map: HashMap<String, Value> = HashMap::from_dxr(value)?;
 
@@ -80,10 +94,11 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
 
     let name = input.ident;
+    let dxr = use_dxr();
 
     for param in &mut input.generics.params {
         if let GenericParam::Type(ref mut type_param) = *param {
-            type_param.bounds.push(parse_quote!(dxr::ToDXR));
+            type_param.bounds.push(parse_quote!(#dxr::ToDXR));
         }
     }
 
@@ -113,15 +128,15 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
         _ => unimplemented!("ToDXR can not be derived for enums and unions."),
     }
 
-    let mut fields = proc_macro2::TokenStream::new();
+    let mut fields = TokenStream2::new();
     fields.extend(field_impls.into_iter());
 
     let impl_block = quote! {
-        impl #impl_generics ::dxr_shared::ToDXR for #name #ty_generics #where_clause {
-            fn to_dxr(&self) -> Result<::dxr_shared::Value, ::dxr_shared::DxrError> {
+        impl #impl_generics #dxr::ToDXR for #name #ty_generics #where_clause {
+            fn to_dxr(&self) -> Result<#dxr::Value, #dxr::DxrError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
-                use ::dxr_shared::Value;
+                use #dxr::Value;
 
                 let mut map: HashMap<String, Value> = HashMap::new();
 

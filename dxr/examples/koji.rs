@@ -3,7 +3,7 @@
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
 
-use dxr::{Call, ClientBuilder, FromDXR, ToDXR};
+use dxr::{Call, ClientBuilder, DxrError, FromDXR, ToDXR, Value};
 use url::Url;
 
 #[derive(Debug, FromDXR, ToDXR)]
