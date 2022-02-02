@@ -1,8 +1,5 @@
 //! definitions of XML-RPC data types with (de)serialization implementations
 
-// FIXME: add docs
-#![allow(missing_docs)]
-
 use chrono::{DateTime, Utc};
 use quick_xml::escape::{escape, unescape};
 use serde::{Deserialize, Serialize};
