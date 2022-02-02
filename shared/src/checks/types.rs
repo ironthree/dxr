@@ -1,5 +1,6 @@
 use quick_xml::escape::escape;
 use quick_xml::{de::from_str, se::to_string};
+use quickcheck::TestResult;
 use quickcheck_macros::quickcheck;
 
 use crate::types::Type;
@@ -69,25 +70,25 @@ fn from_to_string(string: String) -> bool {
 }
 
 #[quickcheck]
-fn to_from_double(double: f64) -> bool {
+fn to_from_double(double: f64) -> TestResult {
     if double.is_nan() {
-        return true;
+        return TestResult::discard();
     }
 
     let value = Type::Double(double);
 
-    value == from_str::<Type>(&to_string(&value).unwrap()).unwrap()
+    TestResult::from_bool(value == from_str::<Type>(&to_string(&value).unwrap()).unwrap())
 }
 
 #[quickcheck]
-fn from_to_double(double: f64) -> bool {
+fn from_to_double(double: f64) -> TestResult {
     if double.is_nan() {
-        return true;
+        return TestResult::discard();
     }
 
     let value = format!("<double>{}</double>", double);
 
-    value == to_string(&from_str::<Type>(&value).unwrap()).unwrap()
+    TestResult::from_bool(value == to_string(&from_str::<Type>(&value).unwrap()).unwrap())
 }
 
 #[quickcheck]
