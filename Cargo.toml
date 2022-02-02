@@ -1,5 +1,5 @@
 [workspace]
-members = ["dxr", "derive", "shared"]
+members = ["dxr", "dxr_derive", "dxr_shared"]
 
 [profile.release]
 codegen-units = 1

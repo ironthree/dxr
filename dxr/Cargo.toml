@@ -19,8 +19,8 @@ required-features = ["server"]
 
 [dependencies]
 axum = { version = "0.4.5", optional = true }
-dxr_derive = { path = "../derive" }
-dxr_shared = { path = "../shared" }
+dxr_derive = { path = "../dxr_derive" }
+dxr_shared = { path = "../dxr_shared" }
 log = "0.4.13"
 quick-xml = { version = "0.22" , features = ["serialize"] }
 reqwest = { version = "0.11", features = ["cookies"] }
