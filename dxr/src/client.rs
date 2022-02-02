@@ -5,7 +5,8 @@ use dxr_shared::{DxrError, FaultResponse, FromDXR, MethodCall, MethodResponse, T
 
 use crate::call::Call;
 
-const DEFAULT_USER_AGENT: &str = concat!("DXR Client v", env!("CARGO_PKG_VERSION"));
+/// default value of the `User-Agent` HTTP header for XML-RPC requests
+pub const DEFAULT_USER_AGENT: &str = concat!("DXR Client v", env!("CARGO_PKG_VERSION"));
 
 /// builder that takes parameters for constructing a [`Client`]
 #[derive(Debug)]
@@ -17,6 +18,8 @@ pub struct ClientBuilder {
 
 impl ClientBuilder {
     /// constructor for [`ClientBuilder`] from the URL of the XML-RPC server
+    ///
+    /// This also sets up the default `Content-Type: text/xml` HTTP header for XML-RPC requests.
     pub fn new(url: Url) -> Self {
         let mut default_headers = HeaderMap::new();
         default_headers.insert(CONTENT_TYPE, HeaderValue::from_static("text/xml"));
@@ -34,23 +37,34 @@ impl ClientBuilder {
         self
     }
 
-    fn add_header(&mut self, name: HeaderName, value: HeaderValue) {
+    /// method for providing additional custom HTTP headers
+    ///
+    /// Using [`HeaderName`] constants for the header name is recommended. The [`HeaderValue`]
+    /// argument needs to be parsed (probably from a string) with [`HeaderValue::from_str`] to
+    /// ensure their value is valid.
+    pub fn add_header(mut self, name: HeaderName, value: HeaderValue) -> Self {
         self.headers.insert(name, value);
+        self
     }
 
     /// build the [`Client`] by setting up and initializing the internal [`reqwest::Client`]
-    pub fn build(mut self) -> Client {
-        self.add_header(
-            USER_AGENT,
-            HeaderValue::from_static(self.user_agent.unwrap_or(DEFAULT_USER_AGENT)),
-        );
+    ///
+    /// If no custom value was provided for `User-Agent`, the default value
+    /// ([`DEFAULT_USER_AGENT`]) will be used.
+    pub fn build(self) -> Client {
+        let user_agent = self.user_agent.unwrap_or(DEFAULT_USER_AGENT);
+
+        let builder = self.add_header(USER_AGENT, HeaderValue::from_static(user_agent));
 
         let client = reqwest::Client::builder()
-            .default_headers(self.headers)
+            .default_headers(builder.headers)
             .build()
             .expect("Failed to initialize reqwest client.");
 
-        Client { url: self.url, client }
+        Client {
+            url: builder.url,
+            client,
+        }
     }
 }
 
