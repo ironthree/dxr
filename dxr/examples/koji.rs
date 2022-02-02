@@ -3,7 +3,7 @@
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
 
-use dxr::{Call, Client, FromDXR, ToDXR};
+use dxr::{Call, ClientBuilder, FromDXR, ToDXR};
 use url::Url;
 
 #[derive(Debug, FromDXR, ToDXR)]
@@ -39,7 +39,8 @@ pub struct Build {
 #[tokio::main]
 async fn main() -> Result<(), String> {
     let url = Url::parse("https://koji.fedoraproject.org/kojihub/").expect("Failed to parse hardcoded URL.");
-    let client = Client::new(url);
+
+    let client = ClientBuilder::new(url).user_agent("dxr-koji").build();
 
     let request: Call<_, Build> = Call::new(String::from("getBuild"), "syncthing-1.1.0-1.fc30");
     let result = client.call(request).await.map_err(|error| error.to_string())?;
