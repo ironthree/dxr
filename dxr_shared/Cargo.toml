@@ -27,3 +27,6 @@ quickcheck_macros = "1.0"
 default = ["i8", "nil"]
 i8 = []
 nil = []
+
+[package.metadata.docs.rs]
+all-features = true

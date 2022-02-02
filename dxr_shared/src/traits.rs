@@ -1,7 +1,7 @@
 use crate::error::DxrError;
 use crate::types::Value;
 
-/// conversion trait from XML-RPC values to primitives, `Option`, `HashMap`, and user-defined types
+/// conversion trait from XML-RPC values to Rust types
 pub trait FromDXR: Sized {
     /// fallible conversion method from an XML-RPC value into the target type
     ///
@@ -10,16 +10,16 @@ pub trait FromDXR: Sized {
     fn from_dxr(value: &Value) -> Result<Self, DxrError>;
 }
 
-/// conversion trait from primitives, `Option`, `HashMap`, and user-defined types to XML-RPC values
+/// conversion trait from Rust types to XML-RPC values
 pub trait ToDXR: Sized {
-    /// conversion method from types into XML-RPC values
+    /// fallible conversion method from types into XML-RPC values
     ///
     /// The resulting XML-RPC value will automatically have a compatible type, so this conversion
     /// can only fail if strings cannot un-escaped from XML correctly.
     fn to_dxr(&self) -> Result<Value, DxrError>;
 }
 
-/// conversion trait from primitives, `Option`, and `HashMap` to XML-RPC method call argument lists
+/// conversion trait from Rust types to XML-RPC method call argument lists
 pub trait ToParams: Sized {
     /// conversion method from types into XML-RPC method call argument lists
     ///

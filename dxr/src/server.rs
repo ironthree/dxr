@@ -9,14 +9,14 @@ use dxr_shared::{Fault, FaultResponse, MethodCall, MethodResponse, Value};
 use axum::routing::post;
 use axum::Router;
 
-/// trait describing methods that can be called via XML-RPC
+/// trait describing server methods that can be called via XML-RPC
 pub trait Handler: Send + Sync {
     /// This method is called for handling incoming XML-RPC method requests with the method name
     /// registered for this [`Handler`], with the request's method parameters as its arguments.
     fn handle(&self, params: &[Value]) -> Result<Value, Fault>;
 }
 
-/// data type that contains all values that are required for constructing a [`Server`]
+/// builder that takes parameters for constructing a [`Server`]
 pub struct ServerBuilder {
     addr: SocketAddr,
     handlers: HashMap<&'static str, Box<dyn Handler>>,

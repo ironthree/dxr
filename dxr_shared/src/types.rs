@@ -7,26 +7,20 @@ use serde::{Deserialize, Serialize};
 use crate::error::DxrError;
 use crate::fault::Fault;
 
-// imports for intra-doc links
-#[cfg(doc)]
-use crate::traits::{FromDXR, ToDXR};
-#[cfg(doc)]
-use std::collections::HashMap;
-
 /// # XML-RPC value type
 ///
 /// The [`Value`] type is the Rust equivalent of valid XML-RPC values. It provides constructors
 /// from all compatible primitive types, (de)serialization support from and to XML-RPC value
-/// strings, and fallible conversion from and to [`Value`] with implementations of the [`FromDXR`]
-/// and [`ToDXR`] traits.
+/// strings, and fallible conversion from and to [`Value`] with implementations of the
+/// `FromDXR` and `ToDXR` traits.
 ///
 /// Note that the constructors for all primitive value types are infallible, except for the string
 /// type, which can fail if the string argument fails to be escaped properly for XML.
 ///
-/// In general, using methods from the fallible [`FromDXR`] and [`ToDXR`] conversion traits is
+/// In general, using methods from the fallible `FromDXR` and `ToDXR` conversion traits is
 /// recommended, as they provide a consistent interface across all types, including [`Vec`],
-/// arrays, slices, tuples, [`HashMap`]s, and even custom structs, when using the [`FromDXR`] and /
-/// or [`ToDXR`] derive macros.
+/// arrays, slices, tuples, `HashMap`s, and even custom structs, when using the `FromDXR` and
+/// `ToDXR` derive macros.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "value")]
 pub struct Value {
@@ -69,7 +63,7 @@ impl Value {
     /// constructor for `<string>` values
     ///
     /// Note that this constructor handles string escaping for safe inclusion in XML internally.
-    /// Using the [`FromDXR`] and [`ToDXR`] trait implementations for [`String`] and [`&str`][str]
+    /// Using the `FromDXR` and `ToDXR` trait implementations for [`String`] and [`&str`][str]
     /// is recommended, as those handle escaping and un-escaping automatically.
     pub fn string_escape(value: &str) -> Result<Value, DxrError> {
         let string = String::from_utf8(escape(value.trim().as_bytes()).to_vec())

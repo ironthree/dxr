@@ -7,7 +7,7 @@ use crate::call::Call;
 
 const DEFAULT_USER_AGENT: &str = concat!("DXR Client v", env!("CARGO_PKG_VERSION"));
 
-/// data type that contains all values that are required for constructing a [`Client`]
+/// builder that takes parameters for constructing a [`Client`]
 #[derive(Debug)]
 pub struct ClientBuilder {
     url: Url,

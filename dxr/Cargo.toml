@@ -42,3 +42,5 @@ server = ["axum"]
 i8 = ["dxr_shared/i8"]
 nil = ["dxr_shared/nil"]
 
+[package.metadata.docs.rs]
+all-features = true
