@@ -5,6 +5,7 @@ license = "MIT OR Apache-2.0"
 
 version = "0.0.0"
 edition = "2021"
+rust-version = "1.56.0"
 
 authors = ["Fabio Valentini <decathorpe@gmail.com>"]
 categories = ["network-programming", "web-programming::http-client", "encoding"]
@@ -12,6 +13,7 @@ keywords = ["XML-RPC", "client", "derive"]
 repository = "https://github.com/ironthree/dxr"
 
 [dependencies]
+axum = { version = "0.4.5", optional = true }
 dxr_derive = { path = "../derive" }
 dxr_shared = { path = "../shared" }
 log = "0.4.13"
@@ -22,6 +24,7 @@ url = "2.2"
 
 [features]
 default = ["dxr_shared/default", "i8", "nil"]
+server = ["axum"]
 i8 = ["dxr_shared/i8"]
 nil = ["dxr_shared/nil"]
 
