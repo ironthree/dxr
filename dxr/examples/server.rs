@@ -19,7 +19,7 @@ use dxr_shared::{DxrError, Fault, FromDXR, ToDXR, Value};
 struct HelloHandler {}
 
 impl Handler for HelloHandler {
-    fn handle(&self, params: &Vec<Value>) -> Result<Value, Fault> {
+    fn handle(&self, params: &[Value]) -> Result<Value, Fault> {
         let mut params = params
             .iter()
             .map(FromDXR::from_dxr)

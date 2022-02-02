@@ -119,7 +119,7 @@ fn from_base64() {
     let data = b"You can't read this!".to_vec();
 
     let value = Value::base64(data.clone());
-    let expected = data.clone();
+    let expected = data;
 
     assert_eq!(<Vec<u8>>::from_dxr(&value).unwrap(), expected);
 }

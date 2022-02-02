@@ -3,6 +3,10 @@ use std::marker::PhantomData;
 use dxr_shared::{DxrError, FromDXR, ToParams};
 use dxr_shared::{MethodCall, Value};
 
+/// # XML-RPC method call
+///
+/// This type describes the data associated with an XML-RPC method call on the client side. This
+/// includes the method name, method parameters, and expected return type.
 #[derive(Debug)]
 pub struct Call<P, R>
 where
@@ -19,6 +23,20 @@ where
     P: ToParams,
     R: FromDXR,
 {
+    /// constructor for [`Call`] values from method name and method parameters
+    ///
+    /// This method accepts every type of value for the `params` argument if it implements the
+    /// [`ToParams`] trait. This includes:
+    ///
+    /// - primitives (`i32`, `i64`, `String`, `f64`, `DateTime`, bytes / `Vec<u8`, etc.)
+    /// - arrays and slices of values of the same type (i.e. `Vec<T`, `[T]`, `&[T]`)
+    /// - tuples up to length 8 of values of possibly different types (i.e. `(1i32, bool)`
+    ///
+    /// For method calls with arguments that have different values, either convert them all to
+    /// [`Value`] first and use an array type, or use them directly and pass them as a tuple.
+    ///
+    /// Note that this method will need type annotations to determine the type `R` of the expected
+    /// return value.
     pub fn new(method: String, params: P) -> Call<P, R> {
         Call {
             method,

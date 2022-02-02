@@ -7,6 +7,26 @@ use serde::{Deserialize, Serialize};
 use crate::error::DxrError;
 use crate::fault::Fault;
 
+// imports for intra-doc links
+#[cfg(doc)]
+use crate::traits::{FromDXR, ToDXR};
+#[cfg(doc)]
+use std::collections::HashMap;
+
+/// # XML-RPC value type
+///
+/// The [`Value`] type is the Rust equivalent of valid XML-RPC values. It provides constructors
+/// from all compatible primitive types, (de)serialization support from and to XML-RPC value
+/// strings, and fallible conversion from and to [`Value`] with implementations of the [`FromDXR`]
+/// and [`ToDXR`] traits.
+///
+/// Note that the constructors for all primitive value types are infallible, except for the string
+/// type, which can fail if the string argument fails to be escaped properly for XML.
+///
+/// In general, using methods from the fallible [`FromDXR`] and [`ToDXR`] conversion traits is
+/// recommended, as they provide a consistent interface across all types, including [`Vec`],
+/// arrays, slices, tuples, [`HashMap`]s, and even custom structs, when using the [`FromDXR`] and /
+/// or [`ToDXR`] derive macros.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "value")]
 pub struct Value {
@@ -23,15 +43,21 @@ impl Value {
         &self.value
     }
 
+    /// constructor for `<i4>` values (signed 32-bit integers)
     pub fn i4(value: i32) -> Value {
         Value::new(Type::Integer(value))
     }
 
+    /// constructor for `<i8>` values (signed 64-bit integers)
+    ///
+    /// This type is not part of the original XML-RPC spec, but is a widely used extension.
+    /// Support for `<i8>` values is optional, but enabled by default.
     #[cfg(feature = "i8")]
     pub fn i8(value: i64) -> Value {
         Value::new(Type::Long(value))
     }
 
+    /// constructor for `<boolean>` values (true or false)
     pub fn boolean(value: bool) -> Value {
         Value::new(Type::Boolean(value))
     }
@@ -40,33 +66,38 @@ impl Value {
         Value::new(Type::String(value))
     }
 
-    /// constructor for a [`Value`] of type string that handles escaping input for XML
+    /// constructor for `<string>` values
+    ///
+    /// Note that this constructor handles string escaping for safe inclusion in XML internally.
+    /// Using the [`FromDXR`] and [`ToDXR`] trait implementations for [`String`] and [`&str`][str]
+    /// is recommended, as those handle escaping and un-escaping automatically.
     pub fn string_escape(value: &str) -> Result<Value, DxrError> {
         let string = String::from_utf8(escape(value.trim().as_bytes()).to_vec())
             .map_err(|error| DxrError::invalid_data(error.to_string()))?;
         Ok(Value::string(string))
     }
 
-    /// associated method un-escaping a [`Value`] of type string
-    pub fn string_unescape(value: &str) -> Result<String, DxrError> {
+    pub(crate) fn string_unescape(value: &str) -> Result<String, DxrError> {
         match unescape(value.as_bytes()) {
-            Ok(bytes) => String::from_utf8(bytes.to_vec()).map_err(|error| DxrError::InvalidData {
-                error: error.to_string(),
-            }),
-            Err(error) => Err(DxrError::InvalidData {
-                error: error.to_string(),
-            }),
+            Ok(bytes) => String::from_utf8(bytes.to_vec()).map_err(|error| DxrError::invalid_data(error.to_string())),
+            Err(error) => Err(DxrError::invalid_data(error.to_string())),
         }
     }
 
+    /// constructor for `<double>` values (64-bit floating point numbers)
     pub fn double(value: f64) -> Value {
         Value::new(Type::Double(value))
     }
 
+    /// constructor for `<dateTime.iso8601>` values (date & time)
+    ///
+    /// Note that the date & time format used by XML-RPC does not include sub-second precision, nor
+    /// any timezone information. This crate assumes [`Utc`] is used on the server.
     pub fn datetime(value: DateTime<Utc>) -> Value {
         Value::new(Type::DateTime(value))
     }
 
+    /// constructor for `<base64>` values (base64-encoded, arbitrary bytes)
     pub fn base64(value: Vec<u8>) -> Value {
         Value::new(Type::Base64(value))
     }
@@ -79,6 +110,14 @@ impl Value {
         Value::new(Type::Array { data: value.data })
     }
 
+    /// constructor for the `<nil/>` value (empty / missing value)
+    ///
+    /// This type is not part of the original XML-RPC spec, but is a widely used extension.
+    /// Support for `<nil>` values is optional, but enabled by default.
+    ///
+    /// If enabled, this type is used to emulate support for optional values in XML-RPC, by mapping
+    /// Rust [`Option`]s to either their contained [`Value`], or to a `<nil>` value. This is
+    /// consistent with the XML-RPC implementation in the Python `xmlrpc` standard library module.
     #[cfg(feature = "nil")]
     pub fn nil() -> Value {
         Value::new(Type::Nil)
@@ -208,6 +247,11 @@ impl ArrayData {
     }
 }
 
+/// # XML-RPC method call type
+///
+/// The [`MethodCall`] type is the Rust equivalent of the contents of an XML-RPC method call.
+///
+/// It contains the name of the method, and a list of dynamically typed method call parameters.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodCall")]
 pub struct MethodCall {
@@ -218,6 +262,7 @@ pub struct MethodCall {
 }
 
 impl MethodCall {
+    /// constructor for `<methodCall>` values from method name and parameter list
     pub fn new(name: String, parameters: Vec<Value>) -> MethodCall {
         MethodCall {
             name: MethodName { name },
@@ -227,10 +272,12 @@ impl MethodCall {
         }
     }
 
+    /// getter method for the method name
     pub fn name(&self) -> &str {
         &self.name.name
     }
 
+    /// getter method for the list of parameters
     pub fn params(&self) -> &Vec<Value> {
         &self.params.params.params
     }
@@ -243,6 +290,11 @@ struct MethodName {
     name: String,
 }
 
+/// # XML-RPC method response type
+///
+/// The [`MethodResponse`] type is the Rust equivalent of the contents of an XML-RPC response.
+///
+/// It contains zero or one return values.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodResponse")]
 pub struct MethodResponse {
@@ -250,6 +302,7 @@ pub struct MethodResponse {
 }
 
 impl MethodResponse {
+    /// constructor for `<methodResponse>` values from the return value
     pub fn new(value: Value) -> MethodResponse {
         MethodResponse {
             params: ResponseParameters {
@@ -258,11 +311,15 @@ impl MethodResponse {
         }
     }
 
+    /// getter method for the returned value
     pub fn inner(self) -> Value {
         self.params.params.value
     }
 }
 
+/// # XML-RPC fault response type
+///
+/// The [`FaultResponse`] type is the Rust equivalent of the contents of an XML-RPC fault response.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodResponse")]
 pub struct FaultResponse {

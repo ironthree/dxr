@@ -6,6 +6,7 @@
 #![warn(missing_docs)]
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[cfg(feature = "derive")]
 pub use dxr_derive::{FromDXR, ToDXR};
