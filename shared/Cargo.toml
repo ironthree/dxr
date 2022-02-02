@@ -1,6 +1,6 @@
 [package]
 name = "dxr_shared"
-description = "Shared implementation details of DXR"
+description = "Implementation details of DXR (XML-RPC value de/serialization)"
 license = "MIT OR Apache-2.0"
 
 version = "0.0.0"

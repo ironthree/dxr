@@ -3,13 +3,15 @@
 // FIXME: add docs
 #![allow(missing_docs)]
 
-use std::fmt::{Display, Formatter};
-
 use chrono::{DateTime, Utc};
 use quick_xml::escape::{escape, unescape};
 use serde::{Deserialize, Serialize};
 
 use crate::error::DxrError;
+
+// only used in unit tests
+#[cfg(test)]
+use crate::fault::Fault;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "value")]
@@ -75,11 +77,11 @@ impl Value {
         Value::new(Type::Base64(value))
     }
 
-    pub fn structure(value: Struct) -> Value {
+    pub(crate) fn structure(value: Struct) -> Value {
         Value::new(Type::Struct { members: value.members })
     }
 
-    pub fn array(value: Array) -> Value {
+    pub(crate) fn array(value: Array) -> Value {
         Value::new(Type::Array { data: value.data })
     }
 
@@ -90,7 +92,7 @@ impl Value {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub enum Type {
+pub(crate) enum Type {
     #[serde(rename = "i4", alias = "int")]
     Integer(#[serde(rename = "$value")] i32),
     #[cfg(feature = "i8")]
@@ -122,7 +124,7 @@ pub enum Type {
 }
 
 impl Type {
-    pub fn name(&self) -> &'static str {
+    pub(crate) fn name(&self) -> &'static str {
         match self {
             Type::Integer(_) => "i4",
             #[cfg(feature = "i8")]
@@ -142,20 +144,20 @@ impl Type {
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "struct")]
-pub struct Struct {
+pub(crate) struct Struct {
     #[serde(default, rename = "member")]
     members: Vec<Member>,
 }
 
 impl Struct {
-    pub fn new(members: Vec<Member>) -> Struct {
+    pub(crate) fn new(members: Vec<Member>) -> Struct {
         Struct { members }
     }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "member")]
-pub struct Member {
+pub(crate) struct Member {
     name: MemberName,
     value: Value,
 }
@@ -168,31 +170,31 @@ struct MemberName {
 }
 
 impl Member {
-    pub fn new(name: String, value: Value) -> Member {
+    pub(crate) fn new(name: String, value: Value) -> Member {
         Member {
             name: MemberName { name },
             value,
         }
     }
 
-    pub fn name(&self) -> &str {
+    pub(crate) fn name(&self) -> &str {
         self.name.name.as_str()
     }
 
-    pub fn inner(&self) -> &Value {
+    pub(crate) fn inner(&self) -> &Value {
         &self.value
     }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "array")]
-pub struct Array {
+pub(crate) struct Array {
     #[serde(default)]
     data: ArrayData,
 }
 
 impl Array {
-    pub fn new(values: Vec<Value>) -> Array {
+    pub(crate) fn new(values: Vec<Value>) -> Array {
         Array {
             data: ArrayData { values },
         }
@@ -201,13 +203,13 @@ impl Array {
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "data")]
-pub struct ArrayData {
+pub(crate) struct ArrayData {
     #[serde(default, rename = "value")]
     values: Vec<Value>,
 }
 
 impl ArrayData {
-    pub fn inner(&self) -> &Vec<Value> {
+    pub(crate) fn inner(&self) -> &Vec<Value> {
         &self.values
     }
 }
@@ -246,7 +248,9 @@ pub struct MethodResponse {
 }
 
 impl MethodResponse {
-    pub fn new(value: Value) -> MethodResponse {
+    // only used in unit tests
+    #[cfg(test)]
+    pub(crate) fn new(value: Value) -> MethodResponse {
         MethodResponse {
             params: ResponseParameters {
                 params: ResponseParameter { value },
@@ -266,74 +270,42 @@ pub struct FaultResponse {
 }
 
 impl FaultResponse {
-    pub fn new(value: Fault) -> FaultResponse {
+    // only used in unit tests
+    #[cfg(test)]
+    pub(crate) fn new(value: Fault) -> FaultResponse {
         FaultResponse {
             fault: FaultStruct {
                 value: FaultValue {
                     value: Struct::new(vec![
-                        Member::new(String::from("faultCode"), Value::i4(value.code)),
-                        Member::new(String::from("faultString"), Value::string(value.string)),
+                        Member::new(String::from("faultCode"), Value::i4(value.code())),
+                        Member::new(String::from("faultString"), Value::string(value.string().to_owned())),
                     ]),
                 },
             },
         }
     }
+
+    pub(crate) fn members(&self) -> &[Member] {
+        &self.fault.value.value.members
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "fault")]
-pub struct FaultStruct {
+struct FaultStruct {
     value: FaultValue,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "value")]
-pub struct FaultValue {
+struct FaultValue {
     #[serde(rename = "struct")]
     value: Struct,
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct Fault {
-    code: i32,
-    string: String,
-}
-
-impl Fault {
-    pub fn new(code: i32, string: String) -> Fault {
-        Fault { code, string }
-    }
-}
-
-impl Display for Fault {
-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        write!(f, "Fault {}: {}", self.code, self.string)
-    }
-}
-
-impl From<FaultResponse> for Fault {
-    fn from(f: FaultResponse) -> Self {
-        let mut members = f.fault.value.value.members;
-
-        let code = if let Type::Integer(code) = members.remove(0).value.value {
-            code
-        } else {
-            unreachable!()
-        };
-
-        let string = if let Type::String(string) = members.remove(0).value.value {
-            string
-        } else {
-            unreachable!()
-        };
-
-        Fault { code, string }
-    }
-}
-
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "params")]
-pub struct RequestParameters {
+struct RequestParameters {
     #[serde(default, rename = "param")]
     params: ParameterData,
 }
@@ -353,13 +325,13 @@ struct ParameterData {
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "params")]
-pub struct ResponseParameters {
+struct ResponseParameters {
     #[serde(rename = "param")]
     params: ResponseParameter,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "param")]
-pub struct ResponseParameter {
+struct ResponseParameter {
     value: Value,
 }

@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
-use dxr_shared::types::{MethodCall, Value};
 use dxr_shared::{DxrError, FromDXR, ToParams};
+use dxr_shared::{MethodCall, Value};
 
 #[derive(Debug)]
 pub struct Call<P, R>

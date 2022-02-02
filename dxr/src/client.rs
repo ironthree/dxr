@@ -1,9 +1,10 @@
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_LENGTH, CONTENT_TYPE};
 use url::Url;
 
+use dxr_shared::{DxrError, FromDXR, ToParams};
+use dxr_shared::{Fault, FaultResponse, MethodResponse};
+
 use crate::call::Call;
-use crate::types::{Fault, FaultResponse, MethodResponse};
-use crate::{DxrError, FromDXR, ToParams};
 
 #[derive(Debug)]
 pub struct Client {

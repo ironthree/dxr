@@ -1,4 +1,7 @@
-use super::*;
+use quick_xml::{de::from_str, se::to_string};
+
+use crate::fault::Fault;
+use crate::types::{FaultResponse, MethodResponse, Value};
 
 #[test]
 fn to_method_response_success() {

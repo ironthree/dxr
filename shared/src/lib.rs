@@ -15,6 +15,9 @@ mod ser_de;
 mod error;
 pub use error::*;
 
+mod fault;
+pub use fault::*;
+
 mod from;
 pub use from::*;
 
@@ -27,13 +30,16 @@ pub use to::*;
 mod traits;
 pub use traits::*;
 
-pub mod types;
+mod types;
+pub use types::{FaultResponse, MethodCall, MethodResponse, Value};
 
 /// date & time format used by the XML-RPC `dateTime.iso8601` value type
 pub const XML_RPC_DATE_FORMAT: &str = "%Y%m%dT%H:%M:%S";
 
+// property-based (de)serialization tests
 #[cfg(test)]
 mod checks;
 
+// standard (de)serialization tests
 #[cfg(test)]
 mod tests;
