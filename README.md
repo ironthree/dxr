@@ -1,9 +1,9 @@
 # DXR: declarative XML-RPC
 
 This repository contains work-in-progress crates for writing XML-RPC API clients
-(and maybe, at some point, servers too) in Rust.
+and servers in Rust.
 
-- `dxr`: high-level client implementation
+- `dxr`: high-level client and server implementations
 - `dxr_derive`: `ToDXR` and `FromDXR` derive macros for custom structs
 - `dxr_shared`: definition of conversion traits and XML-RPC types for (de)serialization  
 

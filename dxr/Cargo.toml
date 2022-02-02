@@ -12,6 +12,11 @@ categories = ["network-programming", "web-programming::http-client", "encoding"]
 keywords = ["XML-RPC", "client", "derive"]
 repository = "https://github.com/ironthree/dxr"
 
+[[example]]
+name = "server"
+path = "examples/server.rs"
+required-features = ["server"]
+
 [dependencies]
 axum = { version = "0.4.5", optional = true }
 dxr_derive = { path = "../derive" }
@@ -21,6 +26,9 @@ quick-xml = { version = "0.22" , features = ["serialize"] }
 reqwest = { version = "0.11", features = ["cookies"] }
 tokio = { version = "1.14", features = ["macros", "rt-multi-thread"] }
 url = "2.2"
+
+[dev-dependencies]
+tokio = { version = "1.14.0", features = ["macros", "rt-multi-thread"] }
 
 [features]
 default = ["dxr_shared/default", "i8", "nil"]

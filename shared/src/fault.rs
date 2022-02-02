@@ -10,8 +10,8 @@ pub struct Fault {
 }
 
 impl Fault {
-    #[cfg(test)]
-    pub(crate) fn new(code: i32, string: String) -> Fault {
+    /// constructor for a new [`Fault`]
+    pub fn new(code: i32, string: String) -> Fault {
         Fault { code, string }
     }
 

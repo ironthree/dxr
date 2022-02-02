@@ -5,9 +5,6 @@ use quick_xml::escape::{escape, unescape};
 use serde::{Deserialize, Serialize};
 
 use crate::error::DxrError;
-
-// only used in unit tests
-#[cfg(test)]
 use crate::fault::Fault;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -229,6 +226,14 @@ impl MethodCall {
             },
         }
     }
+
+    pub fn name(&self) -> &str {
+        &self.name.name
+    }
+
+    pub fn params(&self) -> &Vec<Value> {
+        &self.params.params.params
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -245,9 +250,7 @@ pub struct MethodResponse {
 }
 
 impl MethodResponse {
-    // only used in unit tests
-    #[cfg(test)]
-    pub(crate) fn new(value: Value) -> MethodResponse {
+    pub fn new(value: Value) -> MethodResponse {
         MethodResponse {
             params: ResponseParameters {
                 params: ResponseParameter { value },
@@ -267,23 +270,23 @@ pub struct FaultResponse {
 }
 
 impl FaultResponse {
-    // only used in unit tests
-    #[cfg(test)]
-    pub(crate) fn new(value: Fault) -> FaultResponse {
+    pub(crate) fn members(&self) -> &[Member] {
+        &self.fault.value.value.members
+    }
+}
+
+impl From<Fault> for FaultResponse {
+    fn from(fault: Fault) -> Self {
         FaultResponse {
             fault: FaultStruct {
                 value: FaultValue {
                     value: Struct::new(vec![
-                        Member::new(String::from("faultCode"), Value::i4(value.code())),
-                        Member::new(String::from("faultString"), Value::string(value.string().to_owned())),
+                        Member::new(String::from("faultCode"), Value::i4(fault.code())),
+                        Member::new(String::from("faultString"), Value::string(fault.string().to_owned())),
                     ]),
                 },
             },
         }
-    }
-
-    pub(crate) fn members(&self) -> &[Member] {
-        &self.fault.value.value.members
     }
 }
 
