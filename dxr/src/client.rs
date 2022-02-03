@@ -1,4 +1,4 @@
-use reqwest::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
+use reqwest::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
 use url::Url;
 
 use dxr_shared::{DxrError, FaultResponse, FromDXR, MethodCall, MethodResponse, ToParams};
@@ -68,7 +68,7 @@ impl ClientBuilder {
     }
 }
 
-fn request_to_body(call: &MethodCall) -> Result<(String, usize), DxrError> {
+fn request_to_body(call: &MethodCall) -> Result<String, DxrError> {
     let body = [
         r#"<?xml version="1.0"?>"#,
         quick_xml::se::to_string(&call)
@@ -78,9 +78,7 @@ fn request_to_body(call: &MethodCall) -> Result<(String, usize), DxrError> {
     ]
     .join("\n");
 
-    let content_length = body.as_bytes().len();
-
-    Ok((body, content_length))
+    Ok(body)
 }
 
 fn request_to_result(contents: &str) -> Result<MethodResponse, DxrError> {
@@ -123,14 +121,13 @@ impl Client {
         let request = call.as_xml_rpc()?;
 
         // construct HTTP body and content-length header from request
-        let (body, content_length) = request_to_body(&request)?;
+        let body = request_to_body(&request)?;
 
         // construct request and send to server
         let request = self
             .client()
             .post(self.url.clone())
             .body(body)
-            .header(CONTENT_LENGTH, HeaderValue::from(content_length))
             .build()
             .expect("Failed to construct POST request.");
 
