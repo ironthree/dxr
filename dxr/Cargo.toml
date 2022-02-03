@@ -13,9 +13,14 @@ keywords = ["XML-RPC", "client", "derive"]
 repository = "https://github.com/ironthree/dxr"
 
 [[example]]
+name = "client"
+path = "examples/client.rs"
+required-features = ["client"]
+
+[[example]]
 name = "koji"
 path = "examples/koji.rs"
-required-features = ["derive"]
+required-features = ["client", "derive"]
 
 [[example]]
 name = "server"
@@ -23,20 +28,30 @@ path = "examples/server.rs"
 required-features = ["server"]
 
 [dependencies]
-axum = { version = "0.4.5", optional = true }
-dxr_derive = { path = "../dxr_derive", version = "0.1.0", optional = true}
+# default features
 dxr_shared = { path = "../dxr_shared", version = "0.1.0" }
 log = "0.4.13"
 quick-xml = { version = "0.22" , features = ["serialize"] }
-reqwest = { version = "0.11", features = ["cookies"] }
-tokio = { version = "1.14", features = ["macros", "rt-multi-thread"] }
-url = "2.2"
+
+# derive feature
+dxr_derive = { path = "../dxr_derive", version = "0.1.0", optional = true }
+
+# client feature
+reqwest = { version = "0.11", features = ["cookies"] , optional = true }
+url = { version = "2.2", optional = true }
+
+# server feature
+axum = { version = "0.4.5", optional = true }
 
 [dev-dependencies]
-tokio = { version = "1.14.0", features = ["macros", "rt-multi-thread"] }
+quickcheck = "1.0"
+quickcheck_macros = "1.0"
+# example binaries
+tokio = { version = "1.14", features = ["macros", "rt-multi-thread"] }
 
 [features]
-default = ["dxr_shared/default", "derive", "i8", "nil"]
+default = ["dxr_shared/default", "client", "derive", "i8", "nil"]
+client = ["reqwest", "url"]
 derive = ["dxr_derive"]
 server = ["axum"]
 i8 = ["dxr_shared/i8"]

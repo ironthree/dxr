@@ -12,17 +12,28 @@ pub use dxr_derive::{FromDXR, ToDXR};
 
 pub use dxr_shared::{DxrError, Fault, FromDXR, ToDXR, ToParams, Value, XML_RPC_DATE_FORMAT};
 
-// re-export of chrono, since DateTime / Utc are part of the public API
+// re-export chrono: DateTime / Utc are part of the public API
 pub use dxr_shared::chrono;
-// re-export of url::Url, since it is part of the public API
+
+// re-export url::Url: it is part of the public client API
+#[cfg(feature = "client")]
 pub use url;
 
+#[cfg(not(any(feature = "client", feature = "server")))]
+compile_error!("Either the 'client' or the 'server' feature needs to be enabled.");
+
+// client-specific modules
+#[cfg(feature = "client")]
 mod call;
+#[cfg(feature = "client")]
 pub use call::*;
 
+#[cfg(feature = "client")]
 mod client;
+#[cfg(feature = "client")]
 pub use client::*;
 
+// server-specific modules
 #[cfg(feature = "server")]
 mod server;
 #[cfg(feature = "server")]
