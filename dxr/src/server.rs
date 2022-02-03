@@ -13,12 +13,7 @@ use axum::Router;
 pub trait Handler: Send + Sync {
     /// This method is called for handling incoming XML-RPC method requests with the method name
     /// registered for this [`Handler`], with the request's method parameters as its arguments.
-    fn handle(&self, params: &[Value]) -> Result<Value, Fault>;
-
-    // TODO: methods for verifying user authorization / authentication status
-    //fn needs_authentication(&self) -> bool;
-    //fn is_authenticated(&self, headers: &HeaderMap) -> bool;
-    //fn is_authorized(&self, headers: &HeaderMap) -> bool;
+    fn handle(&self, params: &[Value], headers: &HeaderMap) -> Result<Value, Fault>;
 }
 
 /// builder that takes parameters for constructing a [`Server`]
@@ -89,7 +84,7 @@ impl Server {
     ///
     /// Requests with invalid input, calls of unknown methods, and failed methods are converted
     /// into fault responses.
-    pub async fn serve(self) {
+    pub async fn serve(self) -> Result<(), String> {
         let app = Router::new().route(
             "/",
             post({
@@ -108,17 +103,7 @@ impl Server {
                         None => return fault_to_response(404, "Unknown method."),
                     };
 
-                    /*
-                    if handler.needs_authentication() && !handler.is_authenticated(&headers) {
-                        return fault_to_response(401, "Unauthorized.");
-                    }
-
-                    if !handler.is_authorized(&headers) {
-                        return fault_to_response(403, "Forbidden.");
-                    }
-                    */
-
-                    let response = match handler.handle(call.params()) {
+                    let response = match handler.handle(call.params(), &headers) {
                         Ok(value) => success_to_response(value),
                         Err(fault) => fault_to_response(fault.code(), fault.string()),
                     };
@@ -131,7 +116,7 @@ impl Server {
         axum::Server::bind(&self.addr)
             .serve(app.into_make_service())
             .await
-            .expect("Failed to initialize server.");
+            .map_err(|error| error.to_string())
     }
 }
 

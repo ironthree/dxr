@@ -13,12 +13,13 @@
 //! 'Hello, DXR!'
 //! ```
 
+use axum::http::HeaderMap;
 use dxr::{DxrError, Fault, FromDXR, Handler, ServerBuilder, ToDXR, Value};
 
 struct HelloHandler {}
 
 impl Handler for HelloHandler {
-    fn handle(&self, params: &[Value]) -> Result<Value, Fault> {
+    fn handle(&self, params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
         let mut params = params
             .iter()
             .map(FromDXR::from_dxr)
@@ -44,5 +45,5 @@ async fn main() {
         .add_method("hello", Box::new(hello_handler))
         .build();
 
-    server.serve().await
+    server.serve().await.expect("Failed to run server.")
 }
