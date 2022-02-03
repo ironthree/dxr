@@ -10,7 +10,7 @@
 #[cfg(feature = "derive")]
 pub use dxr_derive::{FromDXR, ToDXR};
 
-pub use dxr_shared::{DxrError, FromDXR, ToDXR, ToParams, Value, XML_RPC_DATE_FORMAT};
+pub use dxr_shared::{DxrError, Fault, FromDXR, ToDXR, ToParams, Value, XML_RPC_DATE_FORMAT};
 
 // re-export of chrono, since DateTime / Utc are part of the public API
 pub use dxr_shared::chrono;

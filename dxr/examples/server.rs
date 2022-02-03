@@ -13,8 +13,7 @@
 //! 'Hello, DXR!'
 //! ```
 
-use dxr::{Handler, ServerBuilder};
-use dxr_shared::{DxrError, Fault, FromDXR, ToDXR, Value};
+use dxr::{DxrError, Fault, FromDXR, Handler, ServerBuilder, ToDXR, Value};
 
 struct HelloHandler {}
 

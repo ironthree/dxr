@@ -1,4 +1,3 @@
-use axum::http::StatusCode;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use std::net::SocketAddr;
@@ -6,6 +5,7 @@ use std::sync::Arc;
 
 use dxr_shared::{Fault, FaultResponse, MethodCall, MethodResponse, Value};
 
+use axum::http::{header::CONTENT_LENGTH, HeaderMap, StatusCode};
 use axum::routing::post;
 use axum::Router;
 
@@ -14,6 +14,11 @@ pub trait Handler: Send + Sync {
     /// This method is called for handling incoming XML-RPC method requests with the method name
     /// registered for this [`Handler`], with the request's method parameters as its arguments.
     fn handle(&self, params: &[Value]) -> Result<Value, Fault>;
+
+    // TODO: methods for verifying user authorization / authentication status
+    //fn needs_authentication(&self) -> bool;
+    //fn is_authenticated(&self, headers: &HeaderMap) -> bool;
+    //fn is_authorized(&self, headers: &HeaderMap) -> bool;
 }
 
 /// builder that takes parameters for constructing a [`Server`]
@@ -88,20 +93,32 @@ impl Server {
         let app = Router::new().route(
             "/",
             post({
-                move |body: String| async move {
+                move |body: String, headers: HeaderMap| async move {
+                    if headers.get(CONTENT_LENGTH).is_none() {
+                        return fault_to_response(411, "Content-Length header missing.");
+                    }
+
                     let call: MethodCall = match quick_xml::de::from_str(&body) {
                         Ok(call) => call,
-                        Err(error) => return fault_to_response(-1, &format!("Invalid request input: {}", error)),
+                        Err(error) => return fault_to_response(400, &format!("Invalid request input: {}", error)),
                     };
 
-                    let handler = self.handlers.get(call.name());
-
-                    let result = match handler {
-                        Some(handler) => handler.handle(call.params()),
-                        None => return fault_to_response(-1000, "Unknown method."),
+                    let handler = match self.handlers.get(call.name()) {
+                        Some(handler) => handler,
+                        None => return fault_to_response(404, "Unknown method."),
                     };
 
-                    let response = match result {
+                    /*
+                    if handler.needs_authentication() && !handler.is_authenticated(&headers) {
+                        return fault_to_response(401, "Unauthorized.");
+                    }
+
+                    if !handler.is_authorized(&headers) {
+                        return fault_to_response(403, "Forbidden.");
+                    }
+                    */
+
+                    let response = match handler.handle(call.params()) {
                         Ok(value) => success_to_response(value),
                         Err(fault) => fault_to_response(fault.code(), fault.string()),
                     };
