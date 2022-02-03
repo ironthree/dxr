@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use dxr_shared::{Fault, FaultResponse, MethodCall, MethodResponse, Value};
 
-use axum::http::{header::CONTENT_LENGTH, HeaderMap, StatusCode};
+use axum::http::{header::CONTENT_LENGTH, header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode};
 use axum::routing::post;
 use axum::Router;
 
@@ -120,21 +120,27 @@ impl Server {
     }
 }
 
-fn success_to_response(value: Value) -> (StatusCode, String) {
+fn response_headers() -> HeaderMap {
+    let mut headers = HeaderMap::new();
+    headers.insert(CONTENT_TYPE, HeaderValue::from_static("text/xml"));
+    headers
+}
+
+fn success_to_response(value: Value) -> (StatusCode, HeaderMap, String) {
     let response = MethodResponse::new(value);
 
     match quick_xml::se::to_string(&response) {
-        Ok(success) => (StatusCode::OK, success),
-        Err(error) => (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
+        Ok(success) => (StatusCode::OK, response_headers(), success),
+        Err(error) => (StatusCode::INTERNAL_SERVER_ERROR, response_headers(), error.to_string()),
     }
 }
 
-fn fault_to_response(code: i32, string: &str) -> (StatusCode, String) {
+fn fault_to_response(code: i32, string: &str) -> (StatusCode, HeaderMap, String) {
     let fault = Fault::new(code, string.to_owned());
     let response: FaultResponse = fault.into();
 
     match quick_xml::se::to_string(&response) {
-        Ok(fault) => (StatusCode::OK, fault),
-        Err(error) => (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
+        Ok(fault) => (StatusCode::OK, response_headers(), fault),
+        Err(error) => (StatusCode::INTERNAL_SERVER_ERROR, response_headers(), error.to_string()),
     }
 }
