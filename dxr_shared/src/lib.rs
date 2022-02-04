@@ -6,12 +6,14 @@
 #![warn(missing_docs)]
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
-#![cfg_attr(docsrs, feature(doc_cfg))]
 
 // re-export of chrono, since it is part of the public API
 pub use chrono;
 
 mod ser_de;
+
+mod dxr;
+pub use dxr::*;
 
 mod error;
 pub use error::*;
@@ -19,14 +21,8 @@ pub use error::*;
 mod fault;
 pub use fault::*;
 
-mod from;
-pub use from::*;
-
 mod params;
 pub use params::*;
-
-mod to;
-pub use to::*;
 
 mod traits;
 pub use traits::*;

@@ -19,6 +19,19 @@ pub trait ToDXR: Sized {
     fn to_dxr(&self) -> Result<Value, DxrError>;
 }
 
+/// conversion trait from an XML-RPC call argument list to Rust types
+pub trait FromParams: Sized {
+    /// conversion method from XML-RPC method call argument lists to Rust types
+    ///
+    /// The conversion aims to do the "expected" thing, depending on the input XML-RPC value type
+    /// and the targeted Rust type.
+    ///
+    /// TODO: FIXME more docs how lists are handled
+    ///
+    /// This trait can be used for argument conversion in XML-RPC servers.
+    fn from_params(values: &[Value]) -> Result<Self, DxrError>;
+}
+
 /// conversion trait from Rust types to XML-RPC method call argument lists
 pub trait ToParams: Sized {
     /// conversion method from types into XML-RPC method call argument lists
@@ -26,5 +39,7 @@ pub trait ToParams: Sized {
     /// For primitive types and maps, calling this method just calls their [`ToDXR`] implementation
     /// in turn. For collections ([`Vec`] and tuples), their values are converted to [`Value`]s,
     /// but they are treated as a list of arguments, not as a single argument that is a list.
+    ///
+    /// This trait can be used for argument conversion in XML-RPC clients.
     fn to_params(&self) -> Result<Vec<Value>, DxrError>;
 }
