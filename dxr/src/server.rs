@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use std::net::SocketAddr;
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
 use dxr_shared::{Fault, FaultResponse, MethodCall, MethodResponse, Value};
 
@@ -10,17 +10,23 @@ use axum::routing::post;
 use axum::Router;
 
 /// trait describing server methods that can be called via XML-RPC
+///
+/// Handlers for XML-RPC method calls must implement this trait. It is already implemented for `fn`
+/// functions with the same arguments as the `handler` method in this trait.
+///
+/// For method handlers that need to keep track of some state (or handle authentication, etc.), just
+/// implement this trait for your own struct.
 pub trait Handler: Send + Sync {
     /// This method is called for handling incoming XML-RPC method requests with the method name
     /// registered for this [`Handler`], with the request's method parameters as its arguments.
-    fn handle(&self, params: &[Value], headers: &HeaderMap) -> Result<Value, Fault>;
+    fn handle(&mut self, params: &[Value], headers: &HeaderMap) -> Result<Value, Fault>;
 }
 
 /// type alias for plain handler functions without associated data
 pub type HandlerFn = fn(params: &[Value], headers: &HeaderMap) -> Result<Value, Fault>;
 
 impl Handler for HandlerFn {
-    fn handle(&self, params: &[Value], headers: &HeaderMap) -> Result<Value, Fault> {
+    fn handle(&mut self, params: &[Value], headers: &HeaderMap) -> Result<Value, Fault> {
         self(params, headers)
     }
 }
@@ -28,7 +34,7 @@ impl Handler for HandlerFn {
 /// builder that takes parameters for constructing a [`Server`]
 pub struct ServerBuilder {
     addr: SocketAddr,
-    handlers: HashMap<&'static str, Box<dyn Handler>>,
+    handlers: HashMap<&'static str, RwLock<Box<dyn Handler + Send + Sync>>>,
 }
 
 impl Debug for ServerBuilder {
@@ -53,8 +59,8 @@ impl ServerBuilder {
     }
 
     /// method for adding a new method handler for the [`Server`]
-    pub fn add_method(mut self, name: &'static str, handler: Box<dyn Handler>) -> Self {
-        self.handlers.insert(name, handler);
+    pub fn add_method(mut self, name: &'static str, handler: Box<dyn Handler + Send + Sync>) -> Self {
+        self.handlers.insert(name, RwLock::new(handler));
         self
     }
 
@@ -73,7 +79,7 @@ impl ServerBuilder {
 /// register method handlers, initialize the [`Server`], and wait for requests.
 pub struct Server {
     addr: SocketAddr,
-    handlers: Arc<HashMap<&'static str, Box<dyn Handler>>>,
+    handlers: Arc<HashMap<&'static str, RwLock<Box<dyn Handler + Send + Sync>>>>,
 }
 
 impl Debug for Server {
@@ -107,8 +113,8 @@ impl Server {
                         Err(error) => return fault_to_response(400, &format!("Invalid request input: {}", error)),
                     };
 
-                    let handler = match self.handlers.get(call.name()) {
-                        Some(handler) => handler,
+                    let mut handler = match self.handlers.get(call.name()) {
+                        Some(handler) => handler.write().expect("Poisoned lock!"),
                         None => return fault_to_response(404, "Unknown method."),
                     };
 
