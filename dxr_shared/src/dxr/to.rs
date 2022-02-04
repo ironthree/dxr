@@ -79,6 +79,7 @@ impl ToDXR for &[u8] {
     }
 }
 
+#[cfg(feature = "nil")]
 impl<T> ToDXR for Option<T>
 where
     T: ToDXR,
@@ -92,6 +93,7 @@ where
     }
 }
 
+#[cfg(feature = "nil")]
 impl<T> ToDXR for &Option<T>
 where
     T: ToDXR,
