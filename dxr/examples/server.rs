@@ -14,26 +14,14 @@
 //! ```
 
 use axum::http::HeaderMap;
-use dxr::{DxrError, Fault, FromDXR, Handler, ServerBuilder, ToDXR, Value};
+use dxr::{Fault, FromParams, Handler, ServerBuilder, ToDXR, Value};
 
 struct HelloHandler {}
 
 impl Handler for HelloHandler {
     fn handle(&self, params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
-        let mut params = params
-            .iter()
-            .map(FromDXR::from_dxr)
-            .collect::<Result<Vec<String>, DxrError>>()
-            .map_err(|error| Fault::new(500, error.to_string()))?;
-
-        let name = match params.len() {
-            1 => params.remove(0),
-            n => return Err(Fault::new(400, format!("Expected one argument, got {}.", n))),
-        };
-
-        format!("Hello, {}!", name)
-            .to_dxr()
-            .map_err(|error| Fault::new(500, error.to_string()))
+        let name = String::from_params(params)?;
+        format!("Hello, {}!", name).to_dxr().map_err(|error| error.into())
     }
 }
 

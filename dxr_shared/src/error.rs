@@ -74,3 +74,19 @@ impl DxrError {
         }
     }
 }
+
+impl From<DxrError> for Fault {
+    fn from(error: DxrError) -> Self {
+        match error {
+            DxrError::ReturnMismatch { argument, expected } => {
+                Fault::new(400, format!("Expected {} argument, got {}.", expected, argument))
+            },
+            DxrError::WrongType { argument, expected } => {
+                Fault::new(400, format!("Expected <{}> argument, got <{}>.", expected, argument))
+            },
+            DxrError::InvalidData { error } => Fault::new(400, format!("Invalid argument: {}", error)),
+            DxrError::MissingField { name } => Fault::new(400, format!("Missing field: {}", name)),
+            DxrError::ServerFault { fault } => fault,
+        }
+    }
+}

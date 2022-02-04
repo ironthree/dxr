@@ -58,4 +58,4 @@ both `reqwest` and `axum`.
 
 Note that the amount of code that is required for writing simple XML-RPC clients and
 servers is very small. The `client` example has only ~10 LOC, and the `server` example
-only needs ~25 LOC, but both examples even include error handling.
+only needs ~15 LOC, but both examples even include error handling.
