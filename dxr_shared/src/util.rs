@@ -1,7 +1,7 @@
 #![allow(clippy::type_complexity)]
 
 use crate::error::DxrError;
-use crate::traits::FromDXR;
+use crate::traits::{FromDXR, ToDXR};
 use crate::types::Value;
 
 pub fn values_to_tuple_1<T>(values: &[Value]) -> Result<(T,), DxrError>
@@ -18,6 +18,14 @@ where
     }
 }
 
+pub fn tuple_to_values_2<A, B>((a, b): &(A, B)) -> Result<Vec<Value>, DxrError>
+where
+    A: ToDXR,
+    B: ToDXR,
+{
+    Ok(vec![a.to_dxr()?, b.to_dxr()?])
+}
+
 pub fn values_to_tuple_2<A, B>(values: &[Value]) -> Result<(A, B), DxrError>
 where
     A: FromDXR,
@@ -32,6 +40,15 @@ where
         },
         n => Err(DxrError::return_mismatch(n, 2)),
     }
+}
+
+pub fn tuple_to_values_3<A, B, C>((a, b, c): &(A, B, C)) -> Result<Vec<Value>, DxrError>
+where
+    A: ToDXR,
+    B: ToDXR,
+    C: ToDXR,
+{
+    Ok(vec![a.to_dxr()?, b.to_dxr()?, c.to_dxr()?])
 }
 
 pub fn values_to_tuple_3<A, B, C>(values: &[Value]) -> Result<(A, B, C), DxrError>
@@ -52,6 +69,16 @@ where
     }
 }
 
+pub fn tuple_to_values_4<A, B, C, D>((a, b, c, d): &(A, B, C, D)) -> Result<Vec<Value>, DxrError>
+where
+    A: ToDXR,
+    B: ToDXR,
+    C: ToDXR,
+    D: ToDXR,
+{
+    Ok(vec![a.to_dxr()?, b.to_dxr()?, c.to_dxr()?, d.to_dxr()?])
+}
+
 pub fn values_to_tuple_4<A, B, C, D>(values: &[Value]) -> Result<(A, B, C, D), DxrError>
 where
     A: FromDXR,
@@ -70,6 +97,17 @@ where
         },
         n => Err(DxrError::return_mismatch(n, 4)),
     }
+}
+
+pub fn tuple_to_values_5<A, B, C, D, E>((a, b, c, d, e): &(A, B, C, D, E)) -> Result<Vec<Value>, DxrError>
+where
+    A: ToDXR,
+    B: ToDXR,
+    C: ToDXR,
+    D: ToDXR,
+    E: ToDXR,
+{
+    Ok(vec![a.to_dxr()?, b.to_dxr()?, c.to_dxr()?, d.to_dxr()?, e.to_dxr()?])
 }
 
 pub fn values_to_tuple_5<A, B, C, D, E>(values: &[Value]) -> Result<(A, B, C, D, E), DxrError>
@@ -100,6 +138,24 @@ where
     }
 }
 
+pub fn tuple_to_values_6<A, B, C, D, E, F>((a, b, c, d, e, f): &(A, B, C, D, E, F)) -> Result<Vec<Value>, DxrError>
+where
+    A: ToDXR,
+    B: ToDXR,
+    C: ToDXR,
+    D: ToDXR,
+    E: ToDXR,
+    F: ToDXR,
+{
+    Ok(vec![
+        a.to_dxr()?,
+        b.to_dxr()?,
+        c.to_dxr()?,
+        d.to_dxr()?,
+        e.to_dxr()?,
+        f.to_dxr()?,
+    ])
+}
 
 pub fn values_to_tuple_6<A, B, C, D, E, F>(values: &[Value]) -> Result<(A, B, C, D, E, F), DxrError>
 where
@@ -130,6 +186,29 @@ where
         },
         n => Err(DxrError::return_mismatch(n, 6)),
     }
+}
+
+pub fn tuple_to_values_7<A, B, C, D, E, F, G>(
+    (a, b, c, d, e, f, g): &(A, B, C, D, E, F, G),
+) -> Result<Vec<Value>, DxrError>
+where
+    A: ToDXR,
+    B: ToDXR,
+    C: ToDXR,
+    D: ToDXR,
+    E: ToDXR,
+    F: ToDXR,
+    G: ToDXR,
+{
+    Ok(vec![
+        a.to_dxr()?,
+        b.to_dxr()?,
+        c.to_dxr()?,
+        d.to_dxr()?,
+        e.to_dxr()?,
+        f.to_dxr()?,
+        g.to_dxr()?,
+    ])
 }
 
 pub fn values_to_tuple_7<A, B, C, D, E, F, G>(values: &[Value]) -> Result<(A, B, C, D, E, F, G), DxrError>
@@ -164,6 +243,31 @@ where
         },
         n => Err(DxrError::return_mismatch(n, 7)),
     }
+}
+
+pub fn tuple_to_values_8<A, B, C, D, E, F, G, H>(
+    (a, b, c, d, e, f, g, h): &(A, B, C, D, E, F, G, H),
+) -> Result<Vec<Value>, DxrError>
+where
+    A: ToDXR,
+    B: ToDXR,
+    C: ToDXR,
+    D: ToDXR,
+    E: ToDXR,
+    F: ToDXR,
+    G: ToDXR,
+    H: ToDXR,
+{
+    Ok(vec![
+        a.to_dxr()?,
+        b.to_dxr()?,
+        c.to_dxr()?,
+        d.to_dxr()?,
+        e.to_dxr()?,
+        f.to_dxr()?,
+        g.to_dxr()?,
+        h.to_dxr()?,
+    ])
 }
 
 pub fn values_to_tuple_8<A, B, C, D, E, F, G, H>(values: &[Value]) -> Result<(A, B, C, D, E, F, G, H), DxrError>

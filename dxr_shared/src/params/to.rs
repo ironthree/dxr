@@ -1,8 +1,11 @@
 use std::collections::HashMap;
 
-use crate::chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc};
+
+use crate::error::DxrError;
+use crate::traits::{ToDXR, ToParams};
 use crate::types::Value;
-use crate::{DxrError, ToDXR, ToParams};
+use crate::util::*;
 
 // for simple values, use ToDXR to convert them
 
@@ -165,9 +168,7 @@ where
     B: ToDXR,
 {
     fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        let (a, b) = self;
-
-        Ok(vec![a.to_dxr()?, b.to_dxr()?])
+        tuple_to_values_2(self)
     }
 }
 
@@ -178,9 +179,7 @@ where
     C: ToDXR,
 {
     fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        let (a, b, c) = self;
-
-        Ok(vec![a.to_dxr()?, b.to_dxr()?, c.to_dxr()?])
+        tuple_to_values_3(self)
     }
 }
 
@@ -192,9 +191,7 @@ where
     D: ToDXR,
 {
     fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        let (a, b, c, d) = self;
-
-        Ok(vec![a.to_dxr()?, b.to_dxr()?, c.to_dxr()?, d.to_dxr()?])
+        tuple_to_values_4(self)
     }
 }
 
@@ -207,9 +204,7 @@ where
     E: ToDXR,
 {
     fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        let (a, b, c, d, e) = self;
-
-        Ok(vec![a.to_dxr()?, b.to_dxr()?, c.to_dxr()?, d.to_dxr()?, e.to_dxr()?])
+        tuple_to_values_5(self)
     }
 }
 
@@ -223,16 +218,7 @@ where
     F: ToDXR,
 {
     fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        let (a, b, c, d, e, f) = self;
-
-        Ok(vec![
-            a.to_dxr()?,
-            b.to_dxr()?,
-            c.to_dxr()?,
-            d.to_dxr()?,
-            e.to_dxr()?,
-            f.to_dxr()?,
-        ])
+        tuple_to_values_6(self)
     }
 }
 
@@ -247,17 +233,7 @@ where
     G: ToDXR,
 {
     fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        let (a, b, c, d, e, f, g) = self;
-
-        Ok(vec![
-            a.to_dxr()?,
-            b.to_dxr()?,
-            c.to_dxr()?,
-            d.to_dxr()?,
-            e.to_dxr()?,
-            f.to_dxr()?,
-            g.to_dxr()?,
-        ])
+        tuple_to_values_7(self)
     }
 }
 
@@ -273,18 +249,7 @@ where
     H: ToDXR,
 {
     fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        let (a, b, c, d, e, f, g, h) = self;
-
-        Ok(vec![
-            a.to_dxr()?,
-            b.to_dxr()?,
-            c.to_dxr()?,
-            d.to_dxr()?,
-            e.to_dxr()?,
-            f.to_dxr()?,
-            g.to_dxr()?,
-            h.to_dxr()?,
-        ])
+        tuple_to_values_8(self)
     }
 }
 

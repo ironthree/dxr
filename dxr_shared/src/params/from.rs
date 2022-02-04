@@ -6,6 +6,84 @@ use crate::traits::{FromDXR, FromParams};
 use crate::types::Value;
 use crate::util::*;
 
+// for simple values, just call the impls for singletons / one-tuples
+
+impl FromParams for Value {
+    fn from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (Self,) = FromParams::from_params(values)?;
+        Ok(value)
+    }
+}
+
+impl FromParams for i32 {
+    fn from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (Self,) = FromParams::from_params(values)?;
+        Ok(value)
+    }
+}
+
+#[cfg(feature = "i8")]
+impl FromParams for i64 {
+    fn from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (Self,) = FromParams::from_params(values)?;
+        Ok(value)
+    }
+}
+
+impl FromParams for bool {
+    fn from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (Self,) = FromParams::from_params(values)?;
+        Ok(value)
+    }
+}
+
+impl FromParams for String {
+    fn from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (Self,) = FromParams::from_params(values)?;
+        Ok(value)
+    }
+}
+
+impl FromParams for f64 {
+    fn from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (Self,) = FromParams::from_params(values)?;
+        Ok(value)
+    }
+}
+
+impl FromParams for DateTime<Utc> {
+    fn from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (Self,) = FromParams::from_params(values)?;
+        Ok(value)
+    }
+}
+
+impl FromParams for Vec<u8> {
+    fn from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (Self,) = FromParams::from_params(values)?;
+        Ok(value)
+    }
+}
+
+// handle optional values twice (not sure if this is a good idea):
+// - check whether there *is* a value
+// - check whether it is a <nil> value
+
+#[cfg(feature = "nil")]
+impl<T> FromParams for Option<T>
+where
+    T: FromDXR,
+{
+    fn from_params(values: &[Value]) -> Result<Self, DxrError> {
+        // one value: convert or return None if it is a <nil/> value
+        match values.len() {
+            1 => Ok(Option::from_dxr(values.get(0).unwrap())?),
+            0 => Ok(None),
+            n => Err(DxrError::return_mismatch(n, 1)),
+        }
+    }
+}
+
 // use collections as they are without unwrapping them
 
 impl<T> FromParams for Vec<T>
@@ -25,6 +103,20 @@ impl FromParams for () {
         }
     }
 }
+
+// treat maps as a single value of a struct
+
+impl<T> FromParams for HashMap<String, T>
+where
+    T: FromDXR,
+{
+    fn from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (Self,) = FromParams::from_params(values)?;
+        Ok(value)
+    }
+}
+
+// treat tuples as collections of values of different types
 
 impl<T> FromParams for (T,)
 where
