@@ -19,9 +19,6 @@ pub use dxr_shared::chrono;
 #[cfg(feature = "client")]
 pub use url;
 
-#[cfg(not(any(feature = "client", feature = "server")))]
-compile_error!("Either the 'client' or the 'server' feature needs to be enabled.");
-
 // client-specific modules
 #[cfg(feature = "client")]
 mod call;

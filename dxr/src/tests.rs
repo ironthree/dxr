@@ -1,6 +1,9 @@
 #![allow(clippy::unwrap_used)]
 
-use super::{FromDXR, ToDXR};
+use quickcheck::TestResult;
+use quickcheck_macros::quickcheck;
+
+use crate::{FromDXR, ToDXR};
 
 #[cfg(feature = "derive")]
 #[test]
@@ -13,31 +16,45 @@ fn roundtrip_struct_empty() {
 }
 
 #[cfg(feature = "derive")]
-#[test]
-fn roundtrip_struct() {
-    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
-    struct Test {
-        id: i32,
+#[quickcheck]
+fn roundtrip_struct(int: i32, string: String, boolean: bool, optional: Option<f64>) -> TestResult {
+    if matches!(optional, Some(f) if f.is_nan()) {
+        return TestResult::discard();
     }
 
-    let value = Test { id: 42 };
-    assert_eq!(Test::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
+    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
+    struct Test {
+        int: i32,
+        string: String,
+        boolean: bool,
+        optional: Option<f64>,
+    }
+
+    let value = Test {
+        int,
+        string: string.trim().to_string(),
+        boolean,
+        optional,
+    };
+    TestResult::from_bool(Test::from_dxr(&value.to_dxr().unwrap()).unwrap() == value)
 }
 
-#[test]
-fn roundtrip_array() {
-    let value = vec![-12, 42];
-    assert_eq!(<Vec<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
+#[quickcheck]
+fn roundtrip_array(a: i32, b: i32) -> bool {
+    let value = vec![a, b];
+    <Vec<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap() == value
 }
 
-#[test]
-fn roundtrip_option_some() {
-    let value = Some(42i32);
-    assert_eq!(<Option<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
-}
-
+#[cfg(feature = "nil")]
 #[test]
 fn roundtrip_option_none() {
     let value: Option<i32> = None;
     assert_eq!(<Option<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
+}
+
+#[cfg(feature = "nil")]
+#[quickcheck]
+fn roundtrip_option_some(a: i32) -> bool {
+    let value = Some(a);
+    <Option<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap() == value
 }
