@@ -3,33 +3,13 @@ use std::fmt::{Debug, Formatter};
 use std::net::SocketAddr;
 use std::sync::{Arc, RwLock};
 
-use dxr_shared::{Fault, FaultResponse, MethodCall, MethodResponse, Value};
-
 use axum::http::{header::CONTENT_LENGTH, header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode};
 use axum::routing::post;
 use axum::Router;
 
-/// trait describing server methods that can be called via XML-RPC
-///
-/// Handlers for XML-RPC method calls must implement this trait. It is already implemented for `fn`
-/// functions with the same arguments as the `handler` method in this trait.
-///
-/// For method handlers that need to keep track of some state (or handle authentication, etc.), just
-/// implement this trait for your own struct.
-pub trait Handler: Send + Sync {
-    /// This method is called for handling incoming XML-RPC method requests with the method name
-    /// registered for this [`Handler`], with the request's method parameters as its arguments.
-    fn handle(&mut self, params: &[Value], headers: &HeaderMap) -> Result<Value, Fault>;
-}
+use dxr_shared::{Fault, FaultResponse, MethodCall, MethodResponse, Value};
 
-/// type alias for plain handler functions without associated data
-pub type HandlerFn = fn(params: &[Value], headers: &HeaderMap) -> Result<Value, Fault>;
-
-impl Handler for HandlerFn {
-    fn handle(&mut self, params: &[Value], headers: &HeaderMap) -> Result<Value, Fault> {
-        self(params, headers)
-    }
-}
+use crate::handler::Handler;
 
 /// builder that takes parameters for constructing a [`Server`]
 pub struct ServerBuilder {

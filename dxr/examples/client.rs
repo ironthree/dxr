@@ -11,7 +11,7 @@ async fn main() -> Result<(), String> {
 
     let client = ClientBuilder::new(url).user_agent("dxr-client-example").build();
 
-    let request: Call<_, String> = Call::new(String::from("hello"), "DXR");
+    let request: Call<_, String> = Call::new("hello", "DXR");
     let result = client.call(request).await.map_err(|error| error.to_string())?;
 
     // print query result

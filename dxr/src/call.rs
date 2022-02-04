@@ -1,24 +1,23 @@
 use std::marker::PhantomData;
 
-use dxr_shared::{DxrError, FromDXR, ToParams};
-use dxr_shared::{MethodCall, Value};
+use dxr_shared::{DxrError, FromDXR, MethodCall, ToParams, Value};
 
 /// # XML-RPC method call
 ///
 /// This type describes the data associated with an XML-RPC method call on the client side. This
 /// includes the method name, method parameters, and expected return type.
 #[derive(Debug)]
-pub struct Call<P, R>
+pub struct Call<'a, P, R>
 where
     P: ToParams,
     R: FromDXR,
 {
-    method: String,
+    method: &'a str,
     params: P,
     retype: PhantomData<*const R>,
 }
 
-impl<P, R> Call<P, R>
+impl<'a, P, R> Call<'a, P, R>
 where
     P: ToParams,
     R: FromDXR,
@@ -37,7 +36,7 @@ where
     ///
     /// Note that this method will need type annotations to determine the type `R` of the expected
     /// return value.
-    pub fn new(method: String, params: P) -> Call<P, R> {
+    pub fn new(method: &'a str, params: P) -> Call<P, R> {
         Call {
             method,
             params,
@@ -50,7 +49,7 @@ where
     }
 
     fn method(&self) -> String {
-        String::from(&self.method)
+        String::from(self.method)
     }
 
     fn params(&self) -> Result<Vec<Value>, DxrError> {

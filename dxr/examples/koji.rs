@@ -42,13 +42,13 @@ async fn main() -> Result<(), String> {
 
     let client = ClientBuilder::new(url).user_agent("dxr-koji").build();
 
-    let request: Call<_, Build> = Call::new(String::from("getBuild"), "syncthing-1.1.0-1.fc30");
+    let request: Call<_, Build> = Call::new("getBuild", "syncthing-1.1.0-1.fc30");
     let result = client.call(request).await.map_err(|error| error.to_string())?;
 
     // print query result
     println!("{:#?}", result);
 
-    let request: Call<_, dxr::Value> = Call::new(String::from("getPackage"), ("syncthing", true));
+    let request: Call<_, dxr::Value> = Call::new("getPackage", ("syncthing", true));
     let result = client.call(request).await.map_err(|error| error.to_string())?;
 
     // print query result

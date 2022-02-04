@@ -48,6 +48,8 @@ quickcheck = "1.0"
 quickcheck_macros = "1.0"
 # example binaries
 tokio = { version = "1.14", features = ["macros", "rt-multi-thread"] }
+# async doctests
+tokio-test = "0.4.2"
 
 [features]
 default = ["dxr_shared/default", "client", "derive", "i8", "nil"]

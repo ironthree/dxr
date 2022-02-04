@@ -6,7 +6,7 @@ use dxr_shared::{DxrError, FaultResponse, FromDXR, MethodCall, MethodResponse, T
 use crate::call::Call;
 
 /// default value of the `User-Agent` HTTP header for XML-RPC requests
-pub const DEFAULT_USER_AGENT: &str = concat!("DXR Client v", env!("CARGO_PKG_VERSION"));
+pub const DEFAULT_USER_AGENT: &str = concat!("dxr-client-v", env!("CARGO_PKG_VERSION"));
 
 /// builder that takes parameters for constructing a [`Client`]
 #[derive(Debug)]
@@ -117,7 +117,7 @@ impl Client {
     ///
     /// Fault responses from the XML-RPC server are transparently converted into
     /// [`DxrError::ServerFault`] errors.
-    pub async fn call<P: ToParams, R: FromDXR>(&self, call: Call<P, R>) -> Result<R, DxrError> {
+    pub async fn call<P: ToParams, R: FromDXR>(&self, call: Call<'_, P, R>) -> Result<R, DxrError> {
         let request = call.as_xml_rpc()?;
 
         // construct HTTP body and content-length header from request
