@@ -5,8 +5,7 @@
 [![crates.io](https://img.shields.io/crates/l/dxr.svg)](https://crates.io/crates/dxr/)
 [![docs.rs](https://docs.rs/dxr/badge.svg)](https://docs.rs/dxr/)
 
-This repository contains work-in-progress crates for writing XML-RPC API clients and
-servers in Rust.
+The dxr project provides crates for writing XML-RPC API clients and servers in Rust.
 
 Documentation of the public API and a tutorial-style introduction are available on
 the [docs.rs](https://docs.rs/dxr/) page for this crate. Additionally, there are a few
