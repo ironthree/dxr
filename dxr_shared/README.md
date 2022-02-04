@@ -1,9 +1,9 @@
 # DXR: declarative XML-RPC (shared traits, types, and implementations)
 
-[![crates.io](https://img.shields.io/crates/v/dxr_derive.svg)](https://crates.io/crates/dxr_derive/)
-[![crates.io](https://img.shields.io/crates/d/dxr_derive.svg)](https://crates.io/crates/dxr_derive/)
-[![crates.io](https://img.shields.io/crates/l/dxr_derive.svg)](https://crates.io/crates/dxr_derive/)
-[![docs.rs](https://docs.rs/dxr_derive/badge.svg)](https://docs.rs/dxr_derive/)
+[![crates.io](https://img.shields.io/crates/v/dxr_shared.svg)](https://crates.io/crates/dxr_shared/)
+[![crates.io](https://img.shields.io/crates/d/dxr_shared.svg)](https://crates.io/crates/dxr_shared/)
+[![crates.io](https://img.shields.io/crates/l/dxr_shared.svg)](https://crates.io/crates/dxr_shared/)
+[![docs.rs](https://docs.rs/dxr_shared/badge.svg)](https://docs.rs/dxr_shared/)
 
 The dxr project provides crates for writing XML-RPC API clients and servers in Rust.
 
