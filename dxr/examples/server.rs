@@ -10,27 +10,39 @@
 //! >>> import xmlrpc.client
 //! >>> proxy = xmlrpc.client.ServerProxy("http://0.0.0.0:3000/")
 //! >>> proxy.hello("DXR")
-//! 'Hello, DXR!'
+//! 'Handler type says: Hello, DXR!'
+//! >>> proxy.hello2("DXR")
+//! 'Handler function says: Hello, DXR!'
 //! ```
 
 use axum::http::HeaderMap;
-use dxr::{Fault, FromParams, Handler, ServerBuilder, ToDXR, Value};
+use dxr::{Fault, FromParams, Handler, HandlerFn, ServerBuilder, ToDXR, Value};
 
-struct HelloHandler {}
+struct HelloHandlerType {}
 
-impl Handler for HelloHandler {
+impl Handler for HelloHandlerType {
     fn handle(&self, params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
         let name = String::from_params(params)?;
-        format!("Hello, {}!", name).to_dxr().map_err(|error| error.into())
+        format!("Handler type says: Hello, {}!", name)
+            .to_dxr()
+            .map_err(|error| error.into())
     }
+}
+
+fn hello_handler_fn(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
+    let name = String::from_params(params)?;
+    format!("Handler function says: Hello, {}!", name)
+        .to_dxr()
+        .map_err(|error| error.into())
 }
 
 #[tokio::main]
 async fn main() {
-    let hello_handler = HelloHandler {};
+    let hello_handler = HelloHandlerType {};
 
     let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
         .add_method("hello", Box::new(hello_handler))
+        .add_method("hello2", Box::new(hello_handler_fn as HandlerFn))
         .build();
 
     server.serve().await.expect("Failed to run server.")

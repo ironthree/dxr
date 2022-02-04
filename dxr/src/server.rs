@@ -16,6 +16,15 @@ pub trait Handler: Send + Sync {
     fn handle(&self, params: &[Value], headers: &HeaderMap) -> Result<Value, Fault>;
 }
 
+/// type alias for plain handler functions without associated data
+pub type HandlerFn = fn(params: &[Value], headers: &HeaderMap) -> Result<Value, Fault>;
+
+impl Handler for HandlerFn {
+    fn handle(&self, params: &[Value], headers: &HeaderMap) -> Result<Value, Fault> {
+        self(params, headers)
+    }
+}
+
 /// builder that takes parameters for constructing a [`Server`]
 pub struct ServerBuilder {
     addr: SocketAddr,
