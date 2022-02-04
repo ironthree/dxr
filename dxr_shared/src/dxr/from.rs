@@ -5,6 +5,7 @@ use chrono::{DateTime, Utc};
 use crate::error::DxrError;
 use crate::traits::FromDXR;
 use crate::types::{Type, Value};
+use crate::util::*;
 
 impl FromDXR for Value {
     fn from_dxr(value: &Value) -> Result<Value, DxrError> {
@@ -152,15 +153,7 @@ where
     fn from_dxr(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
-
-            match values.len() {
-                1 => {
-                    let value = values.get(0).unwrap();
-
-                    Ok((T::from_dxr(value)?,))
-                },
-                n => Err(DxrError::return_mismatch(n, 1)),
-            }
+            values_to_tuple_1(values)
         } else {
             Err(DxrError::wrong_type(value.inner().name(), "array"))
         }
@@ -175,16 +168,7 @@ where
     fn from_dxr(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
-
-            match values.len() {
-                2 => {
-                    let a = values.get(0).unwrap();
-                    let b = values.get(1).unwrap();
-
-                    Ok((A::from_dxr(a)?, B::from_dxr(b)?))
-                },
-                n => Err(DxrError::return_mismatch(n, 2)),
-            }
+            values_to_tuple_2(values)
         } else {
             Err(DxrError::wrong_type(value.inner().name(), "array"))
         }
@@ -200,17 +184,7 @@ where
     fn from_dxr(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
-
-            match values.len() {
-                3 => {
-                    let a = values.get(0).unwrap();
-                    let b = values.get(1).unwrap();
-                    let c = values.get(2).unwrap();
-
-                    Ok((A::from_dxr(a)?, B::from_dxr(b)?, C::from_dxr(c)?))
-                },
-                n => Err(DxrError::return_mismatch(n, 3)),
-            }
+            values_to_tuple_3(values)
         } else {
             Err(DxrError::wrong_type(value.inner().name(), "array"))
         }
@@ -227,18 +201,7 @@ where
     fn from_dxr(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
-
-            match values.len() {
-                4 => {
-                    let a = values.get(0).unwrap();
-                    let b = values.get(1).unwrap();
-                    let c = values.get(2).unwrap();
-                    let d = values.get(3).unwrap();
-
-                    Ok((A::from_dxr(a)?, B::from_dxr(b)?, C::from_dxr(c)?, D::from_dxr(d)?))
-                },
-                n => Err(DxrError::return_mismatch(n, 4)),
-            }
+            values_to_tuple_4(values)
         } else {
             Err(DxrError::wrong_type(value.inner().name(), "array"))
         }
@@ -256,25 +219,7 @@ where
     fn from_dxr(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
-
-            match values.len() {
-                5 => {
-                    let a = values.get(0).unwrap();
-                    let b = values.get(1).unwrap();
-                    let c = values.get(2).unwrap();
-                    let d = values.get(3).unwrap();
-                    let e = values.get(4).unwrap();
-
-                    Ok((
-                        A::from_dxr(a)?,
-                        B::from_dxr(b)?,
-                        C::from_dxr(c)?,
-                        D::from_dxr(d)?,
-                        E::from_dxr(e)?,
-                    ))
-                },
-                n => Err(DxrError::return_mismatch(n, 5)),
-            }
+            values_to_tuple_5(values)
         } else {
             Err(DxrError::wrong_type(value.inner().name(), "array"))
         }
@@ -293,27 +238,7 @@ where
     fn from_dxr(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
-
-            match values.len() {
-                6 => {
-                    let a = values.get(0).unwrap();
-                    let b = values.get(1).unwrap();
-                    let c = values.get(2).unwrap();
-                    let d = values.get(3).unwrap();
-                    let e = values.get(4).unwrap();
-                    let f = values.get(5).unwrap();
-
-                    Ok((
-                        A::from_dxr(a)?,
-                        B::from_dxr(b)?,
-                        C::from_dxr(c)?,
-                        D::from_dxr(d)?,
-                        E::from_dxr(e)?,
-                        F::from_dxr(f)?,
-                    ))
-                },
-                n => Err(DxrError::return_mismatch(n, 6)),
-            }
+            values_to_tuple_6(values)
         } else {
             Err(DxrError::wrong_type(value.inner().name(), "array"))
         }
@@ -333,29 +258,7 @@ where
     fn from_dxr(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
-
-            match values.len() {
-                7 => {
-                    let a = values.get(0).unwrap();
-                    let b = values.get(1).unwrap();
-                    let c = values.get(2).unwrap();
-                    let d = values.get(3).unwrap();
-                    let e = values.get(4).unwrap();
-                    let f = values.get(5).unwrap();
-                    let g = values.get(6).unwrap();
-
-                    Ok((
-                        A::from_dxr(a)?,
-                        B::from_dxr(b)?,
-                        C::from_dxr(c)?,
-                        D::from_dxr(d)?,
-                        E::from_dxr(e)?,
-                        F::from_dxr(f)?,
-                        G::from_dxr(g)?,
-                    ))
-                },
-                n => Err(DxrError::return_mismatch(n, 7)),
-            }
+            values_to_tuple_7(values)
         } else {
             Err(DxrError::wrong_type(value.inner().name(), "array"))
         }
@@ -376,31 +279,7 @@ where
     fn from_dxr(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
-
-            match values.len() {
-                8 => {
-                    let a = values.get(0).unwrap();
-                    let b = values.get(1).unwrap();
-                    let c = values.get(2).unwrap();
-                    let d = values.get(3).unwrap();
-                    let e = values.get(4).unwrap();
-                    let f = values.get(5).unwrap();
-                    let g = values.get(6).unwrap();
-                    let h = values.get(7).unwrap();
-
-                    Ok((
-                        A::from_dxr(a)?,
-                        B::from_dxr(b)?,
-                        C::from_dxr(c)?,
-                        D::from_dxr(d)?,
-                        E::from_dxr(e)?,
-                        F::from_dxr(f)?,
-                        G::from_dxr(g)?,
-                        H::from_dxr(h)?,
-                    ))
-                },
-                n => Err(DxrError::return_mismatch(n, 8)),
-            }
+            values_to_tuple_8(values)
         } else {
             Err(DxrError::wrong_type(value.inner().name(), "array"))
         }

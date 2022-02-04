@@ -30,6 +30,8 @@ pub use traits::*;
 mod types;
 pub use types::{FaultResponse, MethodCall, MethodResponse, Value};
 
+mod util;
+
 /// date & time format used by the XML-RPC `dateTime.iso8601` value type
 pub const XML_RPC_DATE_FORMAT: &str = "%Y%m%dT%H:%M:%S";
 
