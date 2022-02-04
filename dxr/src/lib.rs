@@ -41,7 +41,7 @@
 //! # }
 //! ```
 //!
-//! The [examples/client.rs] file contains a complete implementation of a simple client binary,
+//! The `examples/client.rs` file contains a complete implementation of a simple client binary,
 //! which can be used to issue an RPC request to the server provided by the server example.
 //!
 //! ## Server interface
@@ -85,14 +85,14 @@
 //! ```no_run
 //! # #[cfg(feature = "server")] {
 //! # tokio_test::block_on(async {
-//! use dxr::ServerBuilder;
-//! let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap()).build();
+//! # use dxr::ServerBuilder;
+//! # let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap()).build();
 //! server.serve().await.unwrap();
 //! # })
 //! # }
 //! ```
 //!
-//! The [examples/server.rs] file contains an implementation of a simple server binary, which
+//! The `examples/server.rs` file contains an implementation of a simple server binary, which
 //! provides a `hello(String)` method that returns a welcome message, and a `countme()` method that
 //! returns the number of times the `countme()` method has been called since the server was started.
 //!
