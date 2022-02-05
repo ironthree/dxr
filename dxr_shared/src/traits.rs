@@ -26,7 +26,13 @@ pub trait FromParams: Sized {
     /// The conversion aims to do the "expected" thing, depending on the input XML-RPC value type
     /// and the targeted Rust type.
     ///
-    /// TODO: FIXME more docs how lists are handled
+    /// - Tuples with *N* members of potentially heterogeneous types are converted from lists with
+    ///   length *N*. This returns an error if the lengths don't match, or if any of the target
+    ///   types don't match.
+    /// - Simple values are treated the same as singletons / one-tuples, i.e. this returns an error
+    ///   if the length of the parameter list is not one.
+    /// - Lists of homogeneously typed values are not checked for length, but only converted to the
+    ///   target type. This returns an error if any list value does not match the target type.
     ///
     /// This trait can be used for argument conversion in XML-RPC servers.
     fn from_params(values: &[Value]) -> Result<Self, DxrError>;
