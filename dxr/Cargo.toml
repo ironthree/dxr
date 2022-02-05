@@ -27,6 +27,11 @@ name = "server"
 path = "examples/server.rs"
 required-features = ["server"]
 
+[[test]]
+name = "echo"
+path = "tests/echo.rs"
+required-features = ["derive", "client", "server", "i8", "nil"]
+
 [dependencies]
 # default features
 dxr_shared = { path = "../dxr_shared", version = "0.1.0" }
@@ -46,9 +51,9 @@ axum = { version = "0.4.5", optional = true }
 [dev-dependencies]
 quickcheck = "1.0"
 quickcheck_macros = "1.0"
-# example binaries
+# used for example binaries and integration tests
 tokio = { version = "1.14", features = ["macros", "rt-multi-thread"] }
-# async doctests
+# used for compiling async doctests
 tokio-test = "0.4.2"
 
 [features]
