@@ -23,7 +23,7 @@ struct TestStruct {
 }
 
 #[tokio::test]
-async fn test() {
+async fn echo() {
     let builder =
         ServerBuilder::new("0.0.0.0:3000".parse().unwrap()).add_method("echo", Box::new(echo_handler as HandlerFn));
     let _dbg_str = format!("{:#?}", &builder);
@@ -73,6 +73,12 @@ async fn test() {
         // datetime
         let value = Utc::now().round_subsecs(0);
         let call: Call<_, (DateTime<Utc>,)> = Call::new("echo", (value,));
+        let r = client.call(call).await.unwrap();
+        assert_eq!((value,), r);
+
+        // bytes
+        let value = b"HELLOWORLD".to_vec();
+        let call: Call<_, (Vec<u8>,)> = Call::new("echo", (value.as_slice(),));
         let r = client.call(call).await.unwrap();
         assert_eq!((value,), r);
 
