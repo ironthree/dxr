@@ -73,7 +73,8 @@
 //!
 //! use dxr::ServerBuilder;
 //! let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
-//!     .add_method("hello", Box::new(hello_handler as HandlerFn)).build();
+//!     .add_method("hello", Box::new(hello_handler as HandlerFn))
+//!     .build();
 //! # }
 //! ```
 //!
