@@ -4,6 +4,13 @@ use crate::error::DxrError;
 use crate::traits::{FromDXR, ToDXR};
 use crate::types::Value;
 
+pub fn tuple_to_values_1<T>((v,): &(T,)) -> Result<Vec<Value>, DxrError>
+where
+    T: ToDXR,
+{
+    Ok(vec![v.to_dxr()?])
+}
+
 pub fn values_to_tuple_1<T>(values: &[Value]) -> Result<(T,), DxrError>
 where
     T: FromDXR,

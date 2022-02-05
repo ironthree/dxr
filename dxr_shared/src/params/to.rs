@@ -158,7 +158,7 @@ where
     T: ToDXR,
 {
     fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+        tuple_to_values_1(self)
     }
 }
 

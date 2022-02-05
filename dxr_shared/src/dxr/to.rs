@@ -173,7 +173,7 @@ where
     T: ToDXR,
 {
     fn to_dxr(&self) -> Result<Value, DxrError> {
-        Ok(Value::array(Array::new(vec![self.to_dxr()?])))
+        Ok(Value::array(Array::new(tuple_to_values_1(self)?)))
     }
 }
 
