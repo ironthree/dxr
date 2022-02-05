@@ -4,8 +4,7 @@
 use std::collections::HashMap;
 use std::time::Duration;
 
-use axum::http::HeaderMap;
-
+use dxr::axum::http::HeaderMap;
 use dxr::chrono::{DateTime, SubsecRound, Utc};
 use dxr::{Call, ClientBuilder, DxrError, Fault, FromDXR, HandlerFn, ServerBuilder, ToDXR, Value};
 

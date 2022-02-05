@@ -2,8 +2,8 @@
 //!
 //! Run this example to test interaction with the `server` example.
 
+use dxr::url::Url;
 use dxr::{Call, ClientBuilder};
-use url::Url;
 
 #[tokio::main]
 async fn main() -> Result<(), String> {

@@ -63,7 +63,7 @@
 //!
 //! ```
 //! # #[cfg(feature = "server")] {
-//! use axum::http::HeaderMap;
+//! use dxr::axum::http::HeaderMap;
 //! use dxr::{Fault, FromParams, HandlerFn, ToDXR, Value};
 //!
 //! fn hello_handler(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
@@ -128,9 +128,13 @@ pub use dxr_shared::{DxrError, Fault, FromDXR, FromParams, ToDXR, ToParams, Valu
 // re-export chrono: DateTime / Utc are part of the public API
 pub use dxr_shared::chrono;
 
-// re-export url::Url: it is part of the public client API
+// re-export url: it is part of the public client API
 #[cfg(feature = "client")]
 pub use url;
+
+// re-export axum: it is part of the public server API
+#[cfg(feature = "server")]
+pub use axum;
 
 // client-specific modules
 #[cfg(feature = "client")]

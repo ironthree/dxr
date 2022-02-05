@@ -19,7 +19,7 @@
 //! 2
 //! ```
 
-use axum::http::HeaderMap;
+use dxr::axum::http::HeaderMap;
 use dxr::{Fault, FromParams, Handler, HandlerFn, ServerBuilder, ToDXR, Value};
 
 struct CounterHandler {
