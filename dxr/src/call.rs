@@ -14,7 +14,7 @@ where
 {
     method: &'a str,
     params: P,
-    retype: PhantomData<*const R>,
+    retype: PhantomData<R>,
 }
 
 impl<'a, P, R> Call<'a, P, R>
