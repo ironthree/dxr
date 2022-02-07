@@ -7,7 +7,7 @@ use axum::http::{header::CONTENT_LENGTH, header::CONTENT_TYPE, HeaderMap, Header
 use axum::routing::post;
 use axum::Router;
 
-use dxr_shared::{Fault, FaultResponse, MethodCall, MethodResponse, Value};
+use dxr_shared::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Value};
 
 use crate::handler::Handler;
 
@@ -90,7 +90,11 @@ impl Server {
 
                     let call: MethodCall = match quick_xml::de::from_str(&body) {
                         Ok(call) => call,
-                        Err(error) => return fault_to_response(400, &format!("Invalid request input: {}", error)),
+                        Err(error) => {
+                            let e = DxrError::invalid_data(error.to_string());
+                            let f = Fault::new(400, e.to_string());
+                            return fault_to_response(f.code(), f.string());
+                        },
                     };
 
                     let mut handler = match self.handlers.get(call.name()) {

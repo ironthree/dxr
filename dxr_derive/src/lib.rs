@@ -31,6 +31,7 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
 
     let name = input.ident;
+    let name_str = name.to_string();
     let dxr = use_dxr();
 
     for param in &mut input.generics.params {
@@ -56,7 +57,7 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
                     let ident_str = ident.to_string();
                     field_impls.push(quote! {
                         #ident: <#stype as FromDXR>::from_dxr(map.get(#ident_str)
-                            .ok_or_else(|| DxrError::missing_field(#ident_str))?)?,
+                            .ok_or_else(|| DxrError::missing_field(#name_str, #ident_str))?)?,
                     });
                 }
             },

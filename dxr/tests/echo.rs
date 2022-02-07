@@ -6,7 +6,7 @@ use std::time::Duration;
 
 use dxr::axum::http::HeaderMap;
 use dxr::chrono::{DateTime, SubsecRound, Utc};
-use dxr::{Call, ClientBuilder, DxrError, Fault, FromDXR, HandlerFn, ServerBuilder, ToDXR, Value};
+use dxr::{Call, ClientBuilder, Fault, FromDXR, HandlerFn, ServerBuilder, ToDXR, Value};
 
 fn echo_handler(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
     Ok(params.to_dxr()?)
@@ -170,10 +170,7 @@ async fn echo() {
         let value = -12i32;
         let call: Call<(i32,), (String,)> = Call::new("echo", (value,));
         let _dbg_str = format!("{:#?}", &call);
-        assert!(matches!(
-            client.call(call).await.unwrap_err(),
-            DxrError::WrongType { .. }
-        ));
+        assert!(client.call(call).await.unwrap_err().is_wrong_type());
     };
 
     tokio::spawn(calls()).await.unwrap();
