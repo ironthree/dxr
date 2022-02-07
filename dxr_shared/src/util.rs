@@ -21,7 +21,7 @@ where
 
             Ok((T::from_dxr(value)?,))
         },
-        n => Err(DxrError::return_mismatch(n, 1)),
+        n => Err(DxrError::parameter_mismatch(n, 1)),
     }
 }
 
@@ -45,7 +45,7 @@ where
 
             Ok((A::from_dxr(a)?, B::from_dxr(b)?))
         },
-        n => Err(DxrError::return_mismatch(n, 2)),
+        n => Err(DxrError::parameter_mismatch(n, 2)),
     }
 }
 
@@ -72,7 +72,7 @@ where
 
             Ok((A::from_dxr(a)?, B::from_dxr(b)?, C::from_dxr(c)?))
         },
-        n => Err(DxrError::return_mismatch(n, 3)),
+        n => Err(DxrError::parameter_mismatch(n, 3)),
     }
 }
 
@@ -102,7 +102,7 @@ where
 
             Ok((A::from_dxr(a)?, B::from_dxr(b)?, C::from_dxr(c)?, D::from_dxr(d)?))
         },
-        n => Err(DxrError::return_mismatch(n, 4)),
+        n => Err(DxrError::parameter_mismatch(n, 4)),
     }
 }
 
@@ -141,7 +141,7 @@ where
                 E::from_dxr(e)?,
             ))
         },
-        n => Err(DxrError::return_mismatch(n, 5)),
+        n => Err(DxrError::parameter_mismatch(n, 5)),
     }
 }
 
@@ -191,7 +191,7 @@ where
                 F::from_dxr(f)?,
             ))
         },
-        n => Err(DxrError::return_mismatch(n, 6)),
+        n => Err(DxrError::parameter_mismatch(n, 6)),
     }
 }
 
@@ -248,7 +248,7 @@ where
                 G::from_dxr(g)?,
             ))
         },
-        n => Err(DxrError::return_mismatch(n, 7)),
+        n => Err(DxrError::parameter_mismatch(n, 7)),
     }
 }
 
@@ -310,7 +310,7 @@ where
                 H::from_dxr(h)?,
             ))
         },
-        n => Err(DxrError::return_mismatch(n, 8)),
+        n => Err(DxrError::parameter_mismatch(n, 8)),
     }
 }
 

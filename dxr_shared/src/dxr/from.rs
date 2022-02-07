@@ -137,7 +137,7 @@ impl FromDXR for () {
 
                 match values.len() {
                     0 => Ok(()),
-                    n => Err(DxrError::return_mismatch(n, 0)),
+                    n => Err(DxrError::parameter_mismatch(n, 0)),
                 }
             },
             Type::Nil => Ok(()),

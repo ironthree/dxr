@@ -24,15 +24,11 @@ struct TestStruct {
 
 #[tokio::test]
 async fn echo() {
-    let builder =
-        ServerBuilder::new("0.0.0.0:3000".parse().unwrap()).add_method("echo", Box::new(echo_handler as HandlerFn));
-    let _dbg_str = format!("{:#?}", &builder);
-
-    let server = builder.build();
-    let _dbg_str = format!("{:#?}", &server);
+    let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
+        .add_method("echo", Box::new(echo_handler as HandlerFn))
+        .build();
 
     let serve = tokio::spawn(server.serve());
-
     tokio::time::sleep(Duration::from_secs(1)).await;
 
     let calls = || async {
@@ -112,7 +108,6 @@ async fn echo() {
             option: Some(-21),
         };
         let call: Call<_, (TestStruct,)> = Call::new("echo", (value.clone(),));
-        let _dbg_str = format!("{:#?}", &call);
         let r = client.call(call).await.unwrap();
         assert_eq!((value,), r);
 
@@ -120,57 +115,54 @@ async fn echo() {
         let value = (1, 2);
         type Pair = (i32, i32);
         let call: Call<Pair, Pair> = Call::new("echo", value);
-        let _dbg_str = format!("{:#?}", &call);
         let r = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3);
         type Triple = (i32, i32, i32);
         let call: Call<Triple, Triple> = Call::new("echo", value);
-        let _dbg_str = format!("{:#?}", &call);
         let r = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3, 4);
         type Quadruple = (i32, i32, i32, i32);
         let call: Call<Quadruple, Quadruple> = Call::new("echo", value);
-        let _dbg_str = format!("{:#?}", &call);
         let r = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3, 4, 5);
         type Quintuple = (i32, i32, i32, i32, i32);
         let call: Call<Quintuple, Quintuple> = Call::new("echo", value);
-        let _dbg_str = format!("{:#?}", &call);
         let r = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3, 4, 5, 6);
         type Sextuple = (i32, i32, i32, i32, i32, i32);
         let call: Call<Sextuple, Sextuple> = Call::new("echo", value);
-        let _dbg_str = format!("{:#?}", &call);
         let r = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3, 4, 5, 6, 7);
         type Septuple = (i32, i32, i32, i32, i32, i32, i32);
         let call: Call<Septuple, Septuple> = Call::new("echo", value);
-        let _dbg_str = format!("{:#?}", &call);
         let r = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3, 4, 5, 6, 7, 8);
         type Octuple = (i32, i32, i32, i32, i32, i32, i32, i32);
         let call: Call<Octuple, Octuple> = Call::new("echo", value);
-        let _dbg_str = format!("{:#?}", &call);
         let r = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // type mismatch
         let value = -12i32;
         let call: Call<(i32,), (String,)> = Call::new("echo", (value,));
-        let _dbg_str = format!("{:#?}", &call);
         assert!(client.call(call).await.unwrap_err().is_wrong_type());
+
+        // parameter number mismatch
+        let value = vec![2i32, 3i32];
+        let call: Call<_, (i32, i32, i32)> = Call::new("echo", value);
+        assert!(client.call(call).await.unwrap_err().is_parameter_mismatch());
     };
 
     tokio::spawn(calls()).await.unwrap();

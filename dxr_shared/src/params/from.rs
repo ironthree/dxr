@@ -79,7 +79,7 @@ where
         match values.len() {
             1 => Ok(Option::from_dxr(values.get(0).unwrap())?),
             0 => Ok(None),
-            n => Err(DxrError::return_mismatch(n, 1)),
+            n => Err(DxrError::parameter_mismatch(n, 1)),
         }
     }
 }
@@ -99,7 +99,7 @@ impl FromParams for () {
     fn from_params(values: &[Value]) -> Result<Self, DxrError> {
         match values.len() {
             0 => Ok(()),
-            n => Err(DxrError::return_mismatch(n, 0)),
+            n => Err(DxrError::parameter_mismatch(n, 0)),
         }
     }
 }

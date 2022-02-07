@@ -28,8 +28,18 @@ path = "examples/server.rs"
 required-features = ["server"]
 
 [[test]]
-name = "echo"
-path = "tests/echo.rs"
+name = "adder"
+path = "tests/adder.rs"
+required-features = ["derive", "client", "server", "i8", "nil"]
+
+[[test]]
+name = "echo_any"
+path = "tests/echo_any.rs"
+required-features = ["derive", "client", "server", "i8", "nil"]
+
+[[test]]
+name = "echo_one"
+path = "tests/echo_one.rs"
 required-features = ["derive", "client", "server", "i8", "nil"]
 
 [dependencies]
@@ -52,7 +62,7 @@ axum = { version = "0.4.5", optional = true }
 quickcheck = "1.0"
 quickcheck_macros = "1.0"
 # used for example binaries and integration tests
-tokio = { version = "1.14", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }
 # used for compiling async doctests
 tokio-test = "0.4.2"
 

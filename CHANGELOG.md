@@ -1,3 +1,16 @@
+## Unreleased 0.2
+
+Added:
+
+- convenience methods for checking the type of `DxrError` and extracting the inner error value
+- more client-server roundtrip tests (for ~80% test coverage across all three crates) 
+
+Changed:
+
+- renamed `DxrError::ReturnMismatch` to `DxrError::ParameterMismatch` to better reflect what it
+  actually means (unexpected number of parameters, whether they are method call arguments or
+  return values)
+
 ## Release 0.1.1
 
 This version fixes some minor issues that were discovered since the last release.

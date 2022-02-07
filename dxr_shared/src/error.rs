@@ -21,10 +21,10 @@ pub enum DxrError {
         /// name of the missing struct field
         field: Cow<'static, str>,
     },
-    /// error variant describing mismatched return types
-    #[error("Type mismatch: got {} values, expected {}", .argument, .expected)]
-    ReturnMismatch {
-        /// number of returned values
+    #[error("Parameter mismatch: got {} values, expected {}", .argument, .expected)]
+    /// error variant describing value number mismatch
+    ParameterMismatch {
+        /// number of received values
         argument: usize,
         /// number of expected values
         expected: usize,
@@ -91,21 +91,21 @@ impl DxrError {
         }
     }
 
-    /// construct a [`DxrError`] for unexpected number of returned values
-    pub fn return_mismatch(argument: usize, expected: usize) -> DxrError {
-        DxrError::ReturnMismatch { argument, expected }
+    /// construct a [`DxrError`] for a parameter number mismatch
+    pub fn parameter_mismatch(argument: usize, expected: usize) -> DxrError {
+        DxrError::ParameterMismatch { argument, expected }
     }
 
     /// check if a given [`DxrError`] was raised for unexpected number of return values
-    pub fn is_return_mismatch(&self) -> bool {
-        matches!(self, DxrError::ReturnMismatch { .. })
+    pub fn is_parameter_mismatch(&self) -> bool {
+        matches!(self, DxrError::ParameterMismatch { .. })
     }
 
-    /// check for [`DxrError::ReturnMismatch`] and return the inner error in case of a match
+    /// check for [`DxrError::ParameterMismatch`] and return the inner error in case of a match
     ///
     /// The returned value is a tuple of the numbers of (received arguments, expected arguments).
-    pub fn as_return_mismatch(&self) -> Option<(usize, usize)> {
-        if let DxrError::ReturnMismatch { argument, expected } = self {
+    pub fn as_parameter_mismatch(&self) -> Option<(usize, usize)> {
+        if let DxrError::ParameterMismatch { argument, expected } = self {
             Some((*argument, *expected))
         } else {
             None
@@ -161,11 +161,11 @@ impl DxrError {
 impl From<DxrError> for Fault {
     fn from(error: DxrError) -> Self {
         match error {
-            DxrError::ReturnMismatch { .. } => Fault::new(400, error.to_string()),
-            DxrError::WrongType { .. } => Fault::new(400, error.to_string()),
             DxrError::InvalidData { .. } => Fault::new(400, error.to_string()),
             DxrError::MissingField { .. } => Fault::new(400, error.to_string()),
+            DxrError::ParameterMismatch { .. } => Fault::new(400, error.to_string()),
             DxrError::ServerFault { fault } => fault,
+            DxrError::WrongType { .. } => Fault::new(400, error.to_string()),
         }
     }
 }
