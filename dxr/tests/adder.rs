@@ -3,7 +3,18 @@
 use std::time::Duration;
 
 use dxr::axum::http::HeaderMap;
-use dxr::{Call, ClientBuilder, Fault, FromParams, HandlerFn, ServerBuilder, ToDXR, Value};
+use dxr::{
+    Call,
+    ClientBuilder,
+    Fault,
+    FromParams,
+    HandlerFn,
+    ServerBuilder,
+    ServerOffSwitch,
+    ToDXR,
+    TokioOffSwitch,
+    Value,
+};
 
 fn add_handler(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
     let (a, b): (i32, i32) = FromParams::from_params(params)?;
@@ -12,7 +23,10 @@ fn add_handler(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
 
 #[tokio::test]
 async fn adder() {
+    let off_switch = TokioOffSwitch::new();
+
     let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
+        .add_off_switch(Box::new(off_switch.clone()))
         .add_method("add", Box::new(add_handler as HandlerFn))
         .build();
 
@@ -61,6 +75,6 @@ async fn adder() {
 
     tokio::spawn(calls()).await.unwrap();
 
-    serve.abort();
-    assert!(serve.await.unwrap_err().is_cancelled());
+    off_switch.flip();
+    serve.await.unwrap().unwrap();
 }

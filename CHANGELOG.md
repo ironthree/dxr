@@ -4,6 +4,7 @@ Added:
 
 - convenience methods for checking the type of `DxrError` and extracting the inner error value
 - more client-server roundtrip tests (for ~80% test coverage across all three crates) 
+- add support for implementing / requesting graceful server shutdown 
 
 Changed:
 

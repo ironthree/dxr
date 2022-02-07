@@ -128,30 +128,22 @@ pub use dxr_shared::{DxrError, Fault, FromDXR, FromParams, ToDXR, ToParams, Valu
 // re-export chrono: DateTime / Utc are part of the public API
 pub use dxr_shared::chrono;
 
-// re-export url: it is part of the public client API
+// re-export url: public client API
 #[cfg(feature = "client")]
 pub use url;
 
-// re-export axum: it is part of the public server API
+// re-export async-trait: public server API
+#[cfg(feature = "server")]
+pub use async_trait;
+
+// re-export axum: public server API
 #[cfg(feature = "server")]
 pub use axum;
-
-// client-specific modules
-#[cfg(feature = "client")]
-mod call;
-#[cfg(feature = "client")]
-pub use call::*;
 
 #[cfg(feature = "client")]
 mod client;
 #[cfg(feature = "client")]
 pub use client::*;
-
-// server-specific modules
-#[cfg(feature = "server")]
-mod handler;
-#[cfg(feature = "server")]
-pub use handler::*;
 
 #[cfg(feature = "server")]
 mod server;

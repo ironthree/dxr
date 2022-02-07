@@ -6,7 +6,18 @@ use std::time::Duration;
 
 use dxr::axum::http::HeaderMap;
 use dxr::chrono::{DateTime, SubsecRound, Utc};
-use dxr::{Call, ClientBuilder, Fault, FromDXR, HandlerFn, ServerBuilder, ToDXR, Value};
+use dxr::{
+    Call,
+    ClientBuilder,
+    Fault,
+    FromDXR,
+    HandlerFn,
+    ServerBuilder,
+    ServerOffSwitch,
+    ToDXR,
+    TokioOffSwitch,
+    Value,
+};
 
 fn echo_handler(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
     Ok(params.to_dxr()?)
@@ -24,7 +35,10 @@ struct TestStruct {
 
 #[tokio::test]
 async fn echo() {
+    let off_switch = TokioOffSwitch::new();
+
     let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
+        .add_off_switch(Box::new(off_switch.clone()))
         .add_method("echo", Box::new(echo_handler as HandlerFn))
         .build();
 
@@ -167,6 +181,6 @@ async fn echo() {
 
     tokio::spawn(calls()).await.unwrap();
 
-    serve.abort();
-    assert!(serve.await.unwrap_err().is_cancelled());
+    off_switch.flip();
+    serve.await.unwrap().unwrap();
 }

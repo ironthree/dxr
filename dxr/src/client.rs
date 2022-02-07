@@ -3,7 +3,8 @@ use url::Url;
 
 use dxr_shared::{DxrError, FaultResponse, FromDXR, MethodCall, MethodResponse, ToParams};
 
-use crate::call::Call;
+mod call;
+pub use call::*;
 
 /// default value of the `User-Agent` HTTP header for XML-RPC requests
 pub const DEFAULT_USER_AGENT: &str = concat!("dxr-client-v", env!("CARGO_PKG_VERSION"));

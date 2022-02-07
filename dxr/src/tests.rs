@@ -1,5 +1,6 @@
 #![allow(clippy::unwrap_used)]
 
+#[cfg(feature = "derive")]
 use quickcheck::TestResult;
 use quickcheck_macros::quickcheck;
 

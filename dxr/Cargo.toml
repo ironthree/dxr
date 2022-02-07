@@ -30,17 +30,17 @@ required-features = ["server"]
 [[test]]
 name = "adder"
 path = "tests/adder.rs"
-required-features = ["derive", "client", "server", "i8", "nil"]
+required-features = ["derive", "client", "server", "i8", "nil", "tokio"]
 
 [[test]]
 name = "echo_any"
 path = "tests/echo_any.rs"
-required-features = ["derive", "client", "server", "i8", "nil"]
+required-features = ["derive", "client", "server", "i8", "nil", "tokio"]
 
 [[test]]
 name = "echo_one"
 path = "tests/echo_one.rs"
-required-features = ["derive", "client", "server", "i8", "nil"]
+required-features = ["derive", "client", "server", "i8", "nil", "tokio"]
 
 [dependencies]
 # default features
@@ -56,7 +56,9 @@ reqwest = { version = "0.11", features = ["cookies"] , optional = true }
 url = { version = "2.2", optional = true }
 
 # server feature
+async-trait = { version = "0.1.52", optional = true }
 axum = { version = "0.4.5", optional = true }
+tokio = { version = "1.14", features = ["time"], optional = true }
 
 [dev-dependencies]
 quickcheck = "1.0"
@@ -70,7 +72,7 @@ tokio-test = "0.4.2"
 default = ["dxr_shared/default", "client", "derive", "i8", "nil"]
 client = ["reqwest", "url"]
 derive = ["dxr_derive"]
-server = ["axum"]
+server = ["async-trait", "axum"]
 i8 = ["dxr_shared/i8"]
 nil = ["dxr_shared/nil"]
 

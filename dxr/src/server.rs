@@ -9,12 +9,17 @@ use axum::Router;
 
 use dxr_shared::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Value};
 
-use crate::handler::Handler;
+mod handler;
+pub use handler::*;
+
+mod shutdown;
+pub use shutdown::*;
 
 /// builder that takes parameters for constructing a [`Server`]
 pub struct ServerBuilder {
     addr: SocketAddr,
-    handlers: HashMap<&'static str, RwLock<Box<dyn Handler + Send + Sync>>>,
+    handlers: HashMap<&'static str, RwLock<Box<dyn Handler>>>,
+    off_switch: Option<Box<dyn ServerOffSwitch>>,
 }
 
 impl Debug for ServerBuilder {
@@ -35,11 +40,21 @@ impl ServerBuilder {
         ServerBuilder {
             addr,
             handlers: HashMap::new(),
+            off_switch: None,
         }
     }
 
+    /// method for adding a switch that is used to handle graceful shutdown
+    ///
+    /// To avoid a direct dependency on an async runtime, the value implementing the
+    /// [`ServerOffSwitch`] trait must provide its own state tracking and sleeping logic.
+    pub fn add_off_switch(mut self, off_switch: Box<dyn ServerOffSwitch>) -> Self {
+        self.off_switch = Some(off_switch);
+        self
+    }
+
     /// method for adding a new method handler for the [`Server`]
-    pub fn add_method(mut self, name: &'static str, handler: Box<dyn Handler + Send + Sync>) -> Self {
+    pub fn add_method(mut self, name: &'static str, handler: Box<dyn Handler>) -> Self {
         self.handlers.insert(name, RwLock::new(handler));
         self
     }
@@ -49,6 +64,7 @@ impl ServerBuilder {
         Server {
             addr: self.addr,
             handlers: Arc::new(self.handlers),
+            off_switch: self.off_switch,
         }
     }
 }
@@ -59,7 +75,8 @@ impl ServerBuilder {
 /// register method handlers, initialize the [`Server`], and wait for requests.
 pub struct Server {
     addr: SocketAddr,
-    handlers: Arc<HashMap<&'static str, RwLock<Box<dyn Handler + Send + Sync>>>>,
+    handlers: Arc<HashMap<&'static str, RwLock<Box<dyn Handler>>>>,
+    off_switch: Option<Box<dyn ServerOffSwitch>>,
 }
 
 impl Debug for Server {
@@ -112,10 +129,18 @@ impl Server {
             }),
         );
 
-        axum::Server::bind(&self.addr)
-            .serve(app.into_make_service())
-            .await
-            .map_err(|error| error.to_string())
+        if let Some(switch) = self.off_switch {
+            axum::Server::bind(&self.addr)
+                .serve(app.into_make_service())
+                .with_graceful_shutdown(switch.watch())
+                .await
+                .map_err(|error| error.to_string())
+        } else {
+            axum::Server::bind(&self.addr)
+                .serve(app.into_make_service())
+                .await
+                .map_err(|error| error.to_string())
+        }
     }
 }
 
