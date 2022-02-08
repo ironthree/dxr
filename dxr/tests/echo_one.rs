@@ -54,64 +54,64 @@ async fn echo_one() {
 
         // i4
         let value = 42i32;
-        let call: Call<_, i32> = Call::new("echo", value);
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", value);
+        let r: i32 = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // i8
         let value = 42i64;
-        let call: Call<_, i64> = Call::new("echo", value);
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", value);
+        let r: i64 = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // double
         let value = 1.5f64;
-        let call: Call<_, f64> = Call::new("echo", value);
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", value);
+        let r: f64 = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // boolean
         let value = true;
-        let call: Call<_, bool> = Call::new("echo", value);
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", value);
+        let r: bool = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // string
         let value = String::from("HELLO WORLD");
-        let call: Call<_, String> = Call::new("echo", value.as_str());
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", value.as_str());
+        let r: String = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // datetime
         let value = Utc::now().round_subsecs(0);
-        let call: Call<_, DateTime<Utc>> = Call::new("echo", value);
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", value);
+        let r: DateTime<Utc> = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // bytes
         let value = b"HELLOWORLD".to_vec();
-        let call: Call<_, Vec<u8>> = Call::new("echo", value.as_slice());
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", value.as_slice());
+        let r: Vec<u8> = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // array
         let value = vec![vec![-12i32, 42i32]];
-        let call: Call<_, Vec<i32>> = Call::new("echo", value.as_slice());
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", value.as_slice());
+        let r: Vec<i32> = client.call(call).await.unwrap();
         assert_eq!(value, vec![r]);
 
         // option
         let value = Some(42i32);
-        let call: Call<_, Option<i32>> = Call::new("echo", value);
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", value);
+        let r: Option<i32> = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // map
         let mut value: HashMap<String, Value> = HashMap::new();
         value.insert(String::from("foo"), Value::i4(21));
         value.insert(String::from("bar"), Value::i8(42));
-        let call: Call<_, HashMap<String, Value>> = Call::new("echo", value.clone());
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", value.clone());
+        let r: HashMap<String, Value> = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // struct
@@ -123,8 +123,8 @@ async fn echo_one() {
             list: vec![1.5, 2.5],
             option: Some(-21),
         };
-        let call: Call<_, TestStruct> = Call::new("echo", vec![value.clone()]);
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("echo", vec![value.clone()]);
+        let r: TestStruct = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // type mismatch
@@ -134,7 +134,7 @@ async fn echo_one() {
 
         // server-side parameter number mismatch
         let value = vec![-12i32, 42i32];
-        let call: Call<_, Vec<i32>> = Call::new("echo", value);
+        let call: Call<Vec<i32>, Vec<i32>> = Call::new("echo", value);
         assert!(client.call(call).await.unwrap_err().is_server_fault());
     };
 

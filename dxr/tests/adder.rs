@@ -40,26 +40,26 @@ async fn adder() {
 
         // add something with tuple params
         let (a, b) = (2i32, 3i32);
-        let call: Call<_, i32> = Call::new("add", (a, b));
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("add", (a, b));
+        let r: i32 = client.call(call).await.unwrap();
         assert_eq!((a + b), r);
 
         // add something with vec params
         let (a, b) = (2i32, 3i32);
-        let call: Call<_, i32> = Call::new("add", vec![a, b]);
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("add", vec![a, b]);
+        let r: i32 = client.call(call).await.unwrap();
         assert_eq!((a + b), r);
 
         // add something with array params
         let (a, b) = (2i32, 3i32);
-        let call: Call<_, i32> = Call::new("add", [a, b]);
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("add", [a, b]);
+        let r: i32 = client.call(call).await.unwrap();
         assert_eq!((a + b), r);
 
         // add something with slice params
         let ab = vec![2i32, 3i32];
-        let call: Call<_, i32> = Call::new("add", ab.as_slice());
-        let r = client.call(call).await.unwrap();
+        let call = Call::new("add", ab.as_slice());
+        let r: i32 = client.call(call).await.unwrap();
         assert_eq!((a + b), r);
 
         // argument number mismatch

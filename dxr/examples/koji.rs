@@ -48,8 +48,8 @@ async fn main() -> Result<(), String> {
     // print query result
     println!("{:#?}", result);
 
-    let request: Call<_, dxr::Value> = Call::new("getPackage", ("syncthing", true));
-    let result = client.call(request).await.map_err(|error| error.to_string())?;
+    let request = Call::new("getPackage", ("syncthing", true));
+    let result: Value = client.call(request).await.map_err(|error| error.to_string())?;
 
     // print query result
     println!("{:#?}", result);

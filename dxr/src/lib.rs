@@ -35,7 +35,7 @@
 //! use dxr::Call;
 //!
 //! // create an RPC request with one string argument and an expected string return value
-//! let request: Call<&str, String> = Call::new("hello", "DXR");
+//! let request = Call::new("hello", "DXR");
 //! let result: String = client.call(request).await.unwrap();
 //! # })
 //! # }
