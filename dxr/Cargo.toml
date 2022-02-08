@@ -61,6 +61,9 @@ axum = { version = "0.4.5", optional = true }
 tokio = { version = "1.14", features = ["time"], optional = true }
 
 [dev-dependencies]
+# used for snapshot tests
+insta = "1.11.0"
+# used for property-based conversion / roundrtip tests
 quickcheck = "1.0"
 quickcheck_macros = "1.0"
 # used for example binaries and integration tests

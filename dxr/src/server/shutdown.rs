@@ -1,6 +1,8 @@
+use std::fmt::Debug;
+
 /// trait definition for server off switches that can be used to handle graceful shutdown
 #[async_trait::async_trait]
-pub trait ServerOffSwitch: Send + Sync {
+pub trait ServerOffSwitch: Debug + Send + Sync {
     /// method for checking the state of the off switch
     fn state(&self) -> bool;
 

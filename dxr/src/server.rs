@@ -30,6 +30,7 @@ impl Debug for ServerBuilder {
         f.debug_struct("ServerBuilder")
             .field("addr", &self.addr)
             .field("handlers", &handler_list)
+            .field("off_switch", &self.off_switch)
             .finish()
     }
 }
@@ -84,9 +85,10 @@ impl Debug for Server {
         let mut handler_list: Vec<&&str> = self.handlers.keys().collect();
         handler_list.sort();
 
-        f.debug_struct("ServerBuilder")
+        f.debug_struct("Server")
             .field("addr", &self.addr)
             .field("handlers", &handler_list)
+            .field("off_switch", &self.off_switch)
             .finish()
     }
 }

@@ -59,3 +59,73 @@ fn roundtrip_option_some(a: i32) -> bool {
     let value = Some(a);
     <Option<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap() == value
 }
+
+#[cfg(feature = "server")]
+#[test]
+fn server_builder_debug() {
+    use crate::ServerBuilder;
+
+    let builder = ServerBuilder::new("0.0.0.0:3000".parse().unwrap());
+    insta::assert_debug_snapshot!(builder);
+}
+
+#[cfg(all(feature = "server", feature = "nil"))]
+#[test]
+fn server_builder_debug_with_method() {
+    use crate::{Fault, HandlerFn, ServerBuilder, Value};
+    use axum::http::HeaderMap;
+
+    fn noop(_v: &[Value], _h: &HeaderMap) -> Result<Value, Fault> {
+        Ok(Value::nil())
+    }
+
+    let builder = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
+        .add_method("noop", Box::new(noop as HandlerFn));
+    insta::assert_debug_snapshot!(builder);
+}
+
+#[cfg(all(feature = "server", feature = "tokio"))]
+#[test]
+fn server_builder_debug_with_off_switch() {
+    use crate::{TokioOffSwitch, ServerBuilder};
+
+    let off_switch = TokioOffSwitch::new();
+    let builder = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
+        .add_off_switch(Box::new(off_switch));
+    insta::assert_debug_snapshot!(builder);
+}
+
+#[cfg(feature = "server")]
+#[test]
+fn server_debug() {
+    use crate::ServerBuilder;
+
+    let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap()).build();
+    insta::assert_debug_snapshot!(server);
+}
+
+#[cfg(all(feature = "server", feature = "nil"))]
+#[test]
+fn server_debug_with_method() {
+    use crate::{Fault, HandlerFn, ServerBuilder, Value};
+    use axum::http::HeaderMap;
+
+    fn noop(_v: &[Value], _h: &HeaderMap) -> Result<Value, Fault> {
+        Ok(Value::nil())
+    }
+
+    let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
+        .add_method("noop", Box::new(noop as HandlerFn)).build();
+    insta::assert_debug_snapshot!(server);
+}
+
+#[cfg(all(feature = "server", feature = "tokio"))]
+#[test]
+fn server_debug_with_off_switch() {
+    use crate::{TokioOffSwitch, ServerBuilder};
+
+    let off_switch = TokioOffSwitch::new();
+    let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
+        .add_off_switch(Box::new(off_switch)).build();
+    insta::assert_debug_snapshot!(server);
+}

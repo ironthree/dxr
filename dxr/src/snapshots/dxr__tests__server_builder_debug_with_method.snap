@@ -1,0 +1,13 @@
+---
+source: dxr/src/tests.rs
+assertion_line: 80
+expression: "ServerBuilder::new(\"0.0.0.0:3000\".parse().unwrap()).add_method(\"noop\",\n    Box::new(noop as HandlerFn))"
+
+---
+ServerBuilder {
+    addr: 0.0.0.0:3000,
+    handlers: [
+        "noop",
+    ],
+    off_switch: None,
+}

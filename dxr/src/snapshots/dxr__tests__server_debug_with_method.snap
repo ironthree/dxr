@@ -1,0 +1,13 @@
+---
+source: dxr/src/tests.rs
+assertion_line: 119
+expression: server
+
+---
+Server {
+    addr: 0.0.0.0:3000,
+    handlers: [
+        "noop",
+    ],
+    off_switch: None,
+}

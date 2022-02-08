@@ -1,0 +1,11 @@
+---
+source: dxr/src/tests.rs
+assertion_line: 67
+expression: "ServerBuilder::new(\"0.0.0.0:3000\".parse().unwrap())"
+
+---
+ServerBuilder {
+    addr: 0.0.0.0:3000,
+    handlers: [],
+    off_switch: None,
+}
