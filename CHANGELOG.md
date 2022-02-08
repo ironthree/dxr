@@ -9,6 +9,9 @@ Added:
 
 Changed:
 
+- moved method handler synchronization from the server to the method handlers themselves to
+  improve concurrency, throughput and latency, especially for methods that do not modify internal
+  or global state
 - changed `MethodResponse` to match the XML-RPC spec (`<params>` can be missing)
 - changed method signatures on client and server implementations to adapt to optional return values
 - renamed `DxrError::ReturnMismatch` to `DxrError::ParameterMismatch` to better reflect what it

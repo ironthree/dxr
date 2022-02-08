@@ -15,14 +15,14 @@ pub type HandlerResult = Result<Option<Value>, Fault>;
 pub trait Handler: Send + Sync {
     /// This method is called for handling incoming XML-RPC method requests with the method name
     /// registered for this [`Handler`], with the request's method parameters as its arguments.
-    fn handle(&mut self, params: &[Value], headers: &HeaderMap) -> HandlerResult;
+    fn handle(&self, params: &[Value], headers: &HeaderMap) -> HandlerResult;
 }
 
 /// type alias for plain handler functions without associated data
 pub type HandlerFn = fn(params: &[Value], headers: &HeaderMap) -> HandlerResult;
 
 impl Handler for HandlerFn {
-    fn handle(&mut self, params: &[Value], headers: &HeaderMap) -> HandlerResult {
+    fn handle(&self, params: &[Value], headers: &HeaderMap) -> HandlerResult {
         self(params, headers)
     }
 }

@@ -19,17 +19,28 @@
 //! 2
 //! ```
 
+use std::sync::RwLock;
+
 use dxr::axum::http::HeaderMap;
 use dxr::{Fault, FromParams, Handler, HandlerFn, ServerBuilder, ToDXR, Value};
 
 struct CounterHandler {
-    counter: u32,
+    counter: RwLock<u32>,
+}
+
+impl CounterHandler {
+    fn new(init: u32) -> CounterHandler {
+        CounterHandler {
+            counter: RwLock::new(init),
+        }
+    }
 }
 
 impl Handler for CounterHandler {
-    fn handle(&mut self, _params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
-        let result = (self.counter as i32).to_dxr()?;
-        self.counter += 1;
+    fn handle(&self, _params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
+        let mut value = self.counter.write().unwrap();
+        let result = (*value as i32).to_dxr()?;
+        *value += 1;
         Ok(Some(result))
     }
 }
@@ -41,7 +52,7 @@ fn hello_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>
 
 #[tokio::main]
 async fn main() {
-    let counter_handler = CounterHandler { counter: 0 };
+    let counter_handler = CounterHandler::new(0);
 
     let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
         .add_method("hello", Box::new(hello_handler as HandlerFn))

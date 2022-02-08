@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use std::net::SocketAddr;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
 use axum::http::{header::CONTENT_LENGTH, header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode};
 use axum::routing::post;
@@ -18,7 +18,7 @@ pub use shutdown::*;
 /// builder that takes parameters for constructing a [`Server`]
 pub struct ServerBuilder {
     addr: SocketAddr,
-    handlers: HashMap<&'static str, RwLock<Box<dyn Handler>>>,
+    handlers: HashMap<&'static str, Box<dyn Handler>>,
     off_switch: Option<Box<dyn ServerOffSwitch>>,
 }
 
@@ -56,7 +56,7 @@ impl ServerBuilder {
 
     /// method for adding a new method handler for the [`Server`]
     pub fn add_method(mut self, name: &'static str, handler: Box<dyn Handler>) -> Self {
-        self.handlers.insert(name, RwLock::new(handler));
+        self.handlers.insert(name, handler);
         self
     }
 
@@ -76,7 +76,7 @@ impl ServerBuilder {
 /// register method handlers, initialize the [`Server`], and wait for requests.
 pub struct Server {
     addr: SocketAddr,
-    handlers: Arc<HashMap<&'static str, RwLock<Box<dyn Handler>>>>,
+    handlers: Arc<HashMap<&'static str, Box<dyn Handler>>>,
     off_switch: Option<Box<dyn ServerOffSwitch>>,
 }
 
@@ -116,8 +116,8 @@ impl Server {
                         },
                     };
 
-                    let mut handler = match self.handlers.get(call.name()) {
-                        Some(handler) => handler.write().expect("Poisoned lock!"),
+                    let handler = match self.handlers.get(call.name()) {
+                        Some(handler) => handler,
                         None => return fault_to_response(404, "Unknown method."),
                     };
 
