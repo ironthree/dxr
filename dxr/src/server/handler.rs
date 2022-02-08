@@ -2,7 +2,7 @@ use dxr_shared::{Fault, Value};
 
 use axum::http::HeaderMap;
 
-/// type alias for result type of method handlers
+/// type alias for the result type of method handlers
 pub type HandlerResult = Result<Option<Value>, Fault>;
 
 /// trait describing server methods that can be called via XML-RPC

@@ -6,6 +6,9 @@
 [![docs.rs](https://docs.rs/dxr/badge.svg)](https://docs.rs/dxr/)
 
 The dxr project provides crates for writing XML-RPC API clients and servers in Rust.
+The goal is to match the [XML-RPC Specification](http://xmlrpc.com/spec.md) -- even
+though some parts of it are under-specified -- and provide optional support for some
+common non-standard extensions.
 
 Documentation of the public API and a tutorial-style introduction are available on
 the [docs.rs](https://docs.rs/dxr/) page for this crate. Additionally, there are a few

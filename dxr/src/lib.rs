@@ -105,7 +105,8 @@
 //! Client and server functionality are both optional, since they pull in additional dependencies.
 //! The features can be enabled and disabled separately, though the `client` feature is enabled by
 //! default, and having neither of the two features enabled makes little sense, as it disabled most
-//! of the crate's functionality.
+//! of the crate's functionality. There is additional support functionality for servers that use
+//! [`tokio`], which can be enabled with the `tokio` feature.
 //!
 //! This crates also supports deriving conversion trait implementations for custom, user-defined
 //! structs. The derive macros are available if the `derive` feature is enabled (which it is by
