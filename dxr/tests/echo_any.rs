@@ -19,8 +19,8 @@ use dxr::{
     Value,
 };
 
-fn echo_handler(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
-    Ok(params.to_dxr()?)
+fn echo_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
+    Ok(Some(params.to_dxr()?))
 }
 
 #[derive(Clone, Debug, FromDXR, PartialEq, ToDXR)]

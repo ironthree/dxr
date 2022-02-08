@@ -27,16 +27,16 @@ struct CounterHandler {
 }
 
 impl Handler for CounterHandler {
-    fn handle(&mut self, _params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
+    fn handle(&mut self, _params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
         let result = (self.counter as i32).to_dxr()?;
         self.counter += 1;
-        Ok(result)
+        Ok(Some(result))
     }
 }
 
-fn hello_handler(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
+fn hello_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
     let name = String::from_params(params)?;
-    Ok(format!("Handler function says: Hello, {}!", name).to_dxr()?)
+    Ok(Some(format!("Handler function says: Hello, {}!", name).to_dxr()?))
 }
 
 #[tokio::main]

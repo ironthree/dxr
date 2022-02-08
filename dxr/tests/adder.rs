@@ -16,9 +16,9 @@ use dxr::{
     Value,
 };
 
-fn add_handler(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
+fn add_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
     let (a, b): (i32, i32) = FromParams::from_params(params)?;
-    Ok((a + b).to_dxr()?)
+    Ok(Some((a + b).to_dxr()?))
 }
 
 #[tokio::test]

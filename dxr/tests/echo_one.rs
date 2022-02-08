@@ -20,9 +20,9 @@ use dxr::{
     Value,
 };
 
-fn echo_handler(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
+fn echo_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
     let value: Value = Value::from_params(params)?;
-    Ok(value.to_dxr()?)
+    Ok(Some(value.to_dxr()?))
 }
 
 #[derive(Clone, Debug, FromDXR, PartialEq, ToDXR)]

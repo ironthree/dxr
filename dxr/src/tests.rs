@@ -72,26 +72,24 @@ fn server_builder_debug() {
 #[cfg(all(feature = "server", feature = "nil"))]
 #[test]
 fn server_builder_debug_with_method() {
-    use crate::{Fault, HandlerFn, ServerBuilder, Value};
+    use crate::{HandlerFn, HandlerResult, ServerBuilder, Value};
     use axum::http::HeaderMap;
 
-    fn noop(_v: &[Value], _h: &HeaderMap) -> Result<Value, Fault> {
-        Ok(Value::nil())
+    fn noop(_v: &[Value], _h: &HeaderMap) -> HandlerResult {
+        Ok(None)
     }
 
-    let builder = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
-        .add_method("noop", Box::new(noop as HandlerFn));
+    let builder = ServerBuilder::new("0.0.0.0:3000".parse().unwrap()).add_method("noop", Box::new(noop as HandlerFn));
     insta::assert_debug_snapshot!(builder);
 }
 
 #[cfg(all(feature = "server", feature = "tokio"))]
 #[test]
 fn server_builder_debug_with_off_switch() {
-    use crate::{TokioOffSwitch, ServerBuilder};
+    use crate::{ServerBuilder, TokioOffSwitch};
 
     let off_switch = TokioOffSwitch::new();
-    let builder = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
-        .add_off_switch(Box::new(off_switch));
+    let builder = ServerBuilder::new("0.0.0.0:3000".parse().unwrap()).add_off_switch(Box::new(off_switch));
     insta::assert_debug_snapshot!(builder);
 }
 
@@ -107,25 +105,27 @@ fn server_debug() {
 #[cfg(all(feature = "server", feature = "nil"))]
 #[test]
 fn server_debug_with_method() {
-    use crate::{Fault, HandlerFn, ServerBuilder, Value};
+    use crate::{HandlerFn, HandlerResult, ServerBuilder, Value};
     use axum::http::HeaderMap;
 
-    fn noop(_v: &[Value], _h: &HeaderMap) -> Result<Value, Fault> {
-        Ok(Value::nil())
+    fn noop(_v: &[Value], _h: &HeaderMap) -> HandlerResult {
+        Ok(None)
     }
 
     let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
-        .add_method("noop", Box::new(noop as HandlerFn)).build();
+        .add_method("noop", Box::new(noop as HandlerFn))
+        .build();
     insta::assert_debug_snapshot!(server);
 }
 
 #[cfg(all(feature = "server", feature = "tokio"))]
 #[test]
 fn server_debug_with_off_switch() {
-    use crate::{TokioOffSwitch, ServerBuilder};
+    use crate::{ServerBuilder, TokioOffSwitch};
 
     let off_switch = TokioOffSwitch::new();
     let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
-        .add_off_switch(Box::new(off_switch)).build();
+        .add_off_switch(Box::new(off_switch))
+        .build();
     insta::assert_debug_snapshot!(server);
 }

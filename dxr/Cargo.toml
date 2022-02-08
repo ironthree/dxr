@@ -30,7 +30,7 @@ required-features = ["server"]
 [[test]]
 name = "adder"
 path = "tests/adder.rs"
-required-features = ["derive", "client", "server", "i8", "nil", "tokio"]
+required-features = ["client", "server", "tokio"]
 
 [[test]]
 name = "echo_any"
@@ -44,7 +44,7 @@ required-features = ["derive", "client", "server", "i8", "nil", "tokio"]
 
 [dependencies]
 # default features
-dxr_shared = { path = "../dxr_shared", version = "0.1.1" }
+dxr_shared = { path = "../dxr_shared", version = "0.1.1", default-features = false }
 log = "0.4.13"
 quick-xml = { version = "0.22" , features = ["serialize"] }
 

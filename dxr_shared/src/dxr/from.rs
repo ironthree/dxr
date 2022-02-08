@@ -140,6 +140,7 @@ impl FromDXR for () {
                     n => Err(DxrError::parameter_mismatch(n, 0)),
                 }
             },
+            #[cfg(feature = "nil")]
             Type::Nil => Ok(()),
             other => Err(DxrError::wrong_type(other.name(), "array | nil")),
         }

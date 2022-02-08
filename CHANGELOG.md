@@ -3,11 +3,14 @@
 Added:
 
 - convenience methods for checking the type of `DxrError` and extracting the inner error value
-- more client-server roundtrip tests (for ~80% test coverage across all three crates) 
-- add support for implementing / requesting graceful server shutdown 
+- more client-server roundtrip tests (for ~80% test coverage across all three crates)
+- support for implementing / requesting graceful server shutdown
+- snapshot tests for some `Debug` implementations
 
 Changed:
 
+- changed `MethodResponse` to match the XML-RPC spec (`<params>` can be missing)
+- changed method signatures on client and server implementations to adapt to optional return values
 - renamed `DxrError::ReturnMismatch` to `DxrError::ParameterMismatch` to better reflect what it
   actually means (unexpected number of parameters, whether they are method call arguments or
   return values)

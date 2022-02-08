@@ -152,8 +152,11 @@ fn response_headers() -> HeaderMap {
     headers
 }
 
-fn success_to_response(value: Value) -> (StatusCode, HeaderMap, String) {
-    let response = MethodResponse::new(value);
+fn success_to_response(value: Option<Value>) -> (StatusCode, HeaderMap, String) {
+    let response = match value {
+        Some(value) => MethodResponse::new(value),
+        None => MethodResponse::empty(),
+    };
 
     match quick_xml::se::to_string(&response) {
         Ok(success) => (StatusCode::OK, response_headers(), success),

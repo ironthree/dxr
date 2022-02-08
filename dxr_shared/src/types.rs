@@ -292,22 +292,28 @@ struct MethodName {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodResponse")]
 pub struct MethodResponse {
-    params: ResponseParameters,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    params: Option<ResponseParameters>,
 }
 
 impl MethodResponse {
     /// constructor for `<methodResponse>` values from the return value
     pub fn new(value: Value) -> MethodResponse {
         MethodResponse {
-            params: ResponseParameters {
+            params: Some(ResponseParameters {
                 params: ResponseParameter { value },
-            },
+            }),
         }
     }
 
+    /// constructor empty `<methodResponse>` values without a value
+    pub fn empty() -> MethodResponse {
+        MethodResponse { params: None }
+    }
+
     /// getter method for the returned value
-    pub fn inner(self) -> Value {
-        self.params.params.value
+    pub fn inner(self) -> Option<Value> {
+        self.params.map(|o| o.params.value)
     }
 }
 

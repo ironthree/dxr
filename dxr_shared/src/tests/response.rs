@@ -4,6 +4,27 @@ use crate::fault::Fault;
 use crate::types::{FaultResponse, MethodResponse, Value};
 
 #[test]
+fn to_method_response_empty() {
+    let value = MethodResponse::empty();
+    let expected = "<methodResponse/>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_method_response_empty() {
+    let value = "<methodResponse/>";
+    let expected = MethodResponse::empty();
+
+    assert_eq!(from_str::<MethodResponse>(value).unwrap(), expected);
+
+    let value = "<methodResponse></methodResponse>";
+    let expected = MethodResponse::empty();
+
+    assert_eq!(from_str::<MethodResponse>(value).unwrap(), expected);
+}
+
+#[test]
 fn to_method_response_success() {
     let value = MethodResponse::new(Value::string(String::from("Success!")));
     let expected =

@@ -83,13 +83,16 @@ fn request_to_body(call: &MethodCall) -> Result<String, DxrError> {
 }
 
 fn request_to_result(contents: &str) -> Result<MethodResponse, DxrError> {
-    let error1 = match quick_xml::de::from_str(contents) {
-        Ok(response) => return Ok(response),
+    // need to check for FaultResponse first:
+    // - a missing <params> tag is ambiguous (can be either an empty response, or a fault response)
+    // - a present <fault> tag is unambiguous
+    let error2 = match quick_xml::de::from_str(contents) {
+        Ok(fault) => return Err(DxrError::server_fault(FaultResponse::into(fault))),
         Err(error) => error.to_string(),
     };
 
-    let error2 = match quick_xml::de::from_str(contents) {
-        Ok(fault) => return Err(DxrError::server_fault(FaultResponse::into(fault))),
+    let error1 = match quick_xml::de::from_str(contents) {
+        Ok(response) => return Ok(response),
         Err(error) => error.to_string(),
     };
 
@@ -138,6 +141,19 @@ impl Client {
         let contents = response.text().await.expect("Failed to decode response body.");
         let result = request_to_result(&contents)?;
 
-        R::from_dxr(&result.inner())
+        if let Some(value) = result.inner() {
+            R::from_dxr(&value)
+        } else {
+            #[cfg(feature = "nil")]
+            {
+                use dxr_shared::Value;
+                R::from_dxr(&Value::nil())
+            }
+
+            #[cfg(not(feature = "nil"))]
+            {
+                Err(DxrError::parameter_mismatch(0, 1))
+            }
+        }
     }
 }
