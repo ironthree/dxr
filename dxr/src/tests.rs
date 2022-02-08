@@ -1,6 +1,6 @@
 #![allow(clippy::unwrap_used)]
 
-#[cfg(feature = "derive")]
+#[cfg(all(feature = "derive", feature = "nil"))]
 use quickcheck::TestResult;
 use quickcheck_macros::quickcheck;
 
@@ -16,7 +16,7 @@ fn roundtrip_struct_empty() {
     assert_eq!(Test::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
 }
 
-#[cfg(feature = "derive")]
+#[cfg(all(feature = "derive", feature = "nil"))]
 #[quickcheck]
 fn roundtrip_struct(int: i32, string: String, boolean: bool, optional: Option<f64>) -> TestResult {
     if matches!(optional, Some(f) if f.is_nan()) {

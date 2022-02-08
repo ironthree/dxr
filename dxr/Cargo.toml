@@ -20,7 +20,7 @@ required-features = ["client"]
 [[example]]
 name = "koji"
 path = "examples/koji.rs"
-required-features = ["client", "derive"]
+required-features = ["client", "derive", "nil"]
 
 [[example]]
 name = "server"
