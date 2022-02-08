@@ -21,3 +21,7 @@ syn = "1.0.86"
 quote = "1.0.15"
 
 [dev-dependencies]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

@@ -28,6 +28,7 @@ impl ToParams for i32 {
 }
 
 #[cfg(feature = "i8")]
+#[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
 impl ToParams for i64 {
     fn to_params(&self) -> Result<Vec<Value>, DxrError> {
         Ok(vec![self.to_dxr()?])
@@ -83,6 +84,7 @@ impl ToParams for &[u8] {
 }
 
 #[cfg(feature = "nil")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> ToParams for Option<T>
 where
     T: ToDXR,
@@ -93,6 +95,7 @@ where
 }
 
 #[cfg(feature = "nil")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> ToParams for &Option<T>
 where
     T: ToDXR,

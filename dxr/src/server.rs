@@ -16,6 +16,7 @@ mod shutdown;
 pub use shutdown::*;
 
 /// builder that takes parameters for constructing a [`Server`]
+#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub struct ServerBuilder {
     addr: SocketAddr,
     handlers: HashMap<&'static str, Box<dyn Handler>>,
@@ -74,6 +75,7 @@ impl ServerBuilder {
 ///
 /// This type provides a very simple XML-RPC server implementation. Specify server address,
 /// register method handlers, initialize the [`Server`], and wait for requests.
+#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub struct Server {
     addr: SocketAddr,
     handlers: Arc<HashMap<&'static str, Box<dyn Handler>>>,

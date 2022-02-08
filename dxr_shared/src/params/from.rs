@@ -23,6 +23,7 @@ impl FromParams for i32 {
 }
 
 #[cfg(feature = "i8")]
+#[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
 impl FromParams for i64 {
     fn from_params(values: &[Value]) -> Result<Self, DxrError> {
         let (value,): (Self,) = FromParams::from_params(values)?;
@@ -70,6 +71,7 @@ impl FromParams for Vec<u8> {
 // - check whether it is a <nil> value
 
 #[cfg(feature = "nil")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> FromParams for Option<T>
 where
     T: FromDXR,

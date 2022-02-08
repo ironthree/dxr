@@ -26,6 +26,7 @@ impl ToDXR for i32 {
 }
 
 #[cfg(feature = "i8")]
+#[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
 impl ToDXR for i64 {
     fn to_dxr(&self) -> Result<Value, DxrError> {
         Ok(Value::i8(*self))
@@ -81,6 +82,7 @@ impl ToDXR for &[u8] {
 }
 
 #[cfg(feature = "nil")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> ToDXR for Option<T>
 where
     T: ToDXR,
@@ -95,6 +97,7 @@ where
 }
 
 #[cfg(feature = "nil")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> ToDXR for &Option<T>
 where
     T: ToDXR,

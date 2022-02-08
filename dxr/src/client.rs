@@ -7,10 +7,12 @@ mod call;
 pub use call::*;
 
 /// default value of the `User-Agent` HTTP header for XML-RPC requests
+#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub const DEFAULT_USER_AGENT: &str = concat!("dxr-client-v", env!("CARGO_PKG_VERSION"));
 
 /// builder that takes parameters for constructing a [`Client`]
 #[derive(Debug)]
+#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub struct ClientBuilder {
     url: Url,
     headers: HeaderMap,
@@ -107,6 +109,7 @@ fn request_to_result(contents: &str) -> Result<MethodResponse, DxrError> {
 /// This type provides a very simple XML-RPC client implementation. Initialize the [`Client`],
 /// submit a [`Call`], get a result (or a fault).
 #[derive(Debug)]
+#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub struct Client {
     url: Url,
     client: reqwest::Client,

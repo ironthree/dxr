@@ -23,6 +23,7 @@ impl FromDXR for i32 {
 }
 
 #[cfg(feature = "i8")]
+#[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
 impl FromDXR for i64 {
     fn from_dxr(value: &Value) -> Result<i64, DxrError> {
         match value.inner() {
@@ -78,6 +79,7 @@ impl FromDXR for Vec<u8> {
 }
 
 #[cfg(feature = "nil")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> FromDXR for Option<T>
 where
     T: FromDXR,

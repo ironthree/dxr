@@ -2,6 +2,7 @@ use std::fmt::Debug;
 
 /// trait definition for server off switches that can be used to handle graceful shutdown
 #[async_trait::async_trait]
+#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub trait ServerOffSwitch: Debug + Send + Sync {
     /// method for checking the state of the off switch
     fn state(&self) -> bool;
@@ -39,6 +40,7 @@ mod tok_io {
 
     /// implementation of [`ServerOffSwitch`] based on tokio
     #[derive(Clone, Debug)]
+    #[cfg_attr(docsrs, doc(cfg(all(feature = "server", feature = "tokio"))))]
     pub struct TokioOffSwitch {
         state: Arc<RwLock<bool>>,
         sleep: Duration,

@@ -7,6 +7,7 @@ use dxr_shared::{DxrError, FromDXR, MethodCall, ToParams, Value};
 /// This type describes the data associated with an XML-RPC method call on the client side. This
 /// includes the method name, method parameters, and expected return type.
 #[derive(Debug)]
+#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub struct Call<'a, P, R>
 where
     P: ToParams,
