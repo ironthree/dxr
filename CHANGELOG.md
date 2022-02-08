@@ -1,4 +1,7 @@
-## Unreleased 0.2
+## Release 0.2.0
+
+This version contains some fixes that required changes in public APIs (listed below), so this
+is a semver-incompatible release.
 
 Added:
 
@@ -6,6 +9,7 @@ Added:
 - more client-server roundtrip tests (for ~80% test coverage across all three crates)
 - support for implementing / requesting graceful server shutdown
 - snapshot tests for some `Debug` implementations
+- feature hints for the generated documentation on [docs.rs](https://docs.rs/dxr)
 
 Changed:
 

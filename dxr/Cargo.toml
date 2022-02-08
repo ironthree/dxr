@@ -3,7 +3,7 @@ name = "dxr"
 description = "Declarative XML-RPC"
 license = "MIT OR Apache-2.0"
 
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 rust-version = "1.56.0"
 
@@ -43,13 +43,12 @@ path = "tests/echo_one.rs"
 required-features = ["derive", "client", "server", "i8", "nil", "tokio"]
 
 [dependencies]
-# default features
-dxr_shared = { path = "../dxr_shared", version = "0.1.1", default-features = false }
+dxr_shared = { path = "../dxr_shared", version = "0.2.0", default-features = false }
 log = "0.4.13"
 quick-xml = { version = "0.22" , features = ["serialize"] }
 
 # derive feature
-dxr_derive = { path = "../dxr_derive", version = "0.1.1", optional = true }
+dxr_derive = { path = "../dxr_derive", version = "0.2.0", optional = true }
 
 # client feature
 reqwest = { version = "0.11", features = ["cookies"] , optional = true }
@@ -58,6 +57,7 @@ url = { version = "2.2", optional = true }
 # server feature
 async-trait = { version = "0.1.52", optional = true }
 axum = { version = "0.4.5", optional = true }
+# server feature: optional tokio support
 tokio = { version = "1.14", features = ["time"], optional = true }
 
 [dev-dependencies]
