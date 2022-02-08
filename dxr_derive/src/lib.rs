@@ -2,8 +2,14 @@
 //!
 //! This crate is an implementation detail of the `dxr` crate, which provides the derive macros.
 
+#![deny(unsafe_code)]
+#![warn(explicit_outlives_requirements)]
+#![warn(missing_copy_implementations)]
 #![warn(missing_docs)]
 #![warn(missing_debug_implementations)]
+#![warn(noop_method_call)]
+#![warn(unused_import_braces)]
+#![warn(unused_qualifications)]
 #![warn(clippy::unwrap_used)]
 
 use proc_macro::TokenStream;

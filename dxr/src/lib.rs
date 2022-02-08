@@ -117,8 +117,14 @@
 //! - long integers (`<i8>`): mapped to [`i64`], enabled with the `i8` feature
 //! - null values (`<nil/>`): mapped to [`Option`]`<T>`, enabled with the `nil` feature
 
+#![deny(unsafe_code)]
+#![warn(explicit_outlives_requirements)]
+#![warn(missing_copy_implementations)]
 #![warn(missing_docs)]
 #![warn(missing_debug_implementations)]
+#![warn(noop_method_call)]
+#![warn(unused_import_braces)]
+#![warn(unused_qualifications)]
 #![warn(clippy::unwrap_used)]
 
 #[cfg(feature = "derive")]

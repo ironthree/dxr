@@ -3,8 +3,14 @@
 //! This crate provides base implementations of all XML-RPC types and functionality that is used in
 //! the macros provided by `dxr_derive` and the high-level functionality provided in `dxr` itself.
 
+#![deny(unsafe_code)]
+#![warn(explicit_outlives_requirements)]
+#![warn(missing_copy_implementations)]
 #![warn(missing_docs)]
 #![warn(missing_debug_implementations)]
+#![warn(noop_method_call)]
+#![warn(unused_import_braces)]
+#![warn(unused_qualifications)]
 #![warn(clippy::unwrap_used)]
 
 // re-export of chrono, since it is part of the public API
