@@ -6,6 +6,7 @@ expression: server
 ---
 Server {
     addr: 0.0.0.0:3000,
+    path: "/",
     handlers: [],
     off_switch: Some(
         TokioOffSwitch {

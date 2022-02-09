@@ -55,6 +55,7 @@ async fn main() {
     let counter_handler = CounterHandler::new(0);
 
     let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
+        .set_path("/")
         .add_method("hello", Box::new(hello_handler as HandlerFn))
         .add_method("countme", Box::new(counter_handler))
         .build();

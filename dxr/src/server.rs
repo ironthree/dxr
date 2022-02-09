@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use std::net::SocketAddr;
@@ -15,10 +16,15 @@ pub use handler::*;
 mod shutdown;
 pub use shutdown::*;
 
+/// default server route / path for XML-RPC endpoints
+#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
+pub const DEFAULT_SERVER_ROUTE: &str = "/";
+
 /// builder that takes parameters for constructing a [`Server`]
 #[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub struct ServerBuilder {
     addr: SocketAddr,
+    path: Cow<'static, str>,
     handlers: HashMap<&'static str, Box<dyn Handler>>,
     off_switch: Option<Box<dyn ServerOffSwitch>>,
 }
@@ -30,6 +36,7 @@ impl Debug for ServerBuilder {
 
         f.debug_struct("ServerBuilder")
             .field("addr", &self.addr)
+            .field("path", &self.path)
             .field("handlers", &handler_list)
             .field("off_switch", &self.off_switch)
             .finish()
@@ -41,9 +48,19 @@ impl ServerBuilder {
     pub fn new(addr: SocketAddr) -> ServerBuilder {
         ServerBuilder {
             addr,
+            path: Cow::Borrowed(DEFAULT_SERVER_ROUTE),
             handlers: HashMap::new(),
             off_switch: None,
         }
+    }
+
+    /// method for overriding the default path / route for the XML-RPC endpoint
+    ///
+    /// The default value is [`/`](DEFAULT_SERVER_ROUTE). Another common value
+    /// is `/RPC2`, which can be set with this method, if necessary.
+    pub fn set_path(mut self, route: &str) -> Self {
+        self.path = Cow::Owned(route.to_owned());
+        self
     }
 
     /// method for adding a switch that is used to handle graceful shutdown
@@ -65,6 +82,7 @@ impl ServerBuilder {
     pub fn build(self) -> Server {
         Server {
             addr: self.addr,
+            path: self.path,
             handlers: Arc::new(self.handlers),
             off_switch: self.off_switch,
         }
@@ -78,6 +96,7 @@ impl ServerBuilder {
 #[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub struct Server {
     addr: SocketAddr,
+    path: Cow<'static, str>,
     handlers: Arc<HashMap<&'static str, Box<dyn Handler>>>,
     off_switch: Option<Box<dyn ServerOffSwitch>>,
 }
@@ -89,6 +108,7 @@ impl Debug for Server {
 
         f.debug_struct("Server")
             .field("addr", &self.addr)
+            .field("path", &self.path)
             .field("handlers", &handler_list)
             .field("off_switch", &self.off_switch)
             .finish()
@@ -102,7 +122,7 @@ impl Server {
     /// into fault responses.
     pub async fn serve(self) -> Result<(), String> {
         let app = Router::new().route(
-            "/",
+            self.path.as_ref(),
             post({
                 move |body: String, headers: HeaderMap| async move {
                     if headers.get(CONTENT_LENGTH).is_none() {

@@ -1,11 +1,12 @@
 ---
 source: dxr/src/tests.rs
-assertion_line: 67
-expression: "ServerBuilder::new(\"0.0.0.0:3000\".parse().unwrap())"
+assertion_line: 69
+expression: builder
 
 ---
 ServerBuilder {
     addr: 0.0.0.0:3000,
+    path: "/",
     handlers: [],
     off_switch: None,
 }

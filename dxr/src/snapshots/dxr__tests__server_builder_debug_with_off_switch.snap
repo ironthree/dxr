@@ -1,11 +1,12 @@
 ---
 source: dxr/src/tests.rs
-assertion_line: 90
-expression: "ServerBuilder::new(\"0.0.0.0:3000\".parse().unwrap()).add_off_switch(Box::new(off_switch))"
+assertion_line: 93
+expression: builder
 
 ---
 ServerBuilder {
     addr: 0.0.0.0:3000,
+    path: "/",
     handlers: [],
     off_switch: Some(
         TokioOffSwitch {

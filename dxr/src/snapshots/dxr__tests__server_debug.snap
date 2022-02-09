@@ -1,11 +1,12 @@
 ---
 source: dxr/src/tests.rs
-assertion_line: 104
+assertion_line: 102
 expression: server
 
 ---
 Server {
     addr: 0.0.0.0:3000,
+    path: "/",
     handlers: [],
     off_switch: None,
 }

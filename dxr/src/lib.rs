@@ -129,8 +129,10 @@
 //! - null values (`<nil/>`): mapped to [`Option`]`<T>`, enabled with the `nil` feature
 
 #[cfg(feature = "derive")]
+#[doc(inline)]
 pub use dxr_derive::{FromDXR, ToDXR};
 
+#[doc(inline)]
 pub use dxr_shared::{DxrError, Fault, FromDXR, FromParams, ToDXR, ToParams, Value, XML_RPC_DATE_FORMAT};
 
 // re-export chrono: DateTime / Utc are part of the public API
