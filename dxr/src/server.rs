@@ -89,6 +89,8 @@ impl ServerBuilder {
     }
 }
 
+type Handlers = Arc<HashMap<&'static str, Box<dyn Handler>>>;
+
 /// # XML-RPC server implementation
 ///
 /// This type provides a very simple XML-RPC server implementation. Specify server address,
@@ -97,7 +99,7 @@ impl ServerBuilder {
 pub struct Server {
     addr: SocketAddr,
     path: Cow<'static, str>,
-    handlers: Arc<HashMap<&'static str, Box<dyn Handler>>>,
+    handlers: Handlers,
     off_switch: Option<Box<dyn ServerOffSwitch>>,
 }
 
@@ -123,34 +125,9 @@ impl Server {
     pub async fn serve(self) -> Result<(), String> {
         let app = Router::new().route(
             self.path.as_ref(),
-            post({
-                move |body: String, headers: HeaderMap| async move {
-                    if headers.get(CONTENT_LENGTH).is_none() {
-                        return fault_to_response(411, "Content-Length header missing.");
-                    }
-
-                    let call: MethodCall = match quick_xml::de::from_str(&body) {
-                        Ok(call) => call,
-                        Err(error) => {
-                            let e = DxrError::invalid_data(error.to_string());
-                            let f = Fault::new(400, e.to_string());
-                            return fault_to_response(f.code(), f.string());
-                        },
-                    };
-
-                    let handler = match self.handlers.get(call.name()) {
-                        Some(handler) => handler,
-                        None => return fault_to_response(404, "Unknown method."),
-                    };
-
-                    let response = match handler.handle(call.params(), &headers) {
-                        Ok(value) => success_to_response(value),
-                        Err(fault) => fault_to_response(fault.code(), fault.string()),
-                    };
-
-                    response
-                }
-            }),
+            post(
+                move |body: String, headers: HeaderMap| async move { service(self.handlers.clone(), &body, &headers) },
+            ),
         );
 
         if let Some(switch) = self.off_switch {
@@ -166,6 +143,33 @@ impl Server {
                 .map_err(|error| error.to_string())
         }
     }
+}
+
+fn service(handlers: Handlers, body: &str, headers: &HeaderMap) -> (StatusCode, HeaderMap, String) {
+    if headers.get(CONTENT_LENGTH).is_none() {
+        return fault_to_response(411, "Content-Length header missing.");
+    }
+
+    let call: MethodCall = match quick_xml::de::from_str(body) {
+        Ok(call) => call,
+        Err(error) => {
+            let e = DxrError::invalid_data(error.to_string());
+            let f = Fault::new(400, e.to_string());
+            return fault_to_response(f.code(), f.string());
+        },
+    };
+
+    let handler = match handlers.get(call.name()) {
+        Some(handler) => handler,
+        None => return fault_to_response(404, "Unknown method."),
+    };
+
+    let response = match handler.handle(call.params(), headers) {
+        Ok(value) => success_to_response(value),
+        Err(fault) => fault_to_response(fault.code(), fault.string()),
+    };
+
+    response
 }
 
 fn response_headers() -> HeaderMap {

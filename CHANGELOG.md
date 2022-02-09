@@ -1,3 +1,13 @@
+## Unreleased 0.2.1
+
+Added:
+
+- `ServerBuilder` method for changing the default route of the XML-RPC endpoint (default: `/`)
+
+Internal changes:
+
+- simplified / refactored `Server::serve` by splitting off the XML-RPC endpoint handler
+
 ## Release 0.2.0
 
 This version contains some fixes that required changes in public APIs (listed below), so this
