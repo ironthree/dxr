@@ -77,9 +77,9 @@
 //! use dxr::axum::http::HeaderMap;
 //! use dxr::{Fault, FromParams, HandlerFn, ToDXR, Value};
 //!
-//! fn hello_handler(params: &[Value], _headers: &HeaderMap) -> Result<Value, Fault> {
+//! fn hello_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
 //!     let name = String::from_params(params)?;
-//!     Ok(format!("Handler function says: Hello, {}!", name).to_dxr()?)
+//!     Ok(Some(format!("Handler function says: Hello, {}!", name).to_dxr()?))
 //! }
 //!
 //! use dxr::ServerBuilder;
