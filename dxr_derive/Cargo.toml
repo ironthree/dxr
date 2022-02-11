@@ -3,7 +3,7 @@ name = "dxr_derive"
 description = "Implementation details of DXR (derive macros)"
 license = "MIT OR Apache-2.0"
 
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 rust-version = "1.56.0"
 
@@ -21,7 +21,3 @@ syn = "1.0.86"
 quote = "1.0.15"
 
 [dev-dependencies]
-
-[package.metadata.docs.rs]
-all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
