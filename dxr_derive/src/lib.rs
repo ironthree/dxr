@@ -7,7 +7,6 @@
 #![warn(unused_import_braces)]
 #![warn(unused_qualifications)]
 #![warn(clippy::unwrap_used)]
-#![cfg_attr(docsrs, feature(doc_cfg))]
 
 //! # dxr_derive
 //!
@@ -33,7 +32,6 @@ fn use_dxr() -> TokenStream2 {
 }
 
 /// procedural macro for deriving the `FromDXR` trait for structs
-#[cfg_attr(docsrs, doc(cfg(feature = "derive")))]
 #[proc_macro_derive(FromDXR)]
 pub fn from_dxr(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
@@ -98,7 +96,6 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
 }
 
 /// procedural macro for deriving the `ToDXR` trait for structs
-#[cfg_attr(docsrs, doc(cfg(feature = "derive")))]
 #[proc_macro_derive(ToDXR)]
 pub fn to_dxr(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);

@@ -129,7 +129,7 @@
 //! - null values (`<nil/>`): mapped to [`Option`]`<T>`, enabled with the `nil` feature
 
 #[cfg(feature = "derive")]
-#[doc(inline)]
+#[cfg_attr(docsrs, doc(cfg(feature = "derive")))]
 pub use dxr_derive::{FromDXR, ToDXR};
 
 #[doc(inline)]
