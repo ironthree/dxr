@@ -6,6 +6,7 @@ use dxr::axum::http::HeaderMap;
 use dxr::{
     Call,
     ClientBuilder,
+    DxrError,
     Fault,
     FromParams,
     HandlerFn,
@@ -65,12 +66,24 @@ async fn adder() {
         // argument number mismatch
         let (a, b, c) = (2i32, 3i32, 4i32);
         let call: Call<_, i32> = Call::new("add", (a, b, c));
-        assert!(client.call(call).await.unwrap_err().is_server_fault());
+        assert!(client
+            .call(call)
+            .await
+            .unwrap_err()
+            .downcast::<DxrError>()
+            .unwrap()
+            .is_server_fault());
 
         // argument type mismatch
         let (a, b) = ("12", "24");
         let call: Call<_, i32> = Call::new("add", (a, b));
-        assert!(client.call(call).await.unwrap_err().is_server_fault());
+        assert!(client
+            .call(call)
+            .await
+            .unwrap_err()
+            .downcast::<DxrError>()
+            .unwrap()
+            .is_server_fault());
     };
 
     tokio::spawn(calls()).await.unwrap();

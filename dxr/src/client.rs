@@ -124,38 +124,33 @@ impl Client {
     ///
     /// Fault responses from the XML-RPC server are transparently converted into
     /// [`DxrError::ServerFault`] errors.
-    pub async fn call<P: ToParams, R: FromDXR>(&self, call: Call<'_, P, R>) -> Result<R, DxrError> {
+    pub async fn call<P: ToParams, R: FromDXR>(&self, call: Call<'_, P, R>) -> Result<R, anyhow::Error> {
         let request = call.as_xml_rpc()?;
 
         // construct HTTP body and content-length header from request
         let body = request_to_body(&request)?;
 
         // construct request and send to server
-        let request = self
-            .client()
-            .post(self.url.clone())
-            .body(body)
-            .build()
-            .expect("Failed to construct POST request.");
+        let request = self.client().post(self.url.clone()).body(body).build()?;
 
-        let response = self.client().execute(request).await.expect("Network request failed.");
+        let response = self.client().execute(request).await?;
 
         // deserialize xml-rpc method response
-        let contents = response.text().await.expect("Failed to decode response body.");
+        let contents = response.text().await?;
         let result = request_to_result(&contents)?;
 
         if let Some(value) = result.inner() {
-            R::from_dxr(&value)
+            Ok(R::from_dxr(&value)?)
         } else {
             #[cfg(feature = "nil")]
             {
                 use dxr_shared::Value;
-                R::from_dxr(&Value::nil())
+                Ok(R::from_dxr(&Value::nil())?)
             }
 
             #[cfg(not(feature = "nil"))]
             {
-                Err(DxrError::parameter_mismatch(0, 1))
+                Err(DxrError::parameter_mismatch(0, 1))?
             }
         }
     }

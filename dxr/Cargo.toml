@@ -43,6 +43,7 @@ path = "tests/echo_one.rs"
 required-features = ["derive", "client", "server", "i8", "nil", "tokio"]
 
 [dependencies]
+anyhow = "1.0.53"
 dxr_shared = { path = "../dxr_shared", version = "0.2.1", default-features = false }
 log = "0.4.13"
 quick-xml = { version = "0.22" , features = ["serialize"] }

@@ -122,7 +122,7 @@ impl Server {
     ///
     /// Requests with invalid input, calls of unknown methods, and failed methods are converted
     /// into fault responses.
-    pub async fn serve(self) -> Result<(), String> {
+    pub async fn serve(self) -> Result<(), anyhow::Error> {
         let app = Router::new().route(
             self.path.as_ref(),
             post(
@@ -131,16 +131,12 @@ impl Server {
         );
 
         if let Some(switch) = self.off_switch {
-            axum::Server::bind(&self.addr)
+            Ok(axum::Server::bind(&self.addr)
                 .serve(app.into_make_service())
                 .with_graceful_shutdown(switch.watch())
-                .await
-                .map_err(|error| error.to_string())
+                .await?)
         } else {
-            axum::Server::bind(&self.addr)
-                .serve(app.into_make_service())
-                .await
-                .map_err(|error| error.to_string())
+            Ok(axum::Server::bind(&self.addr).serve(app.into_make_service()).await?)
         }
     }
 }

@@ -9,6 +9,7 @@ use dxr::chrono::{DateTime, SubsecRound, Utc};
 use dxr::{
     Call,
     ClientBuilder,
+    DxrError,
     Fault,
     FromDXR,
     FromParams,
@@ -130,12 +131,24 @@ async fn echo_one() {
         // type mismatch
         let value = -12i32;
         let call: Call<i32, String> = Call::new("echo", value);
-        assert!(client.call(call).await.unwrap_err().is_wrong_type());
+        assert!(client
+            .call(call)
+            .await
+            .unwrap_err()
+            .downcast::<DxrError>()
+            .unwrap()
+            .is_wrong_type());
 
         // server-side parameter number mismatch
         let value = vec![-12i32, 42i32];
         let call: Call<Vec<i32>, Vec<i32>> = Call::new("echo", value);
-        assert!(client.call(call).await.unwrap_err().is_server_fault());
+        assert!(client
+            .call(call)
+            .await
+            .unwrap_err()
+            .downcast::<DxrError>()
+            .unwrap()
+            .is_server_fault());
     };
 
     tokio::spawn(calls()).await.unwrap();

@@ -1,8 +1,13 @@
-## Unreleased 0.2.2
+## Unreleased 0.3.0
+
+Changed:
+
+- use `anyhow` to simplify error handling in client and server implementations
 
 Internal changes:
 
-- conversion from `FaultResponse` to `Fault` can fail, so implement `TryFrom` instead of `From`
+- conversion from `FaultResponse` to `Fault` can fail, so implement a fallible
+  `TryFrom` instead of a panicking `From`
 
 ## Release 0.2.1
 
