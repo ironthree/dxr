@@ -1,5 +1,7 @@
 #![allow(clippy::unwrap_used)]
 
+use std::borrow::Cow;
+
 #[cfg(all(feature = "derive", feature = "nil"))]
 use quickcheck::TestResult;
 use quickcheck_macros::quickcheck;
@@ -14,6 +16,38 @@ fn roundtrip_struct_empty() {
 
     let value = Test {};
     assert_eq!(Test::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
+}
+
+#[cfg(feature = "derive")]
+#[quickcheck]
+fn roundtrip_struct_cow_static(string: String) -> bool {
+    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
+    struct TestCow {
+        string: Cow<'static, String>,
+    }
+
+    let expected = TestCow {
+        string: Cow::Owned(string.trim().to_owned()),
+    };
+    let value = TestCow::from_dxr(&ToDXR::to_dxr(&expected).unwrap()).unwrap();
+
+    expected == value
+}
+
+#[cfg(feature = "derive")]
+#[quickcheck]
+fn roundtrip_struct_cow_string(string: String) -> bool {
+    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
+    struct TestCow<'a> {
+        string: Cow<'a, String>,
+    }
+
+    let expected = TestCow {
+        string: Cow::Owned(string.trim().to_owned()),
+    };
+    let value = TestCow::from_dxr(&ToDXR::to_dxr(&expected).unwrap()).unwrap();
+
+    expected == value
 }
 
 #[cfg(all(feature = "derive", feature = "nil"))]
@@ -58,6 +92,25 @@ fn roundtrip_option_none() {
 fn roundtrip_option_some(a: i32) -> bool {
     let value = Some(a);
     <Option<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap() == value
+}
+
+#[quickcheck]
+fn roundtrip_cow_string(string: String) -> bool {
+    let expected: Cow<'_, String> = Cow::Owned(string.trim().to_owned());
+    let value = <Cow<String>>::from_dxr(&ToDXR::to_dxr(&expected).unwrap()).unwrap();
+
+    println!("Expected:");
+    println!("{:#?}", expected);
+    println!("Value:");
+    println!("{:#?}", value);
+
+    expected == value
+}
+
+#[quickcheck]
+fn roundtrip_cow_i4(i4: i32) -> bool {
+    let expected: Cow<'_, i32> = Cow::Owned(i4);
+    <Cow<i32>>::from_dxr(&ToDXR::to_dxr(&expected).unwrap()).unwrap() == expected
 }
 
 #[cfg(feature = "server")]

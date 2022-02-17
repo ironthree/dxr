@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
@@ -7,15 +8,18 @@ use crate::traits::ToDXR;
 use crate::types::{Array, Member, Struct, Value};
 use crate::util::*;
 
-impl ToDXR for Value {
+impl<T> ToDXR for &T
+where
+    T: ToDXR,
+{
     fn to_dxr(&self) -> Result<Value, DxrError> {
-        Ok(self.clone())
+        ToDXR::to_dxr(*self)
     }
 }
 
-impl ToDXR for &Value {
+impl ToDXR for Value {
     fn to_dxr(&self) -> Result<Value, DxrError> {
-        Ok(Value::clone(self))
+        Ok(self.clone())
     }
 }
 
@@ -96,17 +100,14 @@ where
     }
 }
 
-#[cfg(feature = "nil")]
-#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
-impl<T> ToDXR for &Option<T>
+impl<'a, T> ToDXR for Cow<'a, T>
 where
-    T: ToDXR,
+    T: ToDXR + Clone,
 {
     fn to_dxr(&self) -> Result<Value, DxrError> {
-        if let Some(value) = self {
-            T::to_dxr(value)
-        } else {
-            Ok(Value::nil())
+        match self {
+            Cow::Owned(owned) => ToDXR::to_dxr(owned),
+            Cow::Borrowed(borrowed) => ToDXR::to_dxr(*borrowed),
         }
     }
 }

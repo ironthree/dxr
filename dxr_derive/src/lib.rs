@@ -78,7 +78,7 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
 
     let impl_block = quote! {
         impl #impl_generics #dxr::FromDXR for #name #ty_generics #where_clause {
-            fn from_dxr(value: &#dxr::Value) -> Result<#name, #dxr::DxrError> {
+            fn from_dxr(value: &#dxr::Value) -> Result<#name #ty_generics, #dxr::DxrError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
                 use #dxr::{Value, DxrError};

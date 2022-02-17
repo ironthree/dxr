@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
@@ -90,6 +91,15 @@ where
         } else {
             Ok(Some(T::from_dxr(value)?))
         }
+    }
+}
+
+impl<T> FromDXR for Cow<'_, T>
+where
+    T: FromDXR + Clone,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        Ok(Cow::Owned(T::from_dxr(value)?))
     }
 }
 
