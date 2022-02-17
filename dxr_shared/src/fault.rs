@@ -1,6 +1,8 @@
 use std::fmt::{Display, Formatter};
 
-use crate::types::{FaultResponse, Type};
+use crate::error::DxrError;
+use crate::traits::FromDXR;
+use crate::types::FaultResponse;
 
 /// data type representing an XML-RPC server fault (numeric error code and message)
 #[derive(Clone, Debug, PartialEq)]
@@ -32,23 +34,32 @@ impl Display for Fault {
     }
 }
 
-impl From<FaultResponse> for Fault {
-    fn from(f: FaultResponse) -> Self {
-        let members = f.members();
+impl TryFrom<FaultResponse> for Fault {
+    type Error = DxrError;
 
-        let first = members.get(0).unwrap();
-        let second = members.get(1).unwrap();
+    fn try_from(value: FaultResponse) -> Result<Self, Self::Error> {
+        let mut members = value.members().iter();
 
-        match (first.inner().inner(), second.inner().inner()) {
-            (Type::Integer(code), Type::String(string)) => Fault {
-                code: *code,
-                string: string.clone(),
-            },
-            (Type::String(string), Type::Integer(code)) => Fault {
-                code: *code,
-                string: string.clone(),
-            },
-            _ => unreachable!(),
-        }
+        let (first, second) = match (members.next(), members.next(), members.next()) {
+            (Some(first), Some(second), None) => (first, second),
+            _ => return Err(DxrError::parameter_mismatch(members.len(), 2)),
+        };
+
+        let fault_code = if first.name() == "faultCode" {
+            first.inner()
+        } else {
+            return Err(DxrError::missing_field("fault", "faultCode"));
+        };
+
+        let fault_string = if second.name() == "faultString" {
+            second.inner()
+        } else {
+            return Err(DxrError::missing_field("fault", "faultString"));
+        };
+
+        let code: i32 = i32::from_dxr(fault_code)?;
+        let string: String = String::from_dxr(fault_string)?;
+
+        Ok(Fault::new(code, string))
     }
 }

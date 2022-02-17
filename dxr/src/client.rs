@@ -89,7 +89,7 @@ fn request_to_result(contents: &str) -> Result<MethodResponse, DxrError> {
     // - a missing <params> tag is ambiguous (can be either an empty response, or a fault response)
     // - a present <fault> tag is unambiguous
     let error2 = match quick_xml::de::from_str(contents) {
-        Ok(fault) => return Err(DxrError::server_fault(FaultResponse::into(fault))),
+        Ok(fault) => return Err(DxrError::server_fault(FaultResponse::try_into(fault)?)),
         Err(error) => error.to_string(),
     };
 

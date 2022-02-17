@@ -1,3 +1,9 @@
+## Unreleased 0.2.2
+
+Internal changes:
+
+- conversion from `FaultResponse` to `Fault` can fail, so implement `TryFrom` instead of `From`
+
 ## Release 0.2.1
 
 Added:

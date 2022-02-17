@@ -79,7 +79,7 @@ where
     fn from_params(values: &[Value]) -> Result<Self, DxrError> {
         // one value: convert or return None if it is a <nil/> value
         match values.len() {
-            1 => Ok(Option::from_dxr(values.get(0).unwrap())?),
+            1 => Ok(Option::from_dxr(&values[0])?),
             0 => Ok(None),
             n => Err(DxrError::parameter_mismatch(n, 1)),
         }

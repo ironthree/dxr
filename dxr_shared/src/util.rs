@@ -17,7 +17,7 @@ where
 {
     match values.len() {
         1 => {
-            let value = values.get(0).unwrap();
+            let value = &values[0];
 
             Ok((T::from_dxr(value)?,))
         },
@@ -40,8 +40,8 @@ where
 {
     match values.len() {
         2 => {
-            let a = values.get(0).unwrap();
-            let b = values.get(1).unwrap();
+            let a = &values[0];
+            let b = &values[1];
 
             Ok((A::from_dxr(a)?, B::from_dxr(b)?))
         },
@@ -66,9 +66,9 @@ where
 {
     match values.len() {
         3 => {
-            let a = values.get(0).unwrap();
-            let b = values.get(1).unwrap();
-            let c = values.get(2).unwrap();
+            let a = &values[0];
+            let b = &values[1];
+            let c = &values[2];
 
             Ok((A::from_dxr(a)?, B::from_dxr(b)?, C::from_dxr(c)?))
         },
@@ -95,10 +95,10 @@ where
 {
     match values.len() {
         4 => {
-            let a = values.get(0).unwrap();
-            let b = values.get(1).unwrap();
-            let c = values.get(2).unwrap();
-            let d = values.get(3).unwrap();
+            let a = &values[0];
+            let b = &values[1];
+            let c = &values[2];
+            let d = &values[3];
 
             Ok((A::from_dxr(a)?, B::from_dxr(b)?, C::from_dxr(c)?, D::from_dxr(d)?))
         },
@@ -127,11 +127,11 @@ where
 {
     match values.len() {
         5 => {
-            let a = values.get(0).unwrap();
-            let b = values.get(1).unwrap();
-            let c = values.get(2).unwrap();
-            let d = values.get(3).unwrap();
-            let e = values.get(4).unwrap();
+            let a = &values[0];
+            let b = &values[1];
+            let c = &values[2];
+            let d = &values[3];
+            let e = &values[4];
 
             Ok((
                 A::from_dxr(a)?,
@@ -175,12 +175,12 @@ where
 {
     match values.len() {
         6 => {
-            let a = values.get(0).unwrap();
-            let b = values.get(1).unwrap();
-            let c = values.get(2).unwrap();
-            let d = values.get(3).unwrap();
-            let e = values.get(4).unwrap();
-            let f = values.get(5).unwrap();
+            let a = &values[0];
+            let b = &values[1];
+            let c = &values[2];
+            let d = &values[3];
+            let e = &values[4];
+            let f = &values[5];
 
             Ok((
                 A::from_dxr(a)?,
@@ -230,13 +230,13 @@ where
 {
     match values.len() {
         7 => {
-            let a = values.get(0).unwrap();
-            let b = values.get(1).unwrap();
-            let c = values.get(2).unwrap();
-            let d = values.get(3).unwrap();
-            let e = values.get(4).unwrap();
-            let f = values.get(5).unwrap();
-            let g = values.get(6).unwrap();
+            let a = &values[0];
+            let b = &values[1];
+            let c = &values[2];
+            let d = &values[3];
+            let e = &values[4];
+            let f = &values[5];
+            let g = &values[6];
 
             Ok((
                 A::from_dxr(a)?,
@@ -290,14 +290,14 @@ where
 {
     match values.len() {
         8 => {
-            let a = values.get(0).unwrap();
-            let b = values.get(1).unwrap();
-            let c = values.get(2).unwrap();
-            let d = values.get(3).unwrap();
-            let e = values.get(4).unwrap();
-            let f = values.get(5).unwrap();
-            let g = values.get(6).unwrap();
-            let h = values.get(7).unwrap();
+            let a = &values[0];
+            let b = &values[1];
+            let c = &values[2];
+            let d = &values[3];
+            let e = &values[4];
+            let f = &values[5];
+            let g = &values[6];
+            let h = &values[7];
 
             Ok((
                 A::from_dxr(a)?,
