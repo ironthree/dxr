@@ -1,3 +1,9 @@
+## Release 0.3.1
+
+Fixed:
+
+- fixed re-export of `async-trait` if `axum-server` feature is not enabled 😫
+
 ## Release 0.3.0
 
 Added:
