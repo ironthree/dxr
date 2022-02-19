@@ -147,7 +147,7 @@ pub use url;
 pub use async_trait;
 
 // re-export axum: public server API
-#[cfg(feature = "server")]
+#[cfg(feature = "axum-server")]
 pub use axum;
 
 #[cfg(feature = "client")]

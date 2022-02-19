@@ -1,147 +1,31 @@
-use std::borrow::Cow;
 use std::collections::HashMap;
-use std::fmt::{Debug, Formatter};
-use std::net::SocketAddr;
 use std::sync::Arc;
 
-use axum::http::{header::CONTENT_LENGTH, header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode};
-use axum::routing::post;
-use axum::Router;
-
 use dxr_shared::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Value};
+use http::header::{CONTENT_LENGTH, CONTENT_TYPE};
+use http::{HeaderMap, HeaderValue, StatusCode};
 
 mod handler;
 pub use handler::*;
 
-mod shutdown;
-pub use shutdown::*;
+mod support;
+pub use support::*;
 
 /// default server route / path for XML-RPC endpoints
 #[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub const DEFAULT_SERVER_ROUTE: &str = "/";
 
-/// builder that takes parameters for constructing a [`Server`]
+/// type alias for atomically reference-counted map of XML-RPC method names and handlers
 #[cfg_attr(docsrs, doc(cfg(feature = "server")))]
-pub struct ServerBuilder {
-    addr: SocketAddr,
-    path: Cow<'static, str>,
-    handlers: HashMap<&'static str, Box<dyn Handler>>,
-    off_switch: Option<Box<dyn ServerOffSwitch>>,
-}
+pub type HandlerMap = Arc<HashMap<&'static str, Box<dyn Handler>>>;
 
-impl Debug for ServerBuilder {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let mut handler_list: Vec<&&str> = self.handlers.keys().collect();
-        handler_list.sort();
-
-        f.debug_struct("ServerBuilder")
-            .field("addr", &self.addr)
-            .field("path", &self.path)
-            .field("handlers", &handler_list)
-            .field("off_switch", &self.off_switch)
-            .finish()
-    }
-}
-
-impl ServerBuilder {
-    /// constructor for [`ServerBuilder`] from the address of the XML-RPC server
-    pub fn new(addr: SocketAddr) -> ServerBuilder {
-        ServerBuilder {
-            addr,
-            path: Cow::Borrowed(DEFAULT_SERVER_ROUTE),
-            handlers: HashMap::new(),
-            off_switch: None,
-        }
-    }
-
-    /// method for overriding the default path / route for the XML-RPC endpoint
-    ///
-    /// The default value is [`/`](DEFAULT_SERVER_ROUTE). Another common value
-    /// is `/RPC2`, which can be set with this method, if necessary.
-    pub fn set_path(mut self, route: &str) -> Self {
-        self.path = Cow::Owned(route.to_owned());
-        self
-    }
-
-    /// method for adding a switch that is used to handle graceful shutdown
-    ///
-    /// To avoid a direct dependency on an async runtime, the value implementing the
-    /// [`ServerOffSwitch`] trait must provide its own state tracking and sleeping logic.
-    pub fn add_off_switch(mut self, off_switch: Box<dyn ServerOffSwitch>) -> Self {
-        self.off_switch = Some(off_switch);
-        self
-    }
-
-    /// method for adding a new method handler for the [`Server`]
-    pub fn add_method(mut self, name: &'static str, handler: Box<dyn Handler>) -> Self {
-        self.handlers.insert(name, handler);
-        self
-    }
-
-    /// build the [`Server`] from the specified URL and registered method handlers
-    pub fn build(self) -> Server {
-        Server {
-            addr: self.addr,
-            path: self.path,
-            handlers: Arc::new(self.handlers),
-            off_switch: self.off_switch,
-        }
-    }
-}
-
-type Handlers = Arc<HashMap<&'static str, Box<dyn Handler>>>;
-
-/// # XML-RPC server implementation
+/// This function can be used in custom XML-RPC endpoints (BYOS - bring your own server).
 ///
-/// This type provides a very simple XML-RPC server implementation. Specify server address,
-/// register method handlers, initialize the [`Server`], and wait for requests.
+/// It takes a map of method handlers ([`HandlerMap`]), the request body, and the request headers
+/// as arguments, and returns a tuple of HTTP status code [`http::StatusCode`], request
+/// response headers, and response body.
 #[cfg_attr(docsrs, doc(cfg(feature = "server")))]
-pub struct Server {
-    addr: SocketAddr,
-    path: Cow<'static, str>,
-    handlers: Handlers,
-    off_switch: Option<Box<dyn ServerOffSwitch>>,
-}
-
-impl Debug for Server {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let mut handler_list: Vec<&&str> = self.handlers.keys().collect();
-        handler_list.sort();
-
-        f.debug_struct("Server")
-            .field("addr", &self.addr)
-            .field("path", &self.path)
-            .field("handlers", &handler_list)
-            .field("off_switch", &self.off_switch)
-            .finish()
-    }
-}
-
-impl Server {
-    /// asynchronous method for processing remote procedure calls via XML-RPC
-    ///
-    /// Requests with invalid input, calls of unknown methods, and failed methods are converted
-    /// into fault responses.
-    pub async fn serve(self) -> Result<(), anyhow::Error> {
-        let app = Router::new().route(
-            self.path.as_ref(),
-            post(
-                move |body: String, headers: HeaderMap| async move { service(self.handlers.clone(), &body, &headers) },
-            ),
-        );
-
-        if let Some(switch) = self.off_switch {
-            Ok(axum::Server::bind(&self.addr)
-                .serve(app.into_make_service())
-                .with_graceful_shutdown(switch.watch())
-                .await?)
-        } else {
-            Ok(axum::Server::bind(&self.addr).serve(app.into_make_service()).await?)
-        }
-    }
-}
-
-fn service(handlers: Handlers, body: &str, headers: &HeaderMap) -> (StatusCode, HeaderMap, String) {
+pub fn server(handlers: HandlerMap, body: &str, headers: &HeaderMap) -> (StatusCode, HeaderMap, String) {
     if headers.get(CONTENT_LENGTH).is_none() {
         return fault_to_response(411, "Content-Length header missing.");
     }

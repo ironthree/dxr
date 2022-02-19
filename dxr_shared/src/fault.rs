@@ -4,7 +4,7 @@ use crate::error::DxrError;
 use crate::traits::FromDXR;
 use crate::types::FaultResponse;
 
-/// data type representing an XML-RPC server fault (numeric error code and message)
+/// XML-RPC server fault (numeric error code and message)
 #[derive(Clone, Debug, PartialEq)]
 pub struct Fault {
     code: i32,

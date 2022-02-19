@@ -1,4 +1,4 @@
-use reqwest::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
+use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
 use url::Url;
 
 use dxr_shared::{DxrError, FaultResponse, FromDXR, MethodCall, MethodResponse, ToParams};
@@ -10,7 +10,7 @@ pub use call::*;
 #[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub const DEFAULT_USER_AGENT: &str = concat!("dxr-client-v", env!("CARGO_PKG_VERSION"));
 
-/// builder that takes parameters for constructing a [`Client`]
+/// builder that takes parameters for constructing a [`Client`] based on [`reqwest`]
 #[derive(Debug)]
 #[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub struct ClientBuilder {
@@ -84,7 +84,7 @@ fn request_to_body(call: &MethodCall) -> Result<String, DxrError> {
     Ok(body)
 }
 
-fn request_to_result(contents: &str) -> Result<MethodResponse, DxrError> {
+fn response_to_result(contents: &str) -> Result<MethodResponse, DxrError> {
     // need to check for FaultResponse first:
     // - a missing <params> tag is ambiguous (can be either an empty response, or a fault response)
     // - a present <fault> tag is unambiguous
@@ -106,8 +106,8 @@ fn request_to_result(contents: &str) -> Result<MethodResponse, DxrError> {
 
 /// # XML-RPC client implementation
 ///
-/// This type provides a very simple XML-RPC client implementation. Initialize the [`Client`],
-/// submit a [`Call`], get a result (or a fault).
+/// This type provides a very simple XML-RPC client implementation based on [`reqwest`]. Initialize
+/// the [`Client`], submit a [`Call`], get a result (or a fault).
 #[derive(Debug)]
 #[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub struct Client {
@@ -125,20 +125,19 @@ impl Client {
     /// Fault responses from the XML-RPC server are transparently converted into
     /// [`DxrError::ServerFault`] errors.
     pub async fn call<P: ToParams, R: FromDXR>(&self, call: Call<'_, P, R>) -> Result<R, anyhow::Error> {
+        // serialize XML-RPC method call
         let request = call.as_xml_rpc()?;
-
-        // construct HTTP body and content-length header from request
         let body = request_to_body(&request)?;
 
         // construct request and send to server
         let request = self.client().post(self.url.clone()).body(body).build()?;
-
         let response = self.client().execute(request).await?;
 
-        // deserialize xml-rpc method response
+        // deserialize XML-RPC method response
         let contents = response.text().await?;
-        let result = request_to_result(&contents)?;
+        let result = response_to_result(&contents)?;
 
+        // extract return value  (if it is present)
         if let Some(value) = result.inner() {
             Ok(R::from_dxr(&value)?)
         } else {

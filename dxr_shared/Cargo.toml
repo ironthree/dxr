@@ -24,7 +24,6 @@ quickcheck = "1.0"
 quickcheck_macros = "1.0"
 
 [features]
-default = ["i8", "nil"]
 i8 = []
 nil = []
 

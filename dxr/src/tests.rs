@@ -113,7 +113,7 @@ fn roundtrip_cow_i4(i4: i32) -> bool {
     <Cow<i32>>::from_dxr(&ToDXR::to_dxr(&expected).unwrap()).unwrap() == expected
 }
 
-#[cfg(feature = "server")]
+#[cfg(all(feature = "axum", feature = "server"))]
 #[test]
 fn server_builder_debug() {
     use crate::ServerBuilder;
@@ -122,7 +122,7 @@ fn server_builder_debug() {
     insta::assert_debug_snapshot!(builder);
 }
 
-#[cfg(all(feature = "server", feature = "nil"))]
+#[cfg(all(feature = "axum", feature = "server"))]
 #[test]
 fn server_builder_debug_with_method() {
     use crate::{HandlerFn, HandlerResult, ServerBuilder, Value};
@@ -136,7 +136,7 @@ fn server_builder_debug_with_method() {
     insta::assert_debug_snapshot!(builder);
 }
 
-#[cfg(all(feature = "server", feature = "tokio"))]
+#[cfg(all(feature = "axum", feature = "server", feature = "tokio"))]
 #[test]
 fn server_builder_debug_with_off_switch() {
     use crate::{ServerBuilder, TokioOffSwitch};
@@ -146,7 +146,7 @@ fn server_builder_debug_with_off_switch() {
     insta::assert_debug_snapshot!(builder);
 }
 
-#[cfg(feature = "server")]
+#[cfg(all(feature = "axum", feature = "server"))]
 #[test]
 fn server_debug() {
     use crate::ServerBuilder;
@@ -155,7 +155,7 @@ fn server_debug() {
     insta::assert_debug_snapshot!(server);
 }
 
-#[cfg(all(feature = "server", feature = "nil"))]
+#[cfg(all(feature = "axum", feature = "server"))]
 #[test]
 fn server_debug_with_method() {
     use crate::{HandlerFn, HandlerResult, ServerBuilder, Value};
@@ -171,7 +171,7 @@ fn server_debug_with_method() {
     insta::assert_debug_snapshot!(server);
 }
 
-#[cfg(all(feature = "server", feature = "tokio"))]
+#[cfg(all(feature = "axum", feature = "server", feature = "tokio"))]
 #[test]
 fn server_debug_with_off_switch() {
     use crate::{ServerBuilder, TokioOffSwitch};

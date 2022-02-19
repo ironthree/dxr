@@ -16,6 +16,7 @@ FEATURES = [
     "client",
     "derive",
     "server",
+    "axum-server",
     "i8",
     "nil",
     "dxr_derive",
@@ -23,6 +24,7 @@ FEATURES = [
     "url",
     "async-trait",
     "axum",
+    "http",
     "tokio",
 ]
 
@@ -34,10 +36,14 @@ def main():
     features = [["--all-features"], ["--no-default-features"]]
     features += [["--no-default-features", "--features", ",".join(features)] for features in allcombos]
 
-    for command in ["check", "clippy"]:
-        for featureset in features:
-            print(f"{command}: features", " ".join(featureset))
-            ret = sp.run(["cargo", command, "--all-targets"] + featureset)
+    for featureset in features:
+        # for command in ["check", "clippy", "build", "test"]:
+        for command in ["check", "clippy"]:
+            print(f">> cargo {command}", " ".join(featureset))
+
+            # cargo test --all-targets skips doctests
+            targets = ["--all-targets"] if command != "test" else []
+            ret = sp.run(["cargo", command] + targets + featureset)
 
             try:
                 ret.check_returncode()

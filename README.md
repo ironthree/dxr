@@ -22,8 +22,7 @@ The following features are already implemented:
 - built-in XML-escaping and un-escaping of string arguments
 - built-in date & time parsing for the `dateTime.iso8861` value type
 - built-in base64 en- and decoding of byte vectors for the `base64` type
-- optional support for the (non-standard) `<i8>` (64-bit unsigned integer) and `<nil/>`
-  (enabled by default)
+- optional support for (non-standard) `<i8>` (64-bit unsigned integer) and `<nil/>` values
 - support for arbitrary method call argument types without needing to convert values
   first (for up to 8 arguments; support for more could be implemented, if needed)
 - basic support for both XML-RPC clients (with `reqwest`) and servers (with `axum`)
