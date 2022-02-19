@@ -1,5 +1,3 @@
-// TODO: move code from this file to koji-rs
-
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
 

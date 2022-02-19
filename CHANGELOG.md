@@ -1,5 +1,11 @@
 ## Unreleased 0.3.0
 
+Added:
+
+- implementations of `ToDXR` and `FromDXR` for `Box<T>` (making owned recursive types possible)
+- support for deriving `ToDXR` for structs containing `&T` references as fields (making
+  reference-based recursive types possible)
+
 Changed:
 
 - merged code from the `dxr_shared` crate into the main `dxr` crate
@@ -8,6 +14,10 @@ Changed:
 - use `anyhow` to simplify error handling in client and server implementations
 - conversion from `FaultResponse` to `Fault` can fail, so implement a fallible
   `TryFrom` instead of a panicking `From`
+
+Internal changes:
+
+- added `trybuild` based pass/fail tests for derive macros
 
 ## Release 0.2.1
 

@@ -11,7 +11,7 @@ authors = ["Fabio Valentini <decathorpe@gmail.com>"]
 categories = ["network-programming", "web-programming::http-client", "encoding"]
 keywords = ["XML-RPC", "client", "derive"]
 repository = "https://github.com/ironthree/dxr"
-
+exclude = ["/wip/"]
 
 [[example]]
 name = "client"
@@ -32,6 +32,11 @@ required-features = ["axum-server"]
 name = "adder"
 path = "tests/adder.rs"
 required-features = ["client", "axum-server", "tokio"]
+
+[[test]]
+name = "derive"
+path = "tests/derive.rs"
+required-features = ["derive", "i8", "nil"]
 
 [[test]]
 name = "echo_any"
@@ -79,6 +84,9 @@ tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }
 
 # used for compiling async doctests
 tokio-test = "0.4.2"
+
+# used for testing derive macros
+trybuild = "1.0.56"
 
 
 [features]

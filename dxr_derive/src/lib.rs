@@ -57,8 +57,19 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
                 for field in &fields.named {
                     let ident = field.ident.as_ref().expect("Failed to get struct field identifier.");
                     let stype = match &field.ty {
-                        Type::Path(v) => v,
-                        _ => unimplemented!("Deriving FromDXR not possible for field: {}", ident),
+                        Type::Path(t) => t.to_token_stream(),
+                        Type::Tuple(t) => t.to_token_stream(),
+                        Type::Array(_) => panic!(
+                            "Deriving FromDXR is not possible for structs that contain array types. \
+                             Try using a Vec for field \"{}\" instead.",
+                            ident
+                        ),
+                        Type::Reference(_) => panic!(
+                            "Deriving FromDXR is not possible for structs that contain reference types. \
+                             Try using a std::borrow::Cow for field \"{}\" instead.",
+                            ident
+                        ),
+                        _ => panic!("Deriving FromDXR not possible for field: {}", ident),
                     };
                     let ident_str = ident.to_string();
                     field_impls.push(quote! {
@@ -67,10 +78,10 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
                     });
                 }
             },
-            Fields::Unnamed(_) => unimplemented!("Cannot derive FromDXR for tuple structs."),
-            Fields::Unit => unimplemented!("Cannot derive FromDXR for unit structs."),
+            Fields::Unnamed(_) => panic!("Deriving FromDXR for tuple structs is not possible."),
+            Fields::Unit => panic!("Deriving FromDXR for unit structs is not possible."),
         },
-        _ => unimplemented!("FromDXR can not be derived for enums and unions."),
+        _ => panic!("Deriving FromDXR for enums and unions is not supported."),
     }
 
     let mut fields = TokenStream2::new();
@@ -121,8 +132,10 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
                     let ident = field.ident.as_ref().expect("Failed to get struct field identifier.");
                     let stype = match &field.ty {
                         Type::Path(t) => t.to_token_stream(),
+                        Type::Tuple(t) => t.to_token_stream(),
+                        Type::Array(t) => t.to_token_stream(),
                         Type::Reference(t) => t.to_token_stream(),
-                        _ => unimplemented!("Deriving ToDXR not possible for field: {}", ident),
+                        _ => panic!("Deriving ToDXR not possible for field: {}", ident),
                     };
                     let ident_str = ident.to_string();
                     field_impls.push(quote! {
@@ -130,10 +143,10 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
                     });
                 }
             },
-            Fields::Unnamed(_) => unimplemented!("Cannot derive ToDXR for tuple structs."),
-            Fields::Unit => unimplemented!("Cannot derive ToDXR for unit structs."),
+            Fields::Unnamed(_) => panic!("Deriving ToDXR for tuple structs is not possible."),
+            Fields::Unit => panic!("Deriving ToDXR for unit structs is not possible."),
         },
-        _ => unimplemented!("ToDXR can not be derived for enums and unions."),
+        _ => panic!("Deriving ToDXR for enums and unions is not supported."),
     }
 
     let mut fields = TokenStream2::new();
