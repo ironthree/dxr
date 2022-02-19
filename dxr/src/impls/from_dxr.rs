@@ -104,6 +104,15 @@ where
     }
 }
 
+impl<T> FromDXR for Box<T>
+where
+    T: FromDXR,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        Ok(Box::new(T::from_dxr(value)?))
+    }
+}
+
 impl<T> FromDXR for Vec<T>
 where
     T: FromDXR,

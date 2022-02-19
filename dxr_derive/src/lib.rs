@@ -16,7 +16,7 @@ use proc_macro::TokenStream;
 
 use proc_macro2::{Span, TokenStream as TokenStream2};
 use proc_macro_crate::{crate_name, FoundCrate};
-use quote::quote;
+use quote::{quote, ToTokens};
 use syn::{parse_macro_input, parse_quote, Data, DeriveInput, Fields, GenericParam, Ident, Type};
 
 fn use_dxr() -> TokenStream2 {
@@ -120,7 +120,8 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
                 for field in &fields.named {
                     let ident = field.ident.as_ref().expect("Failed to get struct field identifier.");
                     let stype = match &field.ty {
-                        Type::Path(v) => v,
+                        Type::Path(t) => t.to_token_stream(),
+                        Type::Reference(t) => t.to_token_stream(),
                         _ => unimplemented!("Deriving ToDXR not possible for field: {}", ident),
                     };
                     let ident_str = ident.to_string();

@@ -113,6 +113,15 @@ where
     }
 }
 
+impl<T> ToDXR for Box<T>
+where
+    T: ToDXR,
+{
+    fn to_dxr(&self) -> Result<Value, DxrError> {
+        ToDXR::to_dxr(self.as_ref())
+    }
+}
+
 impl<T> ToDXR for Vec<T>
 where
     T: ToDXR,
