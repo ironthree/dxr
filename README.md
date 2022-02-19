@@ -33,12 +33,10 @@ tests and property-based tests using `quickcheck`.
 
 The project is split into three crates:
 
-- `dxr`: high-level method call, client, and server implementations
-- `dxr_derive`: `ToDXR` and `FromDXR` derive macros for custom structs
-- `dxr_shared`: definition of conversion traits and XML-RPC types for (de)serialization  
-
-All relevant parts of `dxr_derive` and `dxr_shared` are re-exported in the `dxr` crate,
-they are not supposed to be used directly.
+- `dxr`: high-level method call, client, and server implementations, implementation of
+  XML-RPC types and conversion traits between XML-RPC types and Rust types, and
+  (de)serialization implementations for converting between XML to XML-RPC values
+- `dxr_derive`: `ToDXR` and `FromDXR` derive macros for custom data types
 
 ### Why another crate for XML-RPC?
 
