@@ -161,7 +161,7 @@ pub use values::{Value, XML_RPC_DATE_FORMAT};
 pub use url;
 
 // re-export async-trait: public server API
-#[cfg(feature = "server")]
+#[cfg(feature = "axum-server")]
 pub use async_trait;
 
 // re-export axum: public server API
