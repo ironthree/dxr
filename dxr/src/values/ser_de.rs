@@ -1,10 +1,10 @@
-pub mod datetime {
+pub(crate) mod datetime {
     use chrono::{DateTime, TimeZone, Utc};
     use serde::{Deserialize, Deserializer, Serializer};
 
-    use crate::XML_RPC_DATE_FORMAT;
+    use crate::values::XML_RPC_DATE_FORMAT;
 
-    pub fn serialize<S>(datetime: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
+    pub(crate) fn serialize<S>(datetime: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
@@ -12,7 +12,7 @@ pub mod datetime {
         serializer.serialize_str(&string)
     }
 
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
     where
         D: Deserializer<'de>,
     {
@@ -25,10 +25,10 @@ pub mod datetime {
     }
 }
 
-pub mod boolean {
+pub(crate) mod boolean {
     use serde::{Deserialize, Deserializer, Serializer};
 
-    pub fn serialize<S>(boolean: &bool, serializer: S) -> Result<S::Ok, S::Error>
+    pub(crate) fn serialize<S>(boolean: &bool, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
@@ -39,7 +39,7 @@ pub mod boolean {
         serializer.serialize_str(string)
     }
 
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<bool, D::Error>
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<bool, D::Error>
     where
         D: Deserializer<'de>,
     {
@@ -53,10 +53,10 @@ pub mod boolean {
     }
 }
 
-pub mod base64 {
+pub(crate) mod base64 {
     use serde::{Deserialize, Deserializer, Serializer};
 
-    pub fn serialize<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error>
+    pub(crate) fn serialize<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
@@ -64,7 +64,7 @@ pub mod base64 {
         serializer.serialize_str(&string)
     }
 
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<Vec<u8>, D::Error>
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<Vec<u8>, D::Error>
     where
         D: Deserializer<'de>,
     {

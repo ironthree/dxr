@@ -87,10 +87,6 @@ default = ["client", "server", "derive"]
 
 # reqwest-based XML-RPC client support
 client = ["reqwest", "http", "url"]
-# basic XML-RPC client support
-#client = ["http", "url"]
-# client implementation based on reqwest
-#reqwest-client = ["client", "reqwest"]
 
 # basic XML-RPC server suport
 server = ["async-trait", "http"]

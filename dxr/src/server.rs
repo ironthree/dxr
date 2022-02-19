@@ -6,12 +6,13 @@ use http::{HeaderMap, HeaderValue, StatusCode};
 
 use crate::error::DxrError;
 use crate::fault::Fault;
-use crate::types::{FaultResponse, MethodCall, MethodResponse, Value};
+use crate::values::{FaultResponse, MethodCall, MethodResponse, Value};
 
 mod handler;
 pub use handler::*;
 
 mod support;
+#[cfg_attr(not(feature = "axum-server"), allow(unreachable_pub))]
 pub use support::*;
 
 /// default server route / path for XML-RPC endpoints

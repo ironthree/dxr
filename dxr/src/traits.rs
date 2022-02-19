@@ -1,5 +1,5 @@
 use crate::error::DxrError;
-use crate::types::structs::Value;
+use crate::values::Value;
 
 /// conversion trait from XML-RPC values to Rust types
 pub trait FromDXR: Sized {

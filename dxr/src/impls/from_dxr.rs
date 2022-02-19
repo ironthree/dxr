@@ -3,9 +3,11 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 
-use crate::types::structs::Type;
-use crate::types::util::*;
-use crate::{DxrError, FromDXR, Value};
+use crate::error::DxrError;
+use crate::traits::FromDXR;
+use crate::values::{Type, Value};
+
+use super::utils::*;
 
 impl FromDXR for Value {
     fn from_dxr(value: &Value) -> Result<Value, DxrError> {

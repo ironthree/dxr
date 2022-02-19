@@ -1,8 +1,8 @@
 use std::fmt::{Display, Formatter};
 
 use crate::error::DxrError;
-use crate::types::FaultResponse;
-use crate::types::FromDXR;
+use crate::traits::FromDXR;
+use crate::values::FaultResponse;
 
 /// XML-RPC server fault (numeric error code and message)
 #[derive(Clone, Debug, PartialEq)]

@@ -1,7 +1,7 @@
 use quick_xml::{de::from_str, se::to_string};
 
 use crate::fault::Fault;
-use crate::types::structs::{FaultResponse, MethodResponse, Value};
+use crate::values::{FaultResponse, MethodResponse, Value};
 
 #[test]
 fn to_method_response_empty() {

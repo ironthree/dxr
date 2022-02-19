@@ -36,13 +36,12 @@ def main():
     features = [["--all-features"], ["--no-default-features"]]
     features += [["--no-default-features", "--features", ",".join(features)] for features in allcombos]
 
-    for featureset in features:
-        for command in ["check", "clippy", "build", "test"]:
-        # for command in ["check", "clippy"]:
-            print(f">> cargo {command}", " ".join(featureset))
+    for n, featureset in enumerate(features):
+        for command in ["check", "clippy"]:
+            print(f">> [{n:04d}/{len(features):04d}] cargo {command}", " ".join(featureset))
 
             # cargo test --all-targets skips doctests
-            targets = ["--all-targets"] if command != "test" else []
+            targets = [] if command == "test" else ["--all-targets"]
             ret = sp.run(["cargo", command] + targets + featureset)
 
             try:

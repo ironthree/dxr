@@ -2,8 +2,11 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 
-use crate::types::util::*;
-use crate::{DxrError, ToDXR, ToParams, Value};
+use crate::error::DxrError;
+use crate::traits::{ToDXR, ToParams};
+use crate::values::Value;
+
+use super::utils::*;
 
 // for simple values, use ToDXR to convert them
 

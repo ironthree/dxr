@@ -1,6 +1,6 @@
 use quick_xml::{de::from_str, se::to_string};
 
-use crate::types::structs::{Member, Struct, Value};
+use crate::values::{Member, Struct, Value};
 
 #[test]
 fn to_member() {
@@ -97,4 +97,25 @@ fn from_value_struct() {
     let expected = Value::structure(Struct::new(vec![Member::new(String::from("answer"), Value::i4(42))]));
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
+}
+
+#[cfg(feature = "derive")]
+#[test]
+fn roundtrip_struct_empty() {
+    use crate::{FromDXR, ToDXR};
+
+    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
+    struct Test {}
+
+    let value = Test {};
+    assert_eq!(Test::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
+}
+
+#[cfg(feature = "nil")]
+#[test]
+fn roundtrip_option_none() {
+    use crate::{FromDXR, ToDXR};
+
+    let value: Option<i32> = None;
+    assert_eq!(<Option<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
 }

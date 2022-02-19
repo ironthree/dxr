@@ -1,6 +1,6 @@
 use quick_xml::{de::from_str, se::to_string};
 
-use crate::types::structs::{MethodCall, Value};
+use crate::values::{MethodCall, Value};
 
 #[test]
 fn to_method_call_no_args() {

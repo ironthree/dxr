@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 
-use crate::{FromDXR, ToDXR, Value};
+use crate::traits::{FromDXR, ToDXR};
+use crate::values::Value;
 
 #[test]
 fn to_i32() {

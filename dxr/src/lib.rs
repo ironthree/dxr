@@ -6,6 +6,7 @@
 #![warn(noop_method_call)]
 #![warn(unused_import_braces)]
 #![warn(unused_qualifications)]
+#![warn(unreachable_pub)]
 #![warn(clippy::unwrap_used)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
@@ -56,24 +57,25 @@
 //! which can be used to issue an RPC request to the server provided by the server example.
 //!
 //! ## Server interface
-//! FIXME
-//! The APIs for setting up an XML-RPC server are intended to be similarly straight-forward. First,
-//! set up a [`RouteBuilder`] by giving it the socket address it should bind to, setting up all
-//! method handlers, and then building it into an [`axum::Router`]:
+//!
+//! The APIs for setting up an XML-RPC server are intended to be similarly straight-forward,
+//! and allow embedding the XML-RPC server endpoint route into other servers. First, set up a
+//! [`RouteBuilder`], set up all method handlers, build it into an [`axum::Router`], and then
+//! either use this route as part of a larger server, or create a standalone service from it.
 //!
 //! ```
-//! # #[cfg(feature = "server")] {
+//! # #[cfg(feature = "axum-server")] {
 //! use dxr::RouteBuilder;
-//! let server = RouteBuilder::new("0.0.0.0:3000".parse().unwrap()).build();
+//! let route = RouteBuilder::new().build();
 //! # }
 //! ```
 //!
-//! Now, this is not a very useful server, since it does not know about any method calls. An
-//! arbitrary number of method handlers can be registered with the [`RouteBuilder`] before building
-//! the [`axum::Router`].
+//! Now, this is not a very useful XML-RPC endpoint, since it does not know about any method calls.
+//! An arbitrary number of method handlers can be registered with the [`RouteBuilder`] before
+//! building the [`axum::Router`].
 //!
 //! ```
-//! # #[cfg(feature = "server")] {
+//! # #[cfg(feature = "axum-server")] {
 //! use dxr::axum::http::HeaderMap;
 //! use dxr::{Fault, FromParams, HandlerFn, ToDXR, Value};
 //!
@@ -83,7 +85,8 @@
 //! }
 //!
 //! use dxr::RouteBuilder;
-//! let server = RouteBuilder::new("0.0.0.0:3000".parse().unwrap())
+//! let route = RouteBuilder::new()
+//!     .set_path("/")
 //!     .add_method("hello", Box::new(hello_handler as HandlerFn))
 //!     .build();
 //! # }
@@ -92,13 +95,16 @@
 //! Method handlers must either implement [`Handler`] themselves, or align with the [`HandlerFn`]
 //! function pointer type, for which this trait implementation is already provided.
 //!
-//! Finally, call the [`Server::serve`] method to accept and handle requests:
+//! Using this route in a standalone server with only an XML-RPC endpoint is straightforward:
 //!
 //! ```no_run
-//! # #[cfg(feature = "server")] {
+//! # #[cfg(feature = "axum-server")] {
 //! # tokio_test::block_on(async {
 //! # use dxr::RouteBuilder;
-//! # let server = RouteBuilder::new("0.0.0.0:3000".parse().unwrap()).build();
+//! # let route = RouteBuilder::new().build();
+//! use dxr::Server;
+//!
+//! let server = Server::from_route("0.0.0.0:3000".parse().unwrap(), route);
 //! server.serve().await.unwrap();
 //! # })
 //! # }
@@ -110,14 +116,15 @@
 //!
 //! ## Optional Features
 //!
-//! By default, all features except the `server` feature are enabled. All features can also be
-//! enabled individually -- by turning off default features and just enabling the required features.
+//! By default, only the basic client and server support functionality and derive macros are
+//! enabled. All features can also be enabled individually -- by turning off default features and
+//! just enabling the required features.
 //!
 //! Client and server functionality are both optional, since they pull in additional dependencies.
-//! The features can be enabled and disabled separately, though the `client` feature is enabled by
-//! default, and having neither of the two features enabled makes little sense, as it disabled most
-//! of the crate's functionality. There is additional support functionality for servers that use
-//! [`tokio`], which can be enabled with the `tokio` feature.
+//! The features can be enabled and disabled separately, but having neither of the two features
+//! enabled makes little sense, as it disables most of the crate's functionality. There is
+//! additional support functionality for servers that use [`axum`] and [`tokio`], which can be
+//! enabled with the `axum-server` feature.
 //!
 //! This crates also supports deriving conversion trait implementations for custom, user-defined
 //! structs. The derive macros are available if the `derive` feature is enabled (which it is by
@@ -141,8 +148,14 @@ pub use error::*;
 mod fault;
 pub use fault::*;
 
-mod types;
-pub use types::{FromDXR, FromParams, ToDXR, ToParams, Value, XML_RPC_DATE_FORMAT};
+mod impls;
+pub use impls::*;
+
+mod traits;
+pub use traits::*;
+
+mod values;
+pub use values::{Value, XML_RPC_DATE_FORMAT};
 
 // re-export url: public client API
 #[cfg(feature = "client")]
@@ -166,5 +179,10 @@ mod server;
 #[cfg(feature = "server")]
 pub use server::*;
 
+// property-based tests
+#[cfg(test)]
+mod checks;
+
+// standard tests
 #[cfg(test)]
 mod tests;

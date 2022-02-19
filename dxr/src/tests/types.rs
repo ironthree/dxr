@@ -1,8 +1,7 @@
 use chrono::{SubsecRound, Utc};
 use quick_xml::{de::from_str, se::to_string};
 
-use crate::types::structs::*;
-use crate::XML_RPC_DATE_FORMAT;
+use crate::values::{Type, XML_RPC_DATE_FORMAT};
 
 #[test]
 fn to_i4() {

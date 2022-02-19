@@ -1,9 +1,12 @@
+use std::borrow::Cow;
+
 use quick_xml::escape::escape;
 use quick_xml::{de::from_str, se::to_string};
 use quickcheck::TestResult;
 use quickcheck_macros::quickcheck;
 
-use crate::types::structs::Value;
+use crate::values::Value;
+use crate::{FromDXR, ToDXR};
 
 #[quickcheck]
 fn to_from_i4(int: i32) -> bool {
@@ -103,4 +106,92 @@ fn from_to_base64(bytes: Vec<u8>) -> bool {
     let value = format!("<value><base64>{}</base64></value>", base64::encode(bytes));
 
     value == to_string(&from_str::<Value>(&value).unwrap()).unwrap()
+}
+
+#[cfg(feature = "nil")]
+#[quickcheck]
+fn roundtrip_option_some(a: i32) -> bool {
+    let value = Some(a);
+    <Option<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap() == value
+}
+
+#[quickcheck]
+fn roundtrip_cow_string(string: String) -> bool {
+    let expected: Cow<'_, String> = Cow::Owned(string.trim().to_owned());
+    let value = <Cow<String>>::from_dxr(&ToDXR::to_dxr(&expected).unwrap()).unwrap();
+
+    println!("Expected:");
+    println!("{:#?}", expected);
+    println!("Value:");
+    println!("{:#?}", value);
+
+    expected == value
+}
+
+#[quickcheck]
+fn roundtrip_cow_i4(i4: i32) -> bool {
+    let expected: Cow<'_, i32> = Cow::Owned(i4);
+    <Cow<i32>>::from_dxr(&ToDXR::to_dxr(&expected).unwrap()).unwrap() == expected
+}
+
+#[cfg(feature = "derive")]
+#[quickcheck]
+fn roundtrip_struct_cow_static(string: String) -> bool {
+    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
+    struct TestCow {
+        string: Cow<'static, String>,
+    }
+
+    let expected = TestCow {
+        string: Cow::Owned(string.trim().to_owned()),
+    };
+    let value = TestCow::from_dxr(&ToDXR::to_dxr(&expected).unwrap()).unwrap();
+
+    expected == value
+}
+
+#[cfg(feature = "derive")]
+#[quickcheck]
+fn roundtrip_struct_cow_string(string: String) -> bool {
+    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
+    struct TestCow<'a> {
+        string: Cow<'a, String>,
+    }
+
+    let expected = TestCow {
+        string: Cow::Owned(string.trim().to_owned()),
+    };
+    let value = TestCow::from_dxr(&ToDXR::to_dxr(&expected).unwrap()).unwrap();
+
+    expected == value
+}
+
+#[cfg(all(feature = "derive", feature = "nil"))]
+#[quickcheck]
+fn roundtrip_struct(int: i32, string: String, boolean: bool, optional: Option<f64>) -> TestResult {
+    if matches!(optional, Some(f) if f.is_nan()) {
+        return TestResult::discard();
+    }
+
+    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
+    struct Test {
+        int: i32,
+        string: String,
+        boolean: bool,
+        optional: Option<f64>,
+    }
+
+    let value = Test {
+        int,
+        string: string.trim().to_string(),
+        boolean,
+        optional,
+    };
+    TestResult::from_bool(Test::from_dxr(&value.to_dxr().unwrap()).unwrap() == value)
+}
+
+#[quickcheck]
+fn roundtrip_array(a: i32, b: i32) -> bool {
+    let value = vec![a, b];
+    <Vec<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap() == value
 }
