@@ -29,12 +29,6 @@ pub enum DxrError {
         /// number of expected values
         expected: usize,
     },
-    /// error variant describing a server fault
-    #[error("{}", .fault)]
-    ServerFault {
-        /// fault data returned by the server
-        fault: Fault,
-    },
     /// error variant describing a type mismatch between XML-RPC value and a Rust struct field
     #[error("Type mismatch: got {}, expected {}", .argument, .expected)]
     WrongType {
@@ -112,27 +106,6 @@ impl DxrError {
         }
     }
 
-    /// construct a [`DxrError`] for a server fault
-    pub fn server_fault(fault: Fault) -> DxrError {
-        DxrError::ServerFault { fault }
-    }
-
-    /// check if a given [`DxrError`] was raised for a server fault
-    pub fn is_server_fault(&self) -> bool {
-        matches!(self, DxrError::ServerFault { .. })
-    }
-
-    /// check for [`DxrError::ServerFault`] and return the inner error in case of a match
-    ///
-    /// The returned value is a reference to the inner [`Fault`].
-    pub fn as_server_fault(&self) -> Option<&Fault> {
-        if let DxrError::ServerFault { fault } = self {
-            Some(fault)
-        } else {
-            None
-        }
-    }
-
     /// construct a [`DxrError`] for a type mismatch
     pub fn wrong_type(argument: &'static str, expected: &'static str) -> DxrError {
         DxrError::WrongType {
@@ -164,7 +137,6 @@ impl From<DxrError> for Fault {
             DxrError::InvalidData { .. } => Fault::new(400, error.to_string()),
             DxrError::MissingField { .. } => Fault::new(400, error.to_string()),
             DxrError::ParameterMismatch { .. } => Fault::new(400, error.to_string()),
-            DxrError::ServerFault { fault } => fault,
             DxrError::WrongType { .. } => Fault::new(400, error.to_string()),
         }
     }

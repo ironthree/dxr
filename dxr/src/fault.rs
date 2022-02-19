@@ -1,11 +1,12 @@
-use std::fmt::{Display, Formatter};
+use thiserror::Error;
 
 use crate::error::DxrError;
 use crate::traits::FromDXR;
 use crate::values::FaultResponse;
 
 /// XML-RPC server fault (numeric error code and message)
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Error, PartialEq)]
+#[error("Server Fault {}: {}", .code, .string)]
 pub struct Fault {
     code: i32,
     string: String,
@@ -25,12 +26,6 @@ impl Fault {
     /// error message associated with the fault
     pub fn string(&self) -> &str {
         self.string.as_str()
-    }
-}
-
-impl Display for Fault {
-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        write!(f, "Fault {}: {}", self.code, self.string)
     }
 }
 

@@ -146,13 +146,7 @@ async fn echo_one() {
         // server-side parameter number mismatch
         let value = vec![-12i32, 42i32];
         let call: Call<Vec<i32>, Vec<i32>> = Call::new("echo", value);
-        assert!(client
-            .call(call)
-            .await
-            .unwrap_err()
-            .downcast::<DxrError>()
-            .unwrap()
-            .is_server_fault());
+        let _fault = client.call(call).await.unwrap_err().downcast::<Fault>().unwrap();
     };
 
     tokio::spawn(calls()).await.unwrap();

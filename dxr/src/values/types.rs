@@ -45,7 +45,7 @@ impl Value {
     /// constructor for `<i8>` values (signed 64-bit integers)
     ///
     /// This type is not part of the original XML-RPC spec, but is a widely used extension.
-    /// Support for `<i8>` values is optional, but enabled by default.
+    /// Support for `<i8>` values is optional and can be enabled with the `i8` crate feature.
     #[cfg(feature = "i8")]
     #[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
     pub fn i8(value: i64) -> Value {
@@ -108,7 +108,7 @@ impl Value {
     /// constructor for the `<nil/>` value (empty / missing value)
     ///
     /// This type is not part of the original XML-RPC spec, but is a widely used extension.
-    /// Support for `<nil>` values is optional, but enabled by default.
+    /// Support for `<nil>` values is optional and can be enabled with the `nil` crate feature.
     ///
     /// If enabled, this type is used to emulate support for optional values in XML-RPC, by mapping
     /// Rust [`Option`]s to either their contained [`Value`], or to a `<nil>` value. This is

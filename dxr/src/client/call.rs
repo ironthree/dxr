@@ -31,7 +31,7 @@ where
     ///
     /// - primitives (`i32`, `i64`, `String`, `f64`, `DateTime`, bytes / `Vec<u8`, etc.)
     /// - arrays and slices of values of the same type (i.e. `Vec<T`, `[T]`, `&[T]`)
-    /// - tuples up to length 8 of values of possibly different types (i.e. `(1i32, bool)`
+    /// - tuples up to length 8 of values of possibly different types (i.e. `(i32, bool)`
     ///
     /// For method calls with arguments that have different values, either convert them all to
     /// [`Value`] first and use an array type, or use them directly and pass them as a tuple.

@@ -2,6 +2,7 @@ use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT}
 use url::Url;
 
 use crate::error::DxrError;
+use crate::fault::Fault;
 use crate::traits::{FromDXR, ToParams};
 use crate::values::{FaultResponse, MethodCall, MethodResponse};
 
@@ -86,12 +87,20 @@ fn request_to_body(call: &MethodCall) -> Result<String, DxrError> {
     Ok(body)
 }
 
-fn response_to_result(contents: &str) -> Result<MethodResponse, DxrError> {
+fn response_to_result(contents: &str) -> Result<MethodResponse, anyhow::Error> {
     // need to check for FaultResponse first:
     // - a missing <params> tag is ambiguous (can be either an empty response, or a fault response)
     // - a present <fault> tag is unambiguous
     let error2 = match quick_xml::de::from_str(contents) {
-        Ok(fault) => return Err(DxrError::server_fault(FaultResponse::try_into(fault)?)),
+        Ok(fault) => {
+            let response: FaultResponse = fault;
+            return match Fault::try_from(response) {
+                // server fault: return Fault
+                Ok(fault) => Err(fault.into()),
+                // malformed server fault: return DxrError
+                Err(error) => Err(error.into()),
+            };
+        },
         Err(error) => error.to_string(),
     };
 
@@ -100,10 +109,12 @@ fn response_to_result(contents: &str) -> Result<MethodResponse, DxrError> {
         Err(error) => error.to_string(),
     };
 
+    // log errors if the contents could not be deserialized as either response or fault
     log::debug!("Failed to deserialize response as either value or fault.");
     log::debug!("Response failed with: {}; Fault failed with: {}", error1, error2);
 
-    Err(DxrError::invalid_data(contents.to_owned()))
+    // malformed response: return DxrError::InvalidData
+    Err(DxrError::invalid_data(contents.to_owned()).into())
 }
 
 /// # XML-RPC client implementation
@@ -124,8 +135,8 @@ impl Client {
 
     /// asynchronous method for handling remote procedure calls with XML-RPC
     ///
-    /// Fault responses from the XML-RPC server are transparently converted into
-    /// [`DxrError::ServerFault`] errors.
+    /// Fault responses from the XML-RPC server are transparently converted into [`Fault`] errors.
+    /// Invalid XML-RPC responses or faults will result in an appropriate [`DxrError`].
     pub async fn call<P: ToParams, R: FromDXR>(&self, call: Call<'_, P, R>) -> Result<R, anyhow::Error> {
         // serialize XML-RPC method call
         let request = call.as_xml_rpc()?;

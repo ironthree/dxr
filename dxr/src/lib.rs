@@ -18,7 +18,7 @@
 //! The APIs for implementing both clients and servers are designed to require no boilerplate code
 //! (outside this crate, that is), and implements type conversions from Rust to XML-RPC types
 //! automatically for all supported data types. Custom struct types are also supported, if they
-//! derive the [`FromDXR`] and / or [`ToDXR`] traits.
+//! derive or manually implement the [`FromDXR`] and / or [`ToDXR`] traits.
 //!
 //! ## Client interface
 //!
@@ -77,14 +77,13 @@
 //! ```
 //! # #[cfg(feature = "axum-server")] {
 //! use dxr::axum::http::HeaderMap;
-//! use dxr::{Fault, FromParams, HandlerFn, ToDXR, Value};
+//! use dxr::{Fault, FromParams, HandlerFn, RouteBuilder, ToDXR, Value};
 //!
 //! fn hello_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
 //!     let name = String::from_params(params)?;
 //!     Ok(Some(format!("Handler function says: Hello, {}!", name).to_dxr()?))
 //! }
 //!
-//! use dxr::RouteBuilder;
 //! let route = RouteBuilder::new()
 //!     .set_path("/")
 //!     .add_method("hello", Box::new(hello_handler as HandlerFn))
