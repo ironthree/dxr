@@ -1,7 +1,8 @@
 use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
 use url::Url;
 
-use crate::types::{DxrError, FaultResponse, FromDXR, MethodCall, MethodResponse, ToParams};
+use crate::error::DxrError;
+use crate::types::{FaultResponse, FromDXR, MethodCall, MethodResponse, ToParams};
 
 mod call;
 pub use call::*;
@@ -149,7 +150,7 @@ impl Client {
 
             #[cfg(not(feature = "nil"))]
             {
-                Err(DxrError::parameter_mismatch(0, 1))?
+                Err(DxrError::parameter_mismatch(0, 1)).into()
             }
         }
     }

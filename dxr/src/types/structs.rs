@@ -4,8 +4,8 @@ use chrono::{DateTime, Utc};
 use quick_xml::escape::{escape, unescape};
 use serde::{Deserialize, Serialize};
 
-use crate::types::error::DxrError;
-use crate::types::fault::Fault;
+use crate::error::DxrError;
+use crate::fault::Fault;
 
 /// # XML-RPC value type
 ///
@@ -259,6 +259,7 @@ pub struct MethodCall {
 
 impl MethodCall {
     /// constructor for `<methodCall>` values from method name and parameter list
+    #[allow(unused)]
     pub fn new(name: String, parameters: Vec<Value>) -> MethodCall {
         MethodCall {
             name: MethodName { name },
@@ -269,11 +270,13 @@ impl MethodCall {
     }
 
     /// getter method for the method name
+    #[allow(unused)]
     pub fn name(&self) -> &str {
         &self.name.name
     }
 
     /// getter method for the list of parameters
+    #[allow(unused)]
     pub fn params(&self) -> &Vec<Value> {
         &self.params.params.params
     }
@@ -300,6 +303,7 @@ pub struct MethodResponse {
 
 impl MethodResponse {
     /// constructor for `<methodResponse>` values from the return value
+    #[allow(unused)]
     pub fn new(value: Value) -> MethodResponse {
         MethodResponse {
             params: Some(ResponseParameters {
@@ -309,11 +313,13 @@ impl MethodResponse {
     }
 
     /// constructor empty `<methodResponse>` values without a value
+    #[allow(unused)]
     pub fn empty() -> MethodResponse {
         MethodResponse { params: None }
     }
 
     /// getter method for the returned value
+    #[allow(unused)]
     pub fn inner(self) -> Option<Value> {
         self.params.map(|o| o.params.value)
     }

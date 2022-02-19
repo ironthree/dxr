@@ -56,10 +56,10 @@
 //! which can be used to issue an RPC request to the server provided by the server example.
 //!
 //! ## Server interface
-//!
+//! FIXME
 //! The APIs for setting up an XML-RPC server are intended to be similarly straight-forward. First,
-//! set up a [`ServerBuilder`] by giving it the socket address it should bind to, setting up all
-//! method handlers, and then building it into a [`Server`]:
+//! set up a [`RouteBuilder`] by giving it the socket address it should bind to, setting up all
+//! method handlers, and then building it into an [`axum::Router`]:
 //!
 //! ```
 //! # #[cfg(feature = "server")] {
@@ -69,8 +69,8 @@
 //! ```
 //!
 //! Now, this is not a very useful server, since it does not know about any method calls. An
-//! arbitrary number of method handlers can be registered with the [`ServerBuilder`] before building
-//! the [`Server`].
+//! arbitrary number of method handlers can be registered with the [`RouteBuilder`] before building
+//! the [`axum::Router`].
 //!
 //! ```
 //! # #[cfg(feature = "server")] {
@@ -135,8 +135,14 @@ pub use dxr_derive::{FromDXR, ToDXR};
 // re-export chrono: DateTime / Utc are part of the public API
 pub use chrono;
 
+mod error;
+pub use error::*;
+
+mod fault;
+pub use fault::*;
+
 mod types;
-pub use types::{DxrError, Fault, FromDXR, FromParams, ToDXR, ToParams, Value, XML_RPC_DATE_FORMAT};
+pub use types::{FromDXR, FromParams, ToDXR, ToParams, Value, XML_RPC_DATE_FORMAT};
 
 // re-export url: public client API
 #[cfg(feature = "client")]

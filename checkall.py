@@ -37,8 +37,8 @@ def main():
     features += [["--no-default-features", "--features", ",".join(features)] for features in allcombos]
 
     for featureset in features:
-        # for command in ["check", "clippy", "build", "test"]:
-        for command in ["check", "clippy"]:
+        for command in ["check", "clippy", "build", "test"]:
+        # for command in ["check", "clippy"]:
             print(f">> cargo {command}", " ".join(featureset))
 
             # cargo test --all-targets skips doctests

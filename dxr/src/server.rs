@@ -4,7 +4,9 @@ use std::sync::Arc;
 use http::header::{CONTENT_LENGTH, CONTENT_TYPE};
 use http::{HeaderMap, HeaderValue, StatusCode};
 
-use crate::types::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Value};
+use crate::error::DxrError;
+use crate::fault::Fault;
+use crate::types::{FaultResponse, MethodCall, MethodResponse, Value};
 
 mod handler;
 pub use handler::*;

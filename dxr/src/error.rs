@@ -2,7 +2,7 @@ use std::borrow::Cow;
 
 use thiserror::Error;
 
-use crate::types::fault::Fault;
+use crate::fault::Fault;
 
 #[derive(Debug, Error)]
 /// error type used for conversion errors between XML-RPC values and Rust values

@@ -1,6 +1,6 @@
 use quick_xml::{de::from_str, se::to_string};
 
-use crate::types::fault::Fault;
+use crate::fault::Fault;
 use crate::types::structs::{FaultResponse, MethodResponse, Value};
 
 #[test]

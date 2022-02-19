@@ -3,12 +3,6 @@ mod ser_de;
 mod dxr;
 pub use dxr::*;
 
-mod error;
-pub use error::*;
-
-mod fault;
-pub use fault::*;
-
 mod params;
 pub use params::*;
 

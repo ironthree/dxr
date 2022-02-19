@@ -1,6 +1,6 @@
 #![allow(clippy::type_complexity)]
 
-use crate::types::error::DxrError;
+use crate::error::DxrError;
 use crate::types::structs::Value;
 use crate::types::traits::{FromDXR, ToDXR};
 
