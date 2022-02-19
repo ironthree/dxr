@@ -1,6 +1,7 @@
 use std::marker::PhantomData;
 
-use dxr_shared::{DxrError, FromDXR, MethodCall, ToParams, Value};
+use crate::types::MethodCall;
+use crate::{DxrError, FromDXR, ToParams, Value};
 
 /// # XML-RPC method call
 ///

@@ -3,7 +3,7 @@ use quick_xml::{de::from_str, se::to_string};
 use quickcheck::TestResult;
 use quickcheck_macros::quickcheck;
 
-use crate::Value;
+use crate::types::structs::Value;
 
 #[quickcheck]
 fn to_from_i4(int: i32) -> bool {

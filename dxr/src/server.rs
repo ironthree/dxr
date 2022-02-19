@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use dxr_shared::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Value};
 use http::header::{CONTENT_LENGTH, CONTENT_TYPE};
 use http::{HeaderMap, HeaderValue, StatusCode};
+
+use crate::types::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Value};
 
 mod handler;
 pub use handler::*;

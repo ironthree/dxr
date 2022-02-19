@@ -1,6 +1,6 @@
 use quick_xml::{de::from_str, se::to_string};
 
-use crate::types::{Array, Value};
+use crate::types::structs::{Array, Value};
 
 #[test]
 fn to_array_empty() {

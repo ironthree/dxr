@@ -3,10 +3,9 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 
-use crate::error::DxrError;
-use crate::traits::ToDXR;
-use crate::types::{Array, Member, Struct, Value};
-use crate::util::*;
+use crate::types::structs::{Array, Member, Struct};
+use crate::types::util::*;
+use crate::{DxrError, ToDXR, Value};
 
 impl<T> ToDXR for &T
 where

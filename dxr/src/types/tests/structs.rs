@@ -1,6 +1,6 @@
 use quick_xml::{de::from_str, se::to_string};
 
-use crate::types::{Member, Struct, Value};
+use crate::types::structs::{Member, Struct, Value};
 
 #[test]
 fn to_member() {

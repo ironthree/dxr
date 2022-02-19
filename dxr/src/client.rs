@@ -1,7 +1,7 @@
 use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
 use url::Url;
 
-use dxr_shared::{DxrError, FaultResponse, FromDXR, MethodCall, MethodResponse, ToParams};
+use crate::types::{DxrError, FaultResponse, FromDXR, MethodCall, MethodResponse, ToParams};
 
 mod call;
 pub use call::*;
@@ -143,7 +143,7 @@ impl Client {
         } else {
             #[cfg(feature = "nil")]
             {
-                use dxr_shared::Value;
+                use crate::types::Value;
                 Ok(R::from_dxr(&Value::nil())?)
             }
 

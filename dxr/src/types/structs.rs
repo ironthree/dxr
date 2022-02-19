@@ -4,8 +4,8 @@ use chrono::{DateTime, Utc};
 use quick_xml::escape::{escape, unescape};
 use serde::{Deserialize, Serialize};
 
-use crate::error::DxrError;
-use crate::fault::Fault;
+use crate::types::error::DxrError;
+use crate::types::fault::Fault;
 
 /// # XML-RPC value type
 ///
@@ -127,15 +127,15 @@ pub(crate) enum Type {
     #[cfg(feature = "i8")]
     #[serde(rename = "i8")]
     Long(#[serde(rename = "$value")] i64),
-    #[serde(rename = "boolean", with = "crate::ser_de::boolean")]
+    #[serde(rename = "boolean", with = "super::ser_de::boolean")]
     Boolean(#[serde(rename = "$value")] bool),
     #[serde(rename = "string")]
     String(#[serde(rename = "$value")] String),
     #[serde(rename = "double")]
     Double(#[serde(rename = "$value")] f64),
-    #[serde(rename = "dateTime.iso8601", with = "crate::ser_de::datetime")]
+    #[serde(rename = "dateTime.iso8601", with = "super::ser_de::datetime")]
     DateTime(#[serde(rename = "$value")] DateTime<Utc>),
-    #[serde(rename = "base64", with = "crate::ser_de::base64")]
+    #[serde(rename = "base64", with = "super::ser_de::base64")]
     Base64(#[serde(rename = "$value")] Vec<u8>),
     #[serde(rename = "struct")]
     Struct {

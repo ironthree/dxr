@@ -1,8 +1,8 @@
 #![allow(clippy::type_complexity)]
 
-use crate::error::DxrError;
-use crate::traits::{FromDXR, ToDXR};
-use crate::types::Value;
+use crate::types::error::DxrError;
+use crate::types::structs::Value;
+use crate::types::traits::{FromDXR, ToDXR};
 
 pub fn tuple_to_values_1<T>((v,): &(T,)) -> Result<Vec<Value>, DxrError>
 where

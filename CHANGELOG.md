@@ -2,6 +2,7 @@
 
 Changed:
 
+- merged code from the `dxr_shared` crate into the main `dxr` crate
 - removed support for non-standard `i8` and `nil` values from default features
 - split server feature into generic server functionality and `axum` support
 - use `anyhow` to simplify error handling in client and server implementations

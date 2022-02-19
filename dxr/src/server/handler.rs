@@ -1,5 +1,6 @@
-use dxr_shared::{Fault, Value};
 use http::HeaderMap;
+
+use crate::{Fault, Value};
 
 /// type alias for the result type of method handlers
 #[cfg_attr(docsrs, doc(cfg(feature = "server")))]

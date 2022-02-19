@@ -132,11 +132,11 @@
 #[cfg_attr(docsrs, doc(cfg(feature = "derive")))]
 pub use dxr_derive::{FromDXR, ToDXR};
 
-#[doc(inline)]
-pub use dxr_shared::{DxrError, Fault, FromDXR, FromParams, ToDXR, ToParams, Value, XML_RPC_DATE_FORMAT};
-
 // re-export chrono: DateTime / Utc are part of the public API
-pub use dxr_shared::chrono;
+pub use chrono;
+
+mod types;
+pub use types::{DxrError, Fault, FromDXR, FromParams, ToDXR, ToParams, Value, XML_RPC_DATE_FORMAT};
 
 // re-export url: public client API
 #[cfg(feature = "client")]

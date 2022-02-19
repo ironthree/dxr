@@ -1,10 +1,9 @@
 use std::collections::HashMap;
 
-use crate::chrono::{DateTime, Utc};
-use crate::error::DxrError;
-use crate::traits::{FromDXR, FromParams};
-use crate::types::Value;
-use crate::util::*;
+use chrono::{DateTime, Utc};
+
+use crate::types::util::*;
+use crate::{DxrError, FromDXR, FromParams, Value};
 
 // for simple values, just call the impls for singletons / one-tuples
 
