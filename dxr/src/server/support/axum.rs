@@ -10,9 +10,119 @@ use axum::routing::post;
 use axum::Router;
 
 use crate::server::handler::Handler;
-use crate::server::{server, HandlerMap, DEFAULT_SERVER_ROUTE};
+use crate::server::{server, DEFAULT_SERVER_ROUTE};
 
 const DEFAULT_SLEEP: Duration = Duration::from_secs(5);
+
+/// builder that takes parameters for constructing a standalone [`axum::Router`]
+#[cfg_attr(docsrs, doc(cfg(feature = "axum-server")))]
+#[derive(Default)]
+pub struct RouteBuilder {
+    path: Cow<'static, str>,
+    handlers: HashMap<&'static str, Box<dyn Handler>>,
+}
+
+impl Debug for RouteBuilder {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut handler_list: Vec<&&str> = self.handlers.keys().collect();
+        handler_list.sort();
+
+        f.debug_struct("ServerBuilder")
+            .field("path", &self.path)
+            .field("handlers", &handler_list)
+            .finish()
+    }
+}
+
+impl RouteBuilder {
+    /// constructor for [`RouteBuilder`] from the address of the XML-RPC server
+    pub fn new() -> RouteBuilder {
+        RouteBuilder {
+            path: Cow::Borrowed(DEFAULT_SERVER_ROUTE),
+            handlers: HashMap::new(),
+        }
+    }
+
+    /// method for overriding the default path / route for the XML-RPC endpoint
+    ///
+    /// The default value is [`/`](DEFAULT_SERVER_ROUTE). Another common value
+    /// is `/RPC2`, which can be set with this method, if necessary.
+    pub fn set_path(mut self, route: &str) -> Self {
+        self.path = Cow::Owned(route.to_owned());
+        self
+    }
+
+    /// method for adding a new method handler
+    pub fn add_method(mut self, name: &'static str, handler: Box<dyn Handler>) -> Self {
+        self.handlers.insert(name, handler);
+        self
+    }
+
+    /// build an [`axum::Router`] from the specified route and registered method handlers
+    pub fn build(self) -> Router {
+        let handlers = Arc::new(self.handlers);
+        Router::new().route(
+            self.path.as_ref(),
+            post(move |body: String, headers: HeaderMap| async move { server(handlers, &body, &headers) }),
+        )
+    }
+}
+
+/// # XML-RPC server implementation
+///
+/// This type provides a very simple XML-RPC server implementation based on [`axum::Router`].
+#[cfg_attr(docsrs, doc(cfg(feature = "axum-server")))]
+pub struct Server {
+    addr: SocketAddr,
+    route: Router,
+    off_switch: Option<Box<dyn ServerOffSwitch>>,
+}
+
+impl Debug for Server {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Server")
+            .field("addr", &self.addr)
+            .field("route", &self.route)
+            .field("off_switch", &self.off_switch)
+            .finish()
+    }
+}
+
+impl Server {
+    /// This method can be used to construct a [`Server`] from a standalone [`axum::Router`], which
+    /// will only handle requests at that one route.
+    pub fn from_route(addr: SocketAddr, route: Router) -> Server {
+        Server {
+            addr,
+            route,
+            off_switch: None,
+        }
+    }
+
+    /// This method can be used to add a [`ServerOffSwitch`] for handling graceful server shutdown.
+    pub fn with_off_switch(mut self, switch: Box<dyn ServerOffSwitch>) -> Self {
+        self.off_switch = Some(switch);
+        self
+    }
+
+    /// This method launches an [`axum::Server`] with the configured route of the XML-RPC endpoint
+    /// as the only route that will accept requests.
+    ///
+    /// Requests with invalid input, calls of unknown methods, and failed methods are converted
+    /// into fault responses.
+    pub async fn serve(self) -> Result<(), anyhow::Error> {
+        if let Some(switch) = &self.off_switch {
+            Ok(axum::Server::bind(&self.addr)
+                .serve(self.route.into_make_service())
+                .with_graceful_shutdown(switch.watch())
+                .await?)
+        } else {
+            Ok(axum::Server::bind(&self.addr)
+                .serve(self.route.into_make_service())
+                .await?)
+        }
+    }
+}
 
 /// trait definition for server off switches that can be used to handle graceful shutdown
 #[async_trait::async_trait]
@@ -39,135 +149,6 @@ pub trait ServerOffSwitch: Debug + Send + Sync {
             } else {
                 self.sleep().await;
             }
-        }
-    }
-}
-
-/// builder that takes parameters for constructing a [`Server`] based on [`axum`]
-#[cfg_attr(docsrs, doc(cfg(feature = "axum-server")))]
-pub struct ServerBuilder {
-    addr: SocketAddr,
-    path: Cow<'static, str>,
-    handlers: HashMap<&'static str, Box<dyn Handler>>,
-    off_switch: Option<Box<dyn ServerOffSwitch>>,
-}
-
-impl Debug for ServerBuilder {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let mut handler_list: Vec<&&str> = self.handlers.keys().collect();
-        handler_list.sort();
-
-        f.debug_struct("ServerBuilder")
-            .field("addr", &self.addr)
-            .field("path", &self.path)
-            .field("handlers", &handler_list)
-            .field("off_switch", &self.off_switch)
-            .finish()
-    }
-}
-
-impl ServerBuilder {
-    /// constructor for [`ServerBuilder`] from the address of the XML-RPC server
-    pub fn new(addr: SocketAddr) -> ServerBuilder {
-        ServerBuilder {
-            addr,
-            path: Cow::Borrowed(DEFAULT_SERVER_ROUTE),
-            handlers: HashMap::new(),
-            off_switch: None,
-        }
-    }
-
-    /// method for overriding the default path / route for the XML-RPC endpoint
-    ///
-    /// The default value is [`/`](DEFAULT_SERVER_ROUTE). Another common value
-    /// is `/RPC2`, which can be set with this method, if necessary.
-    pub fn set_path(mut self, route: &str) -> Self {
-        self.path = Cow::Owned(route.to_owned());
-        self
-    }
-
-    /// method for adding a switch that is used to handle graceful shutdown
-    ///
-    /// To avoid a direct dependency on an async runtime, the value implementing the
-    /// [`ServerOffSwitch`] trait must provide its own state tracking and sleeping logic.
-    pub fn add_off_switch(mut self, off_switch: Box<dyn ServerOffSwitch>) -> Self {
-        self.off_switch = Some(off_switch);
-        self
-    }
-
-    /// method for adding a new method handler for the [`Server`]
-    pub fn add_method(mut self, name: &'static str, handler: Box<dyn Handler>) -> Self {
-        self.handlers.insert(name, handler);
-        self
-    }
-
-    /// build the [`Server`] from the specified URL and registered method handlers
-    pub fn build(self) -> Server {
-        Server {
-            addr: self.addr,
-            path: self.path,
-            handlers: Arc::new(self.handlers),
-            off_switch: self.off_switch,
-        }
-    }
-}
-
-/// # XML-RPC server implementation
-///
-/// This type provides a very simple XML-RPC server implementation based on [`axum`]. Specify server
-/// address, register method handlers, initialize the [`Server`], and wait for requests.
-#[cfg_attr(docsrs, doc(cfg(feature = "axum-server")))]
-pub struct Server {
-    addr: SocketAddr,
-    path: Cow<'static, str>,
-    handlers: HandlerMap,
-    off_switch: Option<Box<dyn ServerOffSwitch>>,
-}
-
-impl Debug for Server {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let mut handler_list: Vec<&&str> = self.handlers.keys().collect();
-        handler_list.sort();
-
-        f.debug_struct("Server")
-            .field("addr", &self.addr)
-            .field("path", &self.path)
-            .field("handlers", &handler_list)
-            .field("off_switch", &self.off_switch)
-            .finish()
-    }
-}
-
-impl Server {
-    /// This method can be used to convert a [`Server`] into a standalone [`axum`] route, for
-    /// combining it with other [`axum::Router`]s.
-    ///
-    /// A route that is created with this method will *not* inherit the server's shutdown switch,
-    /// if one was specified.
-    pub fn route(&self) -> Router {
-        let handlers = self.handlers.clone();
-
-        Router::new().route(
-            self.path.as_ref(),
-            post(move |body: String, headers: HeaderMap| async move { server(handlers, &body, &headers) }),
-        )
-    }
-
-    /// This method launches an [`axum::Server`] with the configured route of the XML-RPC endpoint
-    /// as the only route that will accept requests.
-    ///
-    /// Requests with invalid input, calls of unknown methods, and failed methods are converted
-    /// into fault responses.
-    pub async fn serve(self) -> Result<(), anyhow::Error> {
-        let route = self.route();
-
-        if let Some(switch) = &self.off_switch {
-            Ok(axum::Server::bind(&self.addr)
-                .serve(route.into_make_service())
-                .with_graceful_shutdown(switch.watch())
-                .await?)
-        } else {
-            Ok(axum::Server::bind(&self.addr).serve(route.into_make_service()).await?)
         }
     }
 }

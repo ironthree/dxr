@@ -63,8 +63,8 @@
 //!
 //! ```
 //! # #[cfg(feature = "server")] {
-//! use dxr::ServerBuilder;
-//! let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap()).build();
+//! use dxr::RouteBuilder;
+//! let server = RouteBuilder::new("0.0.0.0:3000".parse().unwrap()).build();
 //! # }
 //! ```
 //!
@@ -82,8 +82,8 @@
 //!     Ok(Some(format!("Handler function says: Hello, {}!", name).to_dxr()?))
 //! }
 //!
-//! use dxr::ServerBuilder;
-//! let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
+//! use dxr::RouteBuilder;
+//! let server = RouteBuilder::new("0.0.0.0:3000".parse().unwrap())
 //!     .add_method("hello", Box::new(hello_handler as HandlerFn))
 //!     .build();
 //! # }
@@ -97,8 +97,8 @@
 //! ```no_run
 //! # #[cfg(feature = "server")] {
 //! # tokio_test::block_on(async {
-//! # use dxr::ServerBuilder;
-//! # let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap()).build();
+//! # use dxr::RouteBuilder;
+//! # let server = RouteBuilder::new("0.0.0.0:3000".parse().unwrap()).build();
 //! server.serve().await.unwrap();
 //! # })
 //! # }

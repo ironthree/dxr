@@ -10,7 +10,8 @@ use dxr::{
     Fault,
     FromParams,
     HandlerFn,
-    ServerBuilder,
+    RouteBuilder,
+    Server,
     ServerOffSwitch,
     ToDXR,
     TokioOffSwitch,
@@ -26,16 +27,19 @@ fn add_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, 
 async fn adder() {
     let off_switch = TokioOffSwitch::new();
 
-    let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
-        .add_off_switch(Box::new(off_switch.clone()))
+    let route = RouteBuilder::new()
+        .set_path("/")
         .add_method("add", Box::new(add_handler as HandlerFn))
         .build();
+
+    let server =
+        Server::from_route("0.0.0.0:3000".parse().unwrap(), route).with_off_switch(Box::new(off_switch.clone()));
 
     let serve = tokio::spawn(server.serve());
     tokio::time::sleep(Duration::from_secs(1)).await;
 
     let calls = || async {
-        let client = ClientBuilder::new("http://0.0.0.0:3000".parse().unwrap())
+        let client = ClientBuilder::new("http://0.0.0.0:3000/".parse().unwrap())
             .user_agent("echo-client")
             .build();
 

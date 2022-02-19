@@ -67,9 +67,6 @@ tokio = { version = "1.14",  optional = true }
 
 
 [dev-dependencies]
-# used for snapshot tests
-insta = "1.11.0"
-
 # used for property-based conversion / roundrtip tests
 quickcheck = "1.0"
 quickcheck_macros = "1.0"

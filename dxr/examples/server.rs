@@ -22,7 +22,7 @@
 use std::sync::RwLock;
 
 use dxr::axum::http::HeaderMap;
-use dxr::{Fault, FromParams, Handler, HandlerFn, ServerBuilder, ToDXR, Value};
+use dxr::{Fault, FromParams, Handler, HandlerFn, RouteBuilder, Server, ToDXR, Value};
 
 struct CounterHandler {
     counter: RwLock<u32>,
@@ -54,11 +54,13 @@ fn hello_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>
 async fn main() {
     let counter_handler = CounterHandler::new(0);
 
-    let server = ServerBuilder::new("0.0.0.0:3000".parse().unwrap())
+    let route = RouteBuilder::new()
         .set_path("/")
         .add_method("hello", Box::new(hello_handler as HandlerFn))
         .add_method("countme", Box::new(counter_handler))
         .build();
+
+    let server = Server::from_route("0.0.0.0:3000".parse().unwrap(), route);
 
     server.serve().await.expect("Failed to run server.")
 }
