@@ -6,21 +6,7 @@ use std::time::Duration;
 
 use dxr::axum::http::HeaderMap;
 use dxr::chrono::{DateTime, SubsecRound, Utc};
-use dxr::{
-    Call,
-    ClientBuilder,
-    DxrError,
-    Fault,
-    FromDXR,
-    FromParams,
-    HandlerFn,
-    RouteBuilder,
-    Server,
-    ServerOffSwitch,
-    ToDXR,
-    TokioOffSwitch,
-    Value,
-};
+use dxr::{Call, ClientBuilder, DxrError, Fault, FromDXR, FromParams, HandlerFn, RouteBuilder, Server, ToDXR, Value};
 
 fn echo_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
     let value: Value = Value::from_params(params)?;
@@ -39,15 +25,13 @@ struct TestStruct {
 
 #[tokio::test]
 async fn echo_one() {
-    let off_switch = TokioOffSwitch::new();
-
     let route = RouteBuilder::new()
         .set_path("/")
         .add_method("echo", Box::new(echo_handler as HandlerFn))
         .build();
 
-    let server =
-        Server::from_route("0.0.0.0:3000".parse().unwrap(), route).with_off_switch(Box::new(off_switch.clone()));
+    let mut server = Server::from_route("0.0.0.0:3000".parse().unwrap(), route);
+    let trigger = server.shutdown_trigger();
 
     let serve = tokio::spawn(server.serve());
     tokio::time::sleep(Duration::from_secs(1)).await;
@@ -151,6 +135,6 @@ async fn echo_one() {
 
     tokio::spawn(calls()).await.unwrap();
 
-    off_switch.flip();
+    trigger.notify_one();
     serve.await.unwrap().unwrap();
 }

@@ -11,8 +11,9 @@ use crate::values::{FaultResponse, MethodCall, MethodResponse, Value};
 mod handler;
 pub use handler::*;
 
+#[cfg(feature = "axum-server")]
 mod support;
-#[cfg_attr(not(feature = "axum-server"), allow(unreachable_pub))]
+#[cfg(feature = "axum-server")]
 pub use support::*;
 
 /// default server route / path for XML-RPC endpoints

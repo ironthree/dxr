@@ -3,19 +3,7 @@
 use std::time::Duration;
 
 use dxr::axum::http::HeaderMap;
-use dxr::{
-    Call,
-    ClientBuilder,
-    Fault,
-    FromParams,
-    HandlerFn,
-    RouteBuilder,
-    Server,
-    ServerOffSwitch,
-    ToDXR,
-    TokioOffSwitch,
-    Value,
-};
+use dxr::{Call, ClientBuilder, Fault, FromParams, HandlerFn, RouteBuilder, Server, ToDXR, Value};
 
 fn add_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
     let (a, b): (i32, i32) = FromParams::from_params(params)?;
@@ -24,15 +12,13 @@ fn add_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, 
 
 #[tokio::test]
 async fn adder() {
-    let off_switch = TokioOffSwitch::new();
-
     let route = RouteBuilder::new()
         .set_path("/")
         .add_method("add", Box::new(add_handler as HandlerFn))
         .build();
 
-    let server =
-        Server::from_route("0.0.0.0:3000".parse().unwrap(), route).with_off_switch(Box::new(off_switch.clone()));
+    let mut server = Server::from_route("0.0.0.0:3000".parse().unwrap(), route);
+    let trigger = server.shutdown_trigger();
 
     let serve = tokio::spawn(server.serve());
     tokio::time::sleep(Duration::from_secs(1)).await;
@@ -79,6 +65,6 @@ async fn adder() {
 
     tokio::spawn(calls()).await.unwrap();
 
-    off_switch.flip();
+    trigger.notify_one();
     serve.await.unwrap().unwrap();
 }

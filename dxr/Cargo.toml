@@ -69,9 +69,9 @@ url = { version = "2.2", optional = true }
 async-trait = { version = "0.1.52", optional = true }
 http = { version = "0.2.6", optional = true }
 
-# server feature: axum support
+# server feature: axum implementation / integration
 axum = { version = "0.5.4", optional = true }
-tokio = { version = "1.14",  optional = true }
+tokio = { version = "1.14", optional = true }
 
 
 [dev-dependencies]
@@ -98,8 +98,8 @@ client = ["reqwest", "http", "url"]
 
 # basic XML-RPC server suport
 server = ["http"]
-# server implementation based on axum and tokio
-axum-server = ["server", "async-trait", "axum", "tokio/time"]
+# server implementation based on axum
+axum-server = ["server", "async-trait", "axum", "tokio/sync"]
 
 # derive macros for ToDXR and FromDXR traits
 derive = ["dxr_derive"]
