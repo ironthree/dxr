@@ -54,7 +54,7 @@ anyhow = "1.0.53"
 base64 = "0.13"
 chrono = "0.4.19"
 log = "0.4.13"
-quick-xml = { version = "0.22" , features = ["serialize"] }
+quick-xml = { version = "0.23" , features = ["serialize"] }
 serde = { version = "1.0.104", features = ["derive"] }
 thiserror = "1.0.30"
 
