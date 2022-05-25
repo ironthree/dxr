@@ -191,7 +191,7 @@ pub(crate) struct Member {
     value: Value,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename = "name")]
 struct MemberName {
     #[serde(rename = "$value")]
@@ -282,7 +282,7 @@ impl MethodCall {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename = "methodName")]
 struct MethodName {
     #[serde(rename = "$value")]
