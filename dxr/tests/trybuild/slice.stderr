@@ -1,0 +1,11 @@
+error: Deriving FromDXR is not possible for structs that contain dynamically sized arrays, as they don't implement Sized. Try using a Vec here.
+ --> tests/trybuild/slice.rs:5:12
+  |
+5 |     slice: [i32],
+  |            ^^^^^
+
+error: Deriving ToDXR is not possible for structs that contain dynamically sized arrays, as they don't implement Sized. Try using a Vec or slice reference here.
+ --> tests/trybuild/slice.rs:5:12
+  |
+5 |     slice: [i32],
+  |            ^^^^^

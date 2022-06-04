@@ -1,7 +1,5 @@
-error: proc-macro derive panicked
- --> tests/trybuild/toref.rs:3:10
+error: Deriving FromDXR is not possible for structs that contain reference types. Try using a std::borrow::Cow here.
+ --> tests/trybuild/toref.rs:5:13
   |
-3 | #[derive(FromDXR)]
-  |          ^^^^^^^
-  |
-  = help: message: Deriving FromDXR is not possible for structs that contain reference types. Try using a std::borrow::Cow for field "string" instead.
+5 |     string: &'a str,
+  |             ^^^^^^^

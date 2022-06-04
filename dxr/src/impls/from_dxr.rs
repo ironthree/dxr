@@ -127,6 +127,26 @@ where
     }
 }
 
+impl<T, const N: usize> FromDXR for [T; N]
+where
+    T: FromDXR,
+{
+    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+        let values = match value.inner() {
+            Type::Array { data } => Ok(data.inner()),
+            t => Err(DxrError::wrong_type(t.name(), "array")),
+        }?;
+
+        let mapped: Vec<T> = values
+            .iter()
+            .map(|value| T::from_dxr(value))
+            .collect::<Result<Vec<T>, DxrError>>()?;
+        let len = mapped.len();
+
+        mapped.try_into().map_err(|_| DxrError::parameter_mismatch(len, N))
+    }
+}
+
 impl<T> FromDXR for HashMap<String, T>
 where
     T: FromDXR,

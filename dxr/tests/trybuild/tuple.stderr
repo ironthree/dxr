@@ -1,7 +1,5 @@
-error: proc-macro derive panicked
- --> tests/trybuild/tuple.rs:3:10
+error: Deriving FromDXR for tuple structs is not supported.
+ --> tests/trybuild/tuple.rs:4:12
   |
-3 | #[derive(FromDXR)]
-  |          ^^^^^^^
-  |
-  = help: message: Deriving FromDXR for tuple structs is not possible.
+4 | pub struct TupleStruct(String);
+  |            ^^^^^^^^^^^

@@ -1,7 +1,5 @@
-error: proc-macro derive panicked
- --> tests/trybuild/enum.rs:3:10
+error: Deriving FromDXR for enums and unions is not supported.
+ --> tests/trybuild/enum.rs:4:10
   |
-3 | #[derive(FromDXR)]
-  |          ^^^^^^^
-  |
-  = help: message: Deriving FromDXR for enums and unions is not supported.
+4 | pub enum Enum {
+  |          ^^^^

@@ -23,7 +23,7 @@ pub struct Collectibles {
     strings: Vec<String>,
     ints: Vec<i32>,
     longs: Vec<i64>,
-    booleans: Vec<bool>,
+    booleans: [bool; 69],
     doubles: Vec<f64>,
     tuples: (Vec<String>, Vec<i32>),
     datetimes: Vec<DateTime<Utc>>,
