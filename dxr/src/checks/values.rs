@@ -137,7 +137,7 @@ fn roundtrip_cow_i4(i4: i32) -> bool {
 #[cfg(feature = "derive")]
 #[quickcheck]
 fn roundtrip_struct_cow_static(string: String) -> bool {
-    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
+    #[derive(Debug, Eq, PartialEq, FromDXR, ToDXR)]
     struct TestCow {
         string: Cow<'static, String>,
     }
@@ -153,7 +153,7 @@ fn roundtrip_struct_cow_static(string: String) -> bool {
 #[cfg(feature = "derive")]
 #[quickcheck]
 fn roundtrip_struct_cow_string(string: String) -> bool {
-    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
+    #[derive(Debug, Eq, PartialEq, FromDXR, ToDXR)]
     struct TestCow<'a> {
         string: Cow<'a, String>,
     }

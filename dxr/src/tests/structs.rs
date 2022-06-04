@@ -104,7 +104,7 @@ fn from_value_struct() {
 fn roundtrip_struct_empty() {
     use crate::{FromDXR, ToDXR};
 
-    #[derive(Debug, PartialEq, FromDXR, ToDXR)]
+    #[derive(Debug, Eq, PartialEq, FromDXR, ToDXR)]
     struct Test {}
 
     let value = Test {};
