@@ -28,3 +28,6 @@ i8 = ["dxr_shared/i8"]
 
 # support non-standard <nil> XML-RPC values
 nil = ["dxr_shared/nil"]
+
+[package.metadata.docs.rs]
+all-features = true

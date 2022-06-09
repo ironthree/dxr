@@ -58,15 +58,24 @@ dxr_server = { path = "../dxr_server", version = "0.4.0-dev", optional = true }
 # used for example binaries and integration tests
 tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }
 
+# used to compile and run async code in doctests
+tokio-test = "0.4.2"
+
 # used for testing derive macros
 trybuild = "1.0.56"
 
 [features]
 derive = ["dep:dxr_derive"]
 client = ["dep:dxr_client"]
-server = ["dep:dxr_server"]
+server = ["dxr_server"]
+
+# server: optional axum support code
+axum-server = ["server", "dxr_server/axum"]
 
 # support non-standard <i8> XML-RPC values
 i8 = ["dxr_shared/i8", "dxr_client?/i8"]
 # support non-standard <nil> XML-RPC values
 nil = ["dxr_shared/nil", "dxr_client?/nil"]
+
+[package.metadata.docs.rs]
+all-features = true

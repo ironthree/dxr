@@ -1,3 +1,19 @@
+#![deny(unsafe_code)]
+#![warn(explicit_outlives_requirements)]
+#![warn(missing_copy_implementations)]
+#![warn(missing_docs)]
+#![warn(missing_debug_implementations)]
+#![warn(noop_method_call)]
+#![warn(unused_import_braces)]
+#![warn(unused_qualifications)]
+#![warn(unreachable_pub)]
+#![warn(clippy::unwrap_used)]
+
+//! # dxr_client
+//!
+//! This crate is an implementation detail of the `dxr` crate, which provides an implementation of
+//! an XML-RPC client based on [`reqwest`].
+
 use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
 // re-export url::URL, as it is exposed in the the public API
 pub use url::Url;

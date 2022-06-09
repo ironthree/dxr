@@ -6,6 +6,7 @@
 #![warn(noop_method_call)]
 #![warn(unused_import_braces)]
 #![warn(unused_qualifications)]
+#![warn(unreachable_pub)]
 #![warn(clippy::unwrap_used)]
 
 //! # dxr_derive

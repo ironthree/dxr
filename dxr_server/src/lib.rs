@@ -1,3 +1,19 @@
+#![deny(unsafe_code)]
+#![warn(explicit_outlives_requirements)]
+#![warn(missing_copy_implementations)]
+#![warn(missing_docs)]
+#![warn(missing_debug_implementations)]
+#![warn(noop_method_call)]
+#![warn(unused_import_braces)]
+#![warn(unused_qualifications)]
+#![warn(unreachable_pub)]
+#![warn(clippy::unwrap_used)]
+
+//! # dxr_server
+//!
+//! This crate is an implementation detail of the `dxr` crate, which provides a basic implementation
+//! of an XML-RPC server and optional support code for implementing an XML-RPC server with [`axum`].
+
 use std::collections::HashMap;
 use std::sync::Arc;
 

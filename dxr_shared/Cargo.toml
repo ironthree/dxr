@@ -29,3 +29,6 @@ quickcheck_macros = "1.0"
 i8 = []
 # support non-standard <nil> XML-RPC values
 nil = []
+
+[package.metadata.docs.rs]
+all-features = true
