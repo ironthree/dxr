@@ -250,7 +250,7 @@ impl ArrayData {
 /// It contains the name of the method, and a list of dynamically typed method call parameters.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodCall")]
-pub(crate) struct MethodCall {
+pub struct MethodCall {
     #[serde(rename = "methodName")]
     name: MethodName,
     #[serde(default, skip_serializing_if = "RequestParameters::is_empty")]
@@ -259,8 +259,7 @@ pub(crate) struct MethodCall {
 
 impl MethodCall {
     /// constructor for `<methodCall>` values from method name and parameter list
-    #[allow(unused)]
-    pub(crate) fn new(name: String, parameters: Vec<Value>) -> MethodCall {
+    pub fn new(name: String, parameters: Vec<Value>) -> MethodCall {
         MethodCall {
             name: MethodName { name },
             params: RequestParameters {
@@ -270,14 +269,12 @@ impl MethodCall {
     }
 
     /// getter method for the method name
-    #[allow(unused)]
-    pub(crate) fn name(&self) -> &str {
+    pub fn name(&self) -> &str {
         &self.name.name
     }
 
     /// getter method for the list of parameters
-    #[allow(unused)]
-    pub(crate) fn params(&self) -> &Vec<Value> {
+    pub fn params(&self) -> &Vec<Value> {
         &self.params.params.params
     }
 }
@@ -296,15 +293,14 @@ struct MethodName {
 /// It contains zero or one return values.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodResponse")]
-pub(crate) struct MethodResponse {
+pub struct MethodResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     params: Option<ResponseParameters>,
 }
 
 impl MethodResponse {
     /// constructor for `<methodResponse>` values from the return value
-    #[allow(unused)]
-    pub(crate) fn new(value: Value) -> MethodResponse {
+    pub fn new(value: Value) -> MethodResponse {
         MethodResponse {
             params: Some(ResponseParameters {
                 params: ResponseParameter { value },
@@ -313,14 +309,12 @@ impl MethodResponse {
     }
 
     /// constructor empty `<methodResponse>` values without a value
-    #[allow(unused)]
-    pub(crate) fn empty() -> MethodResponse {
+    pub fn empty() -> MethodResponse {
         MethodResponse { params: None }
     }
 
     /// getter method for the returned value
-    #[allow(unused)]
-    pub(crate) fn inner(self) -> Option<Value> {
+    pub fn inner(self) -> Option<Value> {
         self.params.map(|o| o.params.value)
     }
 }

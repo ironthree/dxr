@@ -8,8 +8,8 @@ edition = "2021"
 rust-version = "1.56.0"
 
 authors = ["Fabio Valentini <decathorpe@gmail.com>"]
-categories = ["network-programming", "web-programming::http-client", "encoding"]
-keywords = ["XML-RPC", "client", "derive"]
+categories = ["network-programming", "encoding"]
+keywords = ["XML-RPC", "client", "server", "derive"]
 repository = "https://github.com/ironthree/dxr"
 exclude = ["/wip/"]
 
@@ -26,12 +26,12 @@ required-features = ["client", "derive", "nil"]
 [[example]]
 name = "server"
 path = "examples/server.rs"
-required-features = ["axum-server"]
+required-features = ["dxr_server/axum"]
 
 [[test]]
 name = "adder"
 path = "tests/adder.rs"
-required-features = ["client", "axum-server", "tokio"]
+required-features = ["client", "dxr_server/axum"]
 
 [[test]]
 name = "derive"
@@ -41,76 +41,32 @@ required-features = ["derive", "i8", "nil"]
 [[test]]
 name = "echo_any"
 path = "tests/echo_any.rs"
-required-features = ["derive", "client", "axum-server", "i8", "nil", "tokio"]
+required-features = ["derive", "client", "server", "dxr_server/axum", "i8", "nil"]
 
 [[test]]
 name = "echo_one"
 path = "tests/echo_one.rs"
-required-features = ["derive", "client", "axum-server", "i8", "nil", "tokio"]
-
+required-features = ["derive", "client", "server", "dxr_server/axum", "i8", "nil"]
 
 [dependencies]
-anyhow = "1.0.53"
-base64 = "0.13"
-chrono = "0.4.19"
-log = "0.4.13"
-quick-xml = { version = "0.23" , features = ["serialize"] }
-serde = { version = "1.0.104", features = ["derive"] }
-thiserror = "1.0.30"
-
-# derive feature
+dxr_shared = { path = "../dxr_shared", version = "0.4.0-dev" }
 dxr_derive = { path = "../dxr_derive", version = "0.4.0-dev", optional = true }
-
-# client feature
-reqwest = { version = "0.11", features = ["cookies"] , optional = true }
-url = { version = "2.2", optional = true }
-
-# server feature
-async-trait = { version = "0.1.52", optional = true }
-http = { version = "0.2.6", optional = true }
-
-# server feature: axum implementation / integration
-axum = { version = "0.5.4", optional = true }
-tokio = { version = "1.14", optional = true }
-
+dxr_client = { path = "../dxr_client", version = "0.4.0-dev", optional = true }
+dxr_server = { path = "../dxr_server", version = "0.4.0-dev", optional = true }
 
 [dev-dependencies]
-# used for property-based conversion / roundrtip tests
-quickcheck = "1.0"
-quickcheck_macros = "1.0"
-
 # used for example binaries and integration tests
 tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }
-
-# used for compiling async doctests
-tokio-test = "0.4.2"
 
 # used for testing derive macros
 trybuild = "1.0.56"
 
-
 [features]
-# basic client / server support
-default = ["client", "server", "derive"]
-
-# reqwest-based XML-RPC client support
-client = ["reqwest", "http", "url"]
-
-# basic XML-RPC server suport
-server = ["http"]
-# server implementation based on axum
-axum-server = ["server", "async-trait", "axum", "tokio/sync"]
-
-# derive macros for ToDXR and FromDXR traits
-derive = ["dxr_derive"]
+derive = ["dep:dxr_derive"]
+client = ["dep:dxr_client"]
+server = ["dep:dxr_server"]
 
 # support non-standard <i8> XML-RPC values
-i8 = []
-
+i8 = ["dxr_shared/i8", "dxr_client?/i8"]
 # support non-standard <nil> XML-RPC values
-nil = []
-
-
-[package.metadata.docs.rs]
-all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
+nil = ["dxr_shared/nil", "dxr_client?/nil"]

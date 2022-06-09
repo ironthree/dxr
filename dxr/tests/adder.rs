@@ -2,8 +2,9 @@
 
 use std::time::Duration;
 
-use dxr::axum::http::HeaderMap;
-use dxr::{Call, ClientBuilder, Fault, FromParams, HandlerFn, RouteBuilder, Server, ToDXR, Value};
+use dxr::client::{Call, ClientBuilder};
+use dxr::server::{axum::http::HeaderMap, HandlerFn, RouteBuilder, Server};
+use dxr::{Fault, FromParams, ToDXR, Value};
 
 fn add_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
     let (a, b): (i32, i32) = FromParams::from_params(params)?;

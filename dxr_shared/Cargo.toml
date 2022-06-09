@@ -1,0 +1,31 @@
+[package]
+name = "dxr_shared"
+description = "Declarative XML-RPC (implementation details)"
+license = "MIT OR Apache-2.0"
+
+version = "0.4.0-dev"
+edition = "2021"
+rust-version = "1.56.0"
+
+authors = ["Fabio Valentini <decathorpe@gmail.com>"]
+categories = ["network-programming", "encoding"]
+keywords = ["XML-RPC"]
+repository = "https://github.com/ironthree/dxr"
+exclude = ["/wip/"]
+
+[dependencies]
+base64 = "0.13"
+chrono = "0.4.19"
+quick-xml = { version = "0.23" , features = ["serialize"] }
+serde = { version = "1.0.104", features = ["derive"] }
+thiserror = "1.0.30"
+
+[dev-dependencies]
+quickcheck = "1.0"
+quickcheck_macros = "1.0"
+
+[features]
+# support non-standard <i8> XML-RPC values
+i8 = []
+# support non-standard <nil> XML-RPC values
+nil = []

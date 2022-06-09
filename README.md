@@ -31,11 +31,13 @@ All conversion methods (both between Rust XML-RPC values and XML strings, and be
 Rust primitives and Rust XML-RPC values) are extensively checked for correctness by unit
 tests and property-based tests using `quickcheck`.
 
-The project is split into three crates:
+The project is split into five crates:
 
-- `dxr`: high-level method call, client, and server implementations, implementation of
-  XML-RPC types and conversion traits between XML-RPC types and Rust types, and
-  (de)serialization implementations for converting between XML to XML-RPC values
+- `dxr`: top-level crate that exposes all publicly available functionality
+- `dxr_client`: XML-RPC client implementation using `reqwest`
+- `dxr_server`: generic XML-RPC server implementation with optional support for `axum`
+- `dxr_shared`: implementation of XML-RPC types, conversion traits between XML-RPC types and
+  Rust types, and (de)serialization implementations for converting between XML to XML-RPC values
 - `dxr_derive`: `ToDXR` and `FromDXR` derive macros for custom data types
 
 ### Why another crate for XML-RPC?

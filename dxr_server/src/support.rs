@@ -10,11 +10,10 @@ use axum::Router;
 
 use tokio::sync::Notify;
 
-use crate::server::handler::Handler;
-use crate::server::{server, DEFAULT_SERVER_ROUTE};
+use crate::handler::Handler;
+use crate::{server, DEFAULT_SERVER_ROUTE};
 
 /// builder that takes parameters for constructing a standalone [`axum::Router`]
-#[cfg_attr(docsrs, doc(cfg(feature = "axum-server")))]
 #[derive(Default)]
 pub struct RouteBuilder {
     path: Cow<'static, str>,
@@ -70,7 +69,6 @@ impl RouteBuilder {
 /// # XML-RPC server implementation
 ///
 /// This type provides a very simple XML-RPC server implementation based on [`axum::Router`].
-#[cfg_attr(docsrs, doc(cfg(feature = "axum-server")))]
 #[derive(Debug)]
 pub struct Server {
     addr: SocketAddr,

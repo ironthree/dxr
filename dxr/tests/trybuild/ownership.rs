@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use dxr::chrono::{DateTime, Utc};
 use dxr::{FromDXR, ToDXR};
 
 #[derive(FromDXR, ToDXR)]

@@ -1,27 +1,27 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+// re-export axum if the feature is enabled: part of the public API
+#[cfg(feature = "axum")]
+pub use axum;
+
 use http::header::{CONTENT_LENGTH, CONTENT_TYPE};
 use http::{HeaderMap, HeaderValue, StatusCode};
 
-use crate::error::DxrError;
-use crate::fault::Fault;
-use crate::values::{FaultResponse, MethodCall, MethodResponse, Value};
+use dxr_shared::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Value};
 
 mod handler;
 pub use handler::*;
 
-#[cfg(feature = "axum-server")]
+#[cfg(feature = "axum")]
 mod support;
-#[cfg(feature = "axum-server")]
+#[cfg(feature = "axum")]
 pub use support::*;
 
 /// default server route / path for XML-RPC endpoints
-#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub const DEFAULT_SERVER_ROUTE: &str = "/";
 
 /// type alias for atomically reference-counted map of XML-RPC method names and handlers
-#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub type HandlerMap = Arc<HashMap<&'static str, Box<dyn Handler>>>;
 
 /// This function can be used in custom XML-RPC endpoints (BYOS - bring your own server).
@@ -29,7 +29,6 @@ pub type HandlerMap = Arc<HashMap<&'static str, Box<dyn Handler>>>;
 /// It takes a map of method handlers ([`HandlerMap`]), the request body, and the request headers
 /// as arguments, and returns a tuple of HTTP status code [`http::StatusCode`], request
 /// response headers, and response body.
-#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub fn server(handlers: HandlerMap, body: &str, headers: &HeaderMap) -> (StatusCode, HeaderMap, String) {
     if headers.get(CONTENT_LENGTH).is_none() {
         return fault_to_response(411, "Content-Length header missing.");

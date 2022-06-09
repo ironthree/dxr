@@ -1,21 +1,17 @@
 use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
-use url::Url;
+// re-export url::URL, as it is exposed in the the public API
+pub use url::Url;
 
-use crate::error::DxrError;
-use crate::fault::Fault;
-use crate::traits::{FromDXR, ToParams};
-use crate::values::{FaultResponse, MethodCall, MethodResponse};
+use dxr_shared::{DxrError, Fault, FaultResponse, FromDXR, MethodCall, MethodResponse, ToParams};
 
 mod call;
 pub use call::*;
 
 /// default value of the `User-Agent` HTTP header for XML-RPC requests
-#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub const DEFAULT_USER_AGENT: &str = concat!("dxr-client-v", env!("CARGO_PKG_VERSION"));
 
 /// builder that takes parameters for constructing a [`Client`] based on [`reqwest`]
 #[derive(Debug)]
-#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub struct ClientBuilder {
     url: Url,
     headers: HeaderMap,
@@ -122,7 +118,6 @@ fn response_to_result(contents: &str) -> Result<MethodResponse, anyhow::Error> {
 /// This type provides a very simple XML-RPC client implementation based on [`reqwest`]. Initialize
 /// the [`Client`], submit a [`Call`], get a result (or a fault).
 #[derive(Debug)]
-#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub struct Client {
     url: Url,
     client: reqwest::Client,
@@ -156,8 +151,7 @@ impl Client {
         } else {
             #[cfg(feature = "nil")]
             {
-                use crate::values::Value;
-                Ok(R::from_dxr(&Value::nil())?)
+                Ok(R::from_dxr(&dxr_shared::Value::nil())?)
             }
 
             #[cfg(not(feature = "nil"))]

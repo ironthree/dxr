@@ -1,5 +1,11 @@
 [workspace]
-members = ["dxr", "dxr_derive"]
+members = [
+    "dxr",
+    "dxr_client",
+    "dxr_server",
+    "dxr_shared",
+    "dxr_derive",
+]
 
 [profile.release]
 codegen-units = 1

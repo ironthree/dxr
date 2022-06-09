@@ -1,8 +1,8 @@
 #![warn(missing_debug_implementations)]
 #![warn(clippy::unwrap_used)]
 
-use dxr::url::Url;
-use dxr::{Call, ClientBuilder, DxrError, FromDXR, ToDXR, Value};
+use dxr::client::{Call, ClientBuilder, Url};
+use dxr::{DxrError, FromDXR, ToDXR, Value};
 
 #[derive(Debug, FromDXR, ToDXR)]
 pub struct Build {

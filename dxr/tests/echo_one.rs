@@ -4,9 +4,10 @@
 use std::collections::HashMap;
 use std::time::Duration;
 
-use dxr::axum::http::HeaderMap;
 use dxr::chrono::{DateTime, SubsecRound, Utc};
-use dxr::{Call, ClientBuilder, DxrError, Fault, FromDXR, FromParams, HandlerFn, RouteBuilder, Server, ToDXR, Value};
+use dxr::client::{Call, ClientBuilder};
+use dxr::server::{axum::http::HeaderMap, HandlerFn, RouteBuilder, Server};
+use dxr::{DxrError, Fault, FromDXR, FromParams, ToDXR, Value};
 
 fn echo_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
     let value: Value = Value::from_params(params)?;

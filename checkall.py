@@ -3,6 +3,7 @@
 # This script is used to verify that all combinations of enabled / disabled features
 # compile, produce no warnings, and pass tests.
 
+import os
 import subprocess as sp
 
 
@@ -12,42 +13,43 @@ def powerset(elements):
     return powerset(elements[1:]) + [[elements[0]] + x for x in powerset(elements[1:])]
 
 
-FEATURES = [
-    "client",
-    "derive",
-    "server",
-    "axum-server",
-    "i8",
-    "nil",
-    "dxr_derive",
-    "reqwest",
-    "url",
-    "async-trait",
-    "axum",
-    "http",
-    "tokio",
-]
-
-
-def main():
-    allcombos = powerset(FEATURES)
+def check(package: str, feature_list: list[str]):
+    allcombos = powerset(feature_list)
     allcombos.remove([])
 
     features = [["--all-features"], ["--no-default-features"]]
     features += [["--no-default-features", "--features", ",".join(features)] for features in allcombos]
 
+    abort = False
     for n, featureset in enumerate(features):
-        for command in ["check", "clippy"]:
-            print(f">> [{n:04d}/{len(features):04d}] cargo {command}", " ".join(featureset))
+        for command in ["check", "clippy", "test"]:
+            print(f">> [{package}] [{n:04d}/{len(features):04d}] cargo {command}", " ".join(featureset))
 
             # cargo test --all-targets skips doctests
             targets = [] if command == "test" else ["--all-targets"]
-            ret = sp.run(["cargo", command] + targets + featureset)
+            ret = sp.run(["cargo", command, "--package", package] + targets + featureset)
 
             try:
                 ret.check_returncode()
+
             except sp.CalledProcessError:
+                abort = True
+
+            if abort:
                 break
+
+        if abort:
+            break
+
+
+def main():
+    os.environ["QUICKCHECK_TESTS"] = "100000"
+
+    check("dxr", ["derive", "client", "server", "i8", "nil"])
+    check("dxr_derive", [])
+    check("dxr_client", ["i8", "nil"])
+    check("dxr_server", ["axum"])
+    check("dxr_shared", ["i8", "nil"])
 
 
 if __name__ == "__main__":
