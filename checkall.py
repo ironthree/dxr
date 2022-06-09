@@ -45,11 +45,12 @@ def check(package: str, feature_list: list[str]):
 def main():
     os.environ["QUICKCHECK_TESTS"] = "100000"
 
-    check("dxr", ["derive", "client", "server", "i8", "nil"])
+    check("dxr", ["derive", "client", "server", "server-axum", "i8", "nil"])
     check("dxr_derive", [])
-    check("dxr_client", ["i8", "nil"])
-    check("dxr_server", ["axum"])
     check("dxr_shared", ["i8", "nil"])
+    check("dxr_client", ["i8", "nil"])
+    check("dxr_server", ["i8", "nil"])
+    check("dxr_server_axum", ["i8", "nil"])
 
 
 if __name__ == "__main__":

@@ -1,10 +1,11 @@
 [workspace]
 members = [
     "dxr",
+    "dxr_derive",
+    "dxr_shared",
     "dxr_client",
     "dxr_server",
-    "dxr_shared",
-    "dxr_derive",
+    "dxr_server_axum",
 ]
 
 [profile.release]

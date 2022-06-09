@@ -3,7 +3,8 @@
 use std::time::Duration;
 
 use dxr::client::{Call, ClientBuilder};
-use dxr::server::{axum::http::HeaderMap, HandlerFn, RouteBuilder, Server};
+use dxr::server::HandlerFn;
+use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
 use dxr::{Fault, FromParams, ToDXR, Value};
 
 fn add_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {

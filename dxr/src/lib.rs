@@ -58,9 +58,9 @@
 //!
 //! The APIs for setting up an XML-RPC server are intended to be similarly straight-forward,
 //! and allow embedding the XML-RPC server endpoint route into other servers. First, set up a
-//! [`server::RouteBuilder`], set up all method handlers, build it into an [`server::axum::Router`],
-//! and then either use this route as part of a larger server, or create a standalone service from
-//! it.
+//! [`server_axum::RouteBuilder`], set up all method handlers, build it into an
+//! [`server_axum::axum::Router`], and then either use this route as part of a larger server, or
+//! create a standalone service from it.
 //!
 //! ```
 //! # #[cfg(feature = "axum-server")] {
@@ -70,8 +70,8 @@
 //! ```
 //!
 //! Now, this is not a very useful XML-RPC endpoint, since it does not know about any method calls.
-//! An arbitrary number of method handlers can be registered with the [`server::RouteBuilder`]
-//! before building the [`server::axum::Router`].
+//! An arbitrary number of method handlers can be registered with the [`server_axum::RouteBuilder`]
+//! before building the [`server_axum::axum::Router`].
 //!
 //! ```
 //! # #[cfg(feature = "axum-server")] {
@@ -125,7 +125,7 @@
 //! The features can be enabled and disabled separately, but having neither of the two features
 //! enabled makes little sense, as it disables most of the crate's functionality. There is
 //! additional support functionality for servers that use `axum` and `tokio`, which can be enabled
-//! with the `axum-server` feature.
+//! with the `server-axum` feature.
 //!
 //! This crates also supports deriving conversion trait implementations for custom, user-defined
 //! structs. The derive macros are available if the `derive` feature is enabled.
@@ -143,5 +143,8 @@ pub use dxr_client as client;
 
 #[cfg(feature = "server")]
 pub use dxr_server as server;
+
+#[cfg(feature = "server-axum")]
+pub use dxr_server_axum as server_axum;
 
 pub use dxr_shared::*;

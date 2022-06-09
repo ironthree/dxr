@@ -1,8 +1,26 @@
+#![deny(unsafe_code)]
+#![warn(explicit_outlives_requirements)]
+#![warn(missing_copy_implementations)]
+#![warn(missing_docs)]
+#![warn(missing_debug_implementations)]
+#![warn(noop_method_call)]
+#![warn(unused_import_braces)]
+#![warn(unused_qualifications)]
+#![warn(unreachable_pub)]
+#![warn(clippy::unwrap_used)]
+
+//! # dxr_axum
+//!
+//! This crate provides an XML-RPC server implementation `dxr` crate based on [`axum`].
+
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use std::net::SocketAddr;
 use std::sync::Arc;
+
+// re-export axum, as it is exposed in the the public API
+pub use axum;
 
 use axum::http::HeaderMap;
 use axum::routing::post;
@@ -10,8 +28,7 @@ use axum::Router;
 
 use tokio::sync::Notify;
 
-use crate::handler::Handler;
-use crate::{server, DEFAULT_SERVER_ROUTE};
+use dxr_server::{server, Handler, DEFAULT_SERVER_ROUTE};
 
 /// builder that takes parameters for constructing a standalone [`axum::Router`]
 #[derive(Default)]

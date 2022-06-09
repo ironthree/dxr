@@ -26,12 +26,12 @@ required-features = ["client", "derive", "nil"]
 [[example]]
 name = "server"
 path = "examples/server.rs"
-required-features = ["dxr_server/axum"]
+required-features = ["server", "server-axum"]
 
 [[test]]
 name = "adder"
 path = "tests/adder.rs"
-required-features = ["client", "dxr_server/axum"]
+required-features = ["derive", "client", "server", "server-axum"]
 
 [[test]]
 name = "derive"
@@ -41,18 +41,19 @@ required-features = ["derive", "i8", "nil"]
 [[test]]
 name = "echo_any"
 path = "tests/echo_any.rs"
-required-features = ["derive", "client", "server", "dxr_server/axum", "i8", "nil"]
+required-features = ["derive", "client", "server", "server-axum", "i8", "nil"]
 
 [[test]]
 name = "echo_one"
 path = "tests/echo_one.rs"
-required-features = ["derive", "client", "server", "dxr_server/axum", "i8", "nil"]
+required-features = ["derive", "client", "server", "server-axum", "i8", "nil"]
 
 [dependencies]
 dxr_shared = { path = "../dxr_shared", version = "0.4.0-dev" }
 dxr_derive = { path = "../dxr_derive", version = "0.4.0-dev", optional = true }
 dxr_client = { path = "../dxr_client", version = "0.4.0-dev", optional = true }
 dxr_server = { path = "../dxr_server", version = "0.4.0-dev", optional = true }
+dxr_server_axum = { path = "../dxr_server_axum", version = "0.4.0-dev", optional = true }
 
 [dev-dependencies]
 # used for example binaries and integration tests
@@ -66,17 +67,25 @@ trybuild = "1.0.56"
 
 [features]
 default = ["client"]
-derive = ["dxr_derive"]
-client = ["dxr_client"]
-server = ["dxr_server"]
-
-# server: optional axum support code
-axum-server = ["server", "dxr_server/axum-server"]
+derive = ["dep:dxr_derive"]
+client = ["dep:dxr_client"]
+server = ["dep:dxr_server"]
+server-axum = ["dep:dxr_server_axum"]
 
 # support non-standard <i8> XML-RPC values
-i8 = ["dxr_shared/i8", "dxr_client?/i8"]
+i8 = [
+    "dxr_shared/i8",
+    "dxr_client?/i8",
+    "dxr_server?/i8",
+    "dxr_server_axum?/i8",
+]
 # support non-standard <nil> XML-RPC values
-nil = ["dxr_shared/nil", "dxr_client?/nil"]
+nil = [
+    "dxr_shared/nil",
+    "dxr_client?/nil",
+    "dxr_server?/nil",
+    "dxr_server_axum?/nil",
+]
 
 [package.metadata.docs.rs]
 all-features = true

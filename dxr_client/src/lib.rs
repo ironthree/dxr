@@ -15,6 +15,7 @@
 //! an XML-RPC client based on [`reqwest`].
 
 use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
+
 // re-export url::URL, as it is exposed in the the public API
 pub use url::Url;
 

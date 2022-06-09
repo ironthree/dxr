@@ -12,14 +12,10 @@
 //! # dxr_server
 //!
 //! This crate is an implementation detail of the `dxr` crate, which provides a basic implementation
-//! of an XML-RPC server and optional support code for implementing an XML-RPC server with [`axum`].
+//! of an XML-RPC server.
 
 use std::collections::HashMap;
 use std::sync::Arc;
-
-// re-export axum if the feature is enabled: part of the public API
-#[cfg(feature = "axum")]
-pub use axum;
 
 use http::header::{CONTENT_LENGTH, CONTENT_TYPE};
 use http::{HeaderMap, HeaderValue, StatusCode};
@@ -28,11 +24,6 @@ use dxr_shared::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Val
 
 mod handler;
 pub use handler::*;
-
-#[cfg(feature = "axum")]
-mod support;
-#[cfg(feature = "axum")]
-pub use support::*;
 
 /// default server route / path for XML-RPC endpoints
 pub const DEFAULT_SERVER_ROUTE: &str = "/";
