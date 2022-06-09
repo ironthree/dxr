@@ -65,12 +65,13 @@ tokio-test = "0.4.2"
 trybuild = "1.0.56"
 
 [features]
-derive = ["dep:dxr_derive"]
-client = ["dep:dxr_client"]
+default = ["client"]
+derive = ["dxr_derive"]
+client = ["dxr_client"]
 server = ["dxr_server"]
 
 # server: optional axum support code
-axum-server = ["server", "dxr_server/axum"]
+axum-server = ["server", "dxr_server/axum-server"]
 
 # support non-standard <i8> XML-RPC values
 i8 = ["dxr_shared/i8", "dxr_client?/i8"]

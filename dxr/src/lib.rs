@@ -116,19 +116,19 @@
 //!
 //! ## Optional Features
 //!
-//! By default, only the basic client and server support functionality and derive macros are
-//! enabled. All features can also be enabled individually -- by turning off default features and
-//! just enabling the required features.
+//! By default, only the `client` feature is enabled.
+//!
+//! All features can also be enabled individually -- by turning off default features and just
+//! enabling the required features.
 //!
 //! Client and server functionality are both optional, since they pull in additional dependencies.
 //! The features can be enabled and disabled separately, but having neither of the two features
 //! enabled makes little sense, as it disables most of the crate's functionality. There is
 //! additional support functionality for servers that use `axum` and `tokio`, which can be enabled
-//! with the `axum` feature of `dxr_server`.
+//! with the `axum-server` feature.
 //!
 //! This crates also supports deriving conversion trait implementations for custom, user-defined
-//! structs. The derive macros are available if the `derive` feature is enabled (which it is by
-//! default).
+//! structs. The derive macros are available if the `derive` feature is enabled.
 //!
 //! There is also optional support for two non-standard XML-RPC extensions:
 //!
