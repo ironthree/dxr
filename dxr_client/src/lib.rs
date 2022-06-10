@@ -141,10 +141,6 @@ pub struct Client {
 }
 
 impl Client {
-    fn client(&self) -> &reqwest::Client {
-        &self.client
-    }
-
     /// asynchronous method for handling remote procedure calls with XML-RPC
     ///
     /// Fault responses from the XML-RPC server are transparently converted into [`Fault`] errors.
@@ -155,8 +151,8 @@ impl Client {
         let body = request_to_body(&request)?;
 
         // construct request and send to server
-        let request = self.client().post(self.url.clone()).body(body).build()?;
-        let response = self.client().execute(request).await?;
+        let request = self.client.post(self.url.clone()).body(body).build()?;
+        let response = self.client.execute(request).await?;
 
         // deserialize XML-RPC method response
         let contents = response.text().await?;
