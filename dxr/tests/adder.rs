@@ -3,13 +3,13 @@
 use std::time::Duration;
 
 use dxr::client::{Call, ClientBuilder};
-use dxr::server::HandlerFn;
+use dxr::server::{HandlerFn, HandlerResult};
 use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
 use dxr::{Fault, FromParams, ToDXR, Value};
 
-fn add_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
+fn add_handler(params: &[Value], _headers: &HeaderMap) -> HandlerResult {
     let (a, b): (i32, i32) = FromParams::from_params(params)?;
-    Ok(Some((a + b).to_dxr()?))
+    Ok((a + b).to_dxr()?)
 }
 
 #[tokio::test]

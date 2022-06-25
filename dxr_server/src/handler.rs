@@ -3,7 +3,7 @@ use http::HeaderMap;
 use crate::{Fault, Value};
 
 /// type alias for the result type of method handlers
-pub type HandlerResult = Result<Option<Value>, Fault>;
+pub type HandlerResult = Result<Value, Fault>;
 
 /// trait describing server methods that can be called via XML-RPC
 ///

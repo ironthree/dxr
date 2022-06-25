@@ -6,12 +6,12 @@ use std::time::Duration;
 
 use dxr::chrono::{DateTime, SubsecRound, Utc};
 use dxr::client::{Call, ClientBuilder};
-use dxr::server::HandlerFn;
+use dxr::server::{HandlerFn, HandlerResult};
 use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
-use dxr::{DxrError, Fault, FromDXR, ToDXR, Value};
+use dxr::{DxrError, FromDXR, ToDXR, Value};
 
-fn echo_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
-    Ok(Some(params.to_dxr()?))
+fn echo_handler(params: &[Value], _headers: &HeaderMap) -> HandlerResult {
+    Ok(params.to_dxr()?)
 }
 
 #[derive(Clone, Debug, FromDXR, PartialEq, ToDXR)]

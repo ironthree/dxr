@@ -158,19 +158,7 @@ impl Client {
         let contents = response.text().await?;
         let result = response_to_result(&contents)?;
 
-        // extract return value  (if it is present)
-        if let Some(value) = result.inner() {
-            Ok(R::from_dxr(&value)?)
-        } else {
-            #[cfg(feature = "nil")]
-            {
-                Ok(R::from_dxr(&dxr_shared::Value::nil())?)
-            }
-
-            #[cfg(not(feature = "nil"))]
-            {
-                Err(DxrError::parameter_mismatch(0, 1).into())
-            }
-        }
+        // extract return value
+        Ok(R::from_dxr(&result.inner())?)
     }
 }

@@ -259,11 +259,11 @@ pub struct MethodCall {
 
 impl MethodCall {
     /// constructor for `<methodCall>` values from method name and parameter list
-    pub fn new(name: String, parameters: Vec<Value>) -> MethodCall {
+    pub fn new(name: String, params: Vec<Value>) -> MethodCall {
         MethodCall {
             name: MethodName { name },
             params: RequestParameters {
-                params: ParameterData { params: parameters },
+                params: params.into_iter().map(|value| RequestParameter { value }).collect(),
             },
         }
     }
@@ -273,9 +273,9 @@ impl MethodCall {
         &self.name.name
     }
 
-    /// getter method for the list of parameters
-    pub fn params(&self) -> &Vec<Value> {
-        &self.params.params.params
+    /// extract the list of parameters
+    pub fn params(self) -> Vec<Value> {
+        self.params.params.into_iter().map(|param| param.value).collect()
     }
 }
 
@@ -294,28 +294,22 @@ struct MethodName {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodResponse")]
 pub struct MethodResponse {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    params: Option<ResponseParameters>,
+    params: ResponseParameters,
 }
 
 impl MethodResponse {
     /// constructor for `<methodResponse>` values from the return value
     pub fn new(value: Value) -> MethodResponse {
         MethodResponse {
-            params: Some(ResponseParameters {
-                params: ResponseParameter { value },
-            }),
+            params: ResponseParameters {
+                params: ResponseParameter { params: value },
+            },
         }
     }
 
-    /// constructor empty `<methodResponse>` values without a value
-    pub fn empty() -> MethodResponse {
-        MethodResponse { params: None }
-    }
-
     /// getter method for the returned value
-    pub fn inner(self) -> Option<Value> {
-        self.params.map(|o| o.params.value)
+    pub fn inner(self) -> Value {
+        self.params.params.params
     }
 }
 
@@ -366,20 +360,19 @@ struct FaultValue {
 #[serde(rename = "params")]
 struct RequestParameters {
     #[serde(default, rename = "param")]
-    params: ParameterData,
+    params: Vec<RequestParameter>,
 }
 
 impl RequestParameters {
     fn is_empty(&self) -> bool {
-        self.params.params.is_empty()
+        self.params.is_empty()
     }
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "param")]
-struct ParameterData {
-    #[serde(rename = "value")]
-    params: Vec<Value>,
+struct RequestParameter {
+    value: Value,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -392,5 +385,6 @@ struct ResponseParameters {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "param")]
 struct ResponseParameter {
-    value: Value,
+    #[serde(rename = "value")]
+    params: Value,
 }

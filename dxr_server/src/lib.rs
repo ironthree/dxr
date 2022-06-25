@@ -55,7 +55,7 @@ pub fn server(handlers: HandlerMap, body: &str, headers: &HeaderMap) -> (StatusC
         None => return fault_to_response(404, "Unknown method."),
     };
 
-    let response = match handler.handle(call.params(), headers) {
+    let response = match handler.handle(&call.params(), headers) {
         Ok(value) => success_to_response(value),
         Err(fault) => fault_to_response(fault.code(), fault.string()),
     };
@@ -69,11 +69,8 @@ fn response_headers() -> HeaderMap {
     headers
 }
 
-fn success_to_response(value: Option<Value>) -> (StatusCode, HeaderMap, String) {
-    let response = match value {
-        Some(value) => MethodResponse::new(value),
-        None => MethodResponse::empty(),
-    };
+fn success_to_response(value: Value) -> (StatusCode, HeaderMap, String) {
+    let response = MethodResponse::new(value);
 
     match quick_xml::se::to_string(&response) {
         Ok(success) => (StatusCode::OK, response_headers(), success),
