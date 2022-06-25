@@ -17,6 +17,8 @@
 //! 1
 //! >>> proxy.countme()
 //! 2
+//! >>> proxy.add(1, 2)
+//! 3
 //! ```
 
 use std::sync::RwLock;
@@ -51,6 +53,11 @@ fn hello_handler(params: &[Value], _headers: &HeaderMap) -> HandlerResult {
     Ok(format!("Handler function says: Hello, {}!", name).to_dxr()?)
 }
 
+fn adder_handler(params: &[Value], _headers: &HeaderMap) -> HandlerResult {
+    let (a, b): (i32, i32) = FromParams::from_params(params)?;
+    Ok((a + b).to_dxr()?)
+}
+
 #[tokio::main]
 async fn main() {
     let counter_handler = CounterHandler::new(0);
@@ -59,6 +66,7 @@ async fn main() {
         .set_path("/")
         .add_method("hello", Box::new(hello_handler as HandlerFn))
         .add_method("countme", Box::new(counter_handler))
+        .add_method("add", Box::new(adder_handler as HandlerFn))
         .build();
 
     let server = Server::from_route("0.0.0.0:3000".parse().unwrap(), route);

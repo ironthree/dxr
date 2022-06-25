@@ -290,7 +290,7 @@ struct MethodName {
 ///
 /// The [`MethodResponse`] type is the Rust equivalent of the contents of an XML-RPC response.
 ///
-/// It contains zero or one return values.
+/// It contains exactly one return value as a parameter.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodResponse")]
 pub struct MethodResponse {
