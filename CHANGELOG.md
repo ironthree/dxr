@@ -1,3 +1,31 @@
+## Release 0.4.0
+
+**Changed**:
+
+- moved implementations of XML-RPC clients, servers, and the axum server support into separate
+  crates, available as optional features of the top-level `dxr` crate
+- moved to more powerful cargo feature syntax for optional and conditional dependencies
+- server: refactored method call `Handler` trait to allow the handler function to be `async`
+
+**Fixed**:
+
+- `methodResponse` must apparently always contain exactly one value
+- `methodParameters` contain an array of parameters that contain values, not a parameter that
+  is an array of values
+
+Both these fixes required minor changes to the public API, which is why they cannot be backported
+to the 0.3.x branch.
+
+**Added**:
+
+- implemented of `FromDXR` for fixed-size arrays
+- implemented support for struct fields that are fixed-size arrays in the derive macros
+
+**Updated dependencies**:
+
+- updated `axum` version from 0.4 to 0.5
+- updated `quick_xml` version from 0.22 to 0.23
+
 ## Release 0.3.1
 
 Fixed:

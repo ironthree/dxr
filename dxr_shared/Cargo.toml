@@ -3,7 +3,7 @@ name = "dxr_shared"
 description = "Declarative XML-RPC (implementation details)"
 license = "MIT OR Apache-2.0"
 
-version = "0.4.0-dev"
+version = "0.4.0"
 edition = "2021"
 rust-version = "1.60.0"
 
@@ -11,7 +11,6 @@ authors = ["Fabio Valentini <decathorpe@gmail.com>"]
 categories = ["network-programming", "encoding"]
 keywords = ["XML-RPC"]
 repository = "https://github.com/ironthree/dxr"
-exclude = ["/wip/"]
 
 [dependencies]
 base64 = "0.13"
