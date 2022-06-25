@@ -42,6 +42,8 @@ The project is split into six crates:
 - `dxr_server`: generic XML-RPC server functionality
 - `dxr_server_axum`: XML-RPC server implementation using `axum`
 
+It is recommended to only add a direct dependency on `dxr` and to enable the required features.
+
 ### Why another crate for XML-RPC?
 
 Searching for `xml-rpc` on crates.io yields a few results, but they all did not fit my
