@@ -25,6 +25,9 @@ use dxr_shared::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Val
 mod handler;
 pub use handler::*;
 
+// re-export the async_trait macro, as it is exposed as part of the public API
+pub use async_trait::async_trait;
+
 /// default server route / path for XML-RPC endpoints
 pub const DEFAULT_SERVER_ROUTE: &str = "/";
 
@@ -36,7 +39,7 @@ pub type HandlerMap = Arc<HashMap<&'static str, Box<dyn Handler>>>;
 /// It takes a map of method handlers ([`HandlerMap`]), the request body, and the request headers
 /// as arguments, and returns a tuple of HTTP status code [`http::StatusCode`], request
 /// response headers, and response body.
-pub fn server(handlers: HandlerMap, body: &str, headers: &HeaderMap) -> (StatusCode, HeaderMap, String) {
+pub async fn server(handlers: HandlerMap, body: &str, headers: HeaderMap) -> (StatusCode, HeaderMap, String) {
     if headers.get(CONTENT_LENGTH).is_none() {
         return fault_to_response(411, "Content-Length header missing.");
     }
@@ -55,7 +58,7 @@ pub fn server(handlers: HandlerMap, body: &str, headers: &HeaderMap) -> (StatusC
         None => return fault_to_response(404, "Unknown method."),
     };
 
-    let response = match handler.handle(&call.params(), headers) {
+    let response = match handler.handle(&call.params(), headers).await {
         Ok(value) => success_to_response(value),
         Err(fault) => fault_to_response(fault.code(), fault.string()),
     };

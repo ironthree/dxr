@@ -12,17 +12,19 @@ pub type HandlerResult = Result<Value, Fault>;
 ///
 /// For method handlers that need to keep track of some state (or handle authentication, etc.), just
 /// implement this trait for your own struct.
+#[async_trait::async_trait]
 pub trait Handler: Send + Sync {
     /// This method is called for handling incoming XML-RPC method requests with the method name
     /// registered for this [`Handler`], with the request's method parameters as its arguments.
-    fn handle(&self, params: &[Value], headers: &HeaderMap) -> HandlerResult;
+    async fn handle(&self, params: &[Value], headers: HeaderMap) -> HandlerResult;
 }
 
-/// type alias for plain handler functions without associated data
-pub type HandlerFn = fn(params: &[Value], headers: &HeaderMap) -> HandlerResult;
+/// type alias for non-async handler functions without associated data
+pub type HandlerFn = fn(params: &[Value], headers: HeaderMap) -> HandlerResult;
 
+#[async_trait::async_trait]
 impl Handler for HandlerFn {
-    fn handle(&self, params: &[Value], headers: &HeaderMap) -> HandlerResult {
+    async fn handle(&self, params: &[Value], headers: HeaderMap) -> HandlerResult {
         self(params, headers)
     }
 }

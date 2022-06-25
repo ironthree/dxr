@@ -10,7 +10,7 @@ use dxr::server::{HandlerFn, HandlerResult};
 use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
 use dxr::{DxrError, FromDXR, ToDXR, Value};
 
-fn echo_handler(params: &[Value], _headers: &HeaderMap) -> HandlerResult {
+fn echo_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     Ok(params.to_dxr()?)
 }
 

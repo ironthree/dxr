@@ -78,7 +78,7 @@ impl RouteBuilder {
         let handlers = Arc::new(self.handlers);
         Router::new().route(
             self.path.as_ref(),
-            post(move |body: String, headers: HeaderMap| async move { server(handlers, &body, &headers) }),
+            post(move |body: String, headers: HeaderMap| async move { server(handlers, &body, headers).await }),
         )
     }
 }

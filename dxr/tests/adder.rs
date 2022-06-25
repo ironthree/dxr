@@ -7,7 +7,7 @@ use dxr::server::{HandlerFn, HandlerResult};
 use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
 use dxr::{Fault, FromParams, ToDXR, Value};
 
-fn add_handler(params: &[Value], _headers: &HeaderMap) -> HandlerResult {
+fn adder_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let (a, b): (i32, i32) = FromParams::from_params(params)?;
     Ok((a + b).to_dxr()?)
 }
@@ -16,7 +16,7 @@ fn add_handler(params: &[Value], _headers: &HeaderMap) -> HandlerResult {
 async fn adder() {
     let route = RouteBuilder::new()
         .set_path("/")
-        .add_method("add", Box::new(add_handler as HandlerFn))
+        .add_method("add", Box::new(adder_handler as HandlerFn))
         .build();
 
     let mut server = Server::from_route("0.0.0.0:3000".parse().unwrap(), route);

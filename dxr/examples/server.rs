@@ -23,7 +23,7 @@
 
 use std::sync::RwLock;
 
-use dxr::server::{Handler, HandlerFn, HandlerResult};
+use dxr::server::{async_trait, Handler, HandlerFn, HandlerResult};
 use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
 use dxr::{FromParams, ToDXR, Value};
 
@@ -39,8 +39,9 @@ impl CounterHandler {
     }
 }
 
+#[async_trait]
 impl Handler for CounterHandler {
-    fn handle(&self, _params: &[Value], _headers: &HeaderMap) -> HandlerResult {
+    async fn handle(&self, _params: &[Value], _headers: HeaderMap) -> HandlerResult {
         let mut value = self.counter.write().unwrap();
         let result = (*value as i32).to_dxr()?;
         *value += 1;
@@ -48,12 +49,12 @@ impl Handler for CounterHandler {
     }
 }
 
-fn hello_handler(params: &[Value], _headers: &HeaderMap) -> HandlerResult {
+fn hello_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let name = String::from_params(params)?;
     Ok(format!("Handler function says: Hello, {}!", name).to_dxr()?)
 }
 
-fn adder_handler(params: &[Value], _headers: &HeaderMap) -> HandlerResult {
+fn adder_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let (a, b): (i32, i32) = FromParams::from_params(params)?;
     Ok((a + b).to_dxr()?)
 }
