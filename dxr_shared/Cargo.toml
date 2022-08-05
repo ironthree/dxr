@@ -14,12 +14,13 @@ repository = "https://github.com/ironthree/dxr"
 
 [dependencies]
 base64 = "0.13"
-chrono = "0.4.19"
+chrono = { version = "0.4.19", features = ["std"], default-features = false }
 quick-xml = { version = "0.23" , features = ["serialize"] }
 serde = { version = "1.0.104", features = ["derive"] }
 thiserror = "1.0.30"
 
 [dev-dependencies]
+chrono = { version = "0.4.19", features = ["clock", "std"], default-features = false }
 quickcheck = "1.0"
 quickcheck_macros = "1.0"
 

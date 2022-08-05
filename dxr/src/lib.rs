@@ -30,7 +30,9 @@
 //! use dxr::client::{Client, ClientBuilder, Url};
 //!
 //! let url = Url::parse("https://example.com/xml-rpc/").unwrap();
-//! let client: Client = ClientBuilder::new(url).user_agent("dxr-client-example").build();
+//! let client: Client = ClientBuilder::new(url)
+//!     .user_agent("dxr-client-example")
+//!     .build();
 //! # }
 //! ```
 //!
@@ -81,7 +83,9 @@
 //!
 //! fn hello_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
 //!     let name = String::from_params(params)?;
-//!     Ok(Some(format!("Handler function says: Hello, {}!", name).to_dxr()?))
+//!     Ok(Some(
+//!         format!("Handler function says: Hello, {}!", name).to_dxr()?,
+//!     ))
 //! }
 //!
 //! let route = RouteBuilder::new()
