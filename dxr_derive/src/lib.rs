@@ -33,9 +33,9 @@ fn use_dxr() -> TokenStream2 {
     }
 }
 
-/// procedural macro for deriving the `FromDXR` trait for structs
-#[proc_macro_derive(FromDXR)]
-pub fn from_dxr(input: TokenStream) -> TokenStream {
+/// procedural macro for deriving the `TryFromValue` trait for structs
+#[proc_macro_derive(TryFromValue)]
+pub fn try_from_value(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
 
     let name = input.ident;
@@ -44,7 +44,7 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
 
     for param in &mut input.generics.params {
         if let GenericParam::Type(ref mut type_param) = *param {
-            type_param.bounds.push(parse_quote!(#dxr::FromDXR));
+            type_param.bounds.push(parse_quote!(#dxr::TryFromValue));
         }
     }
 
@@ -67,33 +67,33 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
                         // syn::Type::Slice: dynamically-sized array
                         Type::Slice(_) => return quote_spanned! {
                             field.ty.span() => compile_error!(
-                                "Deriving FromDXR is not possible for structs that contain dynamically sized arrays, \
+                                "Deriving TryFromValue is not possible for structs that contain dynamically sized arrays, \
                                  as they don't implement Sized. Try using a Vec here."
                             );
                         }.into(),
                         Type::Reference(_) => return quote_spanned! {
                             field.ty.span() => compile_error!(
-                                "Deriving FromDXR is not possible for structs that contain reference types. \
+                                "Deriving TryFromValue is not possible for structs that contain reference types. \
                                  Try using a std::borrow::Cow here."
                             );
                         }.into(),
                         _ => return quote_spanned! {
                             field.ty.span() => compile_error!(
-                                "Deriving FromDXR is not possible due to an unrecognised struct field type."
+                                "Deriving TryFromValue is not possible due to an unrecognised struct field type."
                             );
                         }.into(),
                     };
                         let ident_str = ident.to_string();
                         field_impls.push(quote! {
-                            #ident: <#stype as FromDXR>::from_dxr(map.get(#ident_str)
-                                .ok_or_else(|| DxrError::missing_field(#name_str, #ident_str))?)?,
+                            #ident: <#stype as TryFromValue>::try_from_value(map.get(#ident_str)
+                                .ok_or_else(|| #dxr::DxrError::missing_field(#name_str, #ident_str))?)?,
                         });
                     }
                 },
                 Fields::Unnamed(_) => {
                     return quote_spanned! {
                         name.span() => compile_error!(
-                            "Deriving FromDXR for tuple structs is not supported."
+                            "Deriving TryFromValue for tuple structs is not supported."
                         );
                     }
                     .into()
@@ -101,7 +101,7 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
                 Fields::Unit => {
                     return quote_spanned! {
                         name.span() => compile_error!(
-                            "Deriving FromDXR for unit structs is not supported."
+                            "Deriving TryFromValue for unit structs is not supported."
                         );
                     }
                     .into()
@@ -111,7 +111,7 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
         Data::Enum(_) | Data::Union(_) => {
             return quote_spanned! {
                 name.span() => compile_error!(
-                    "Deriving FromDXR for enums and unions is not supported."
+                    "Deriving TryFromValue for enums and unions is not supported."
                 );
             }
             .into()
@@ -122,13 +122,13 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
     fields.extend(field_impls.into_iter());
 
     let impl_block = quote! {
-        impl #impl_generics #dxr::FromDXR for #name #ty_generics #where_clause {
-            fn from_dxr(value: &#dxr::Value) -> Result<#name #ty_generics, #dxr::DxrError> {
+        impl #impl_generics #dxr::TryFromValue for #name #ty_generics #where_clause {
+            fn try_from_value(value: &#dxr::Value) -> Result<#name #ty_generics, #dxr::DxrError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
                 use #dxr::{Value, DxrError};
 
-                let map: HashMap<String, Value> = HashMap::from_dxr(value)?;
+                let map: HashMap<String, Value> = HashMap::try_from_value(value)?;
 
                 Ok(#name {
                     #fields
@@ -140,9 +140,9 @@ pub fn from_dxr(input: TokenStream) -> TokenStream {
     proc_macro::TokenStream::from(impl_block)
 }
 
-/// procedural macro for deriving the `ToDXR` trait for structs
-#[proc_macro_derive(ToDXR)]
-pub fn to_dxr(input: TokenStream) -> TokenStream {
+/// procedural macro for deriving the `TryToValue` trait for structs
+#[proc_macro_derive(TryToValue)]
+pub fn try_to_value(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
 
     let name = input.ident;
@@ -150,7 +150,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
 
     for param in &mut input.generics.params {
         if let GenericParam::Type(ref mut type_param) = *param {
-            type_param.bounds.push(parse_quote!(#dxr::ToDXR));
+            type_param.bounds.push(parse_quote!(#dxr::TryToValue));
         }
     }
 
@@ -174,7 +174,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
                             // syn::Type::Slice: dynamically-sized array
                             Type::Slice(_) => return quote_spanned! {
                                 field.ty.span() => compile_error!(
-                                    "Deriving ToDXR is not possible for structs that contain dynamically sized arrays, \
+                                    "Deriving TryToValue is not possible for structs that contain dynamically sized arrays, \
                                      as they don't implement Sized. Try using a Vec or slice reference here."
                                 );
                             }
@@ -182,7 +182,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
                             _ => {
                                 return quote_spanned! {
                                     field.ty.span() => compile_error!(
-                                        "Deriving ToDXR is not possible due to an unrecognised struct field type."
+                                        "Deriving TryToValue is not possible due to an unrecognised struct field type."
                                     );
                                 }
                                 .into()
@@ -190,14 +190,14 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
                         };
                     let ident_str = ident.to_string();
                     field_impls.push(quote! {
-                        map.insert(String::from(#ident_str), <#stype as ToDXR>::to_dxr(&self.#ident)?);
+                        map.insert(String::from(#ident_str), <#stype as TryToValue>::try_to_value(&self.#ident)?);
                     });
                 }
             },
             Fields::Unnamed(_) => {
                 return quote_spanned! {
                     name.span() => compile_error!(
-                        "Deriving ToDXR for tuple structs is not supported."
+                        "Deriving TryToValue for tuple structs is not supported."
                     );
                 }
                 .into()
@@ -205,7 +205,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
             Fields::Unit => {
                 return quote_spanned! {
                     name.span() => compile_error!(
-                        "Deriving ToDXR for unit structs is not supported."
+                        "Deriving TryToValue for unit structs is not supported."
                     );
                 }
                 .into()
@@ -214,7 +214,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
         Data::Enum(_) | Data::Union(_) => {
             return quote_spanned! {
                 name.span() => compile_error!(
-                    "Deriving FromDXR for enums and unions is not supported."
+                    "Deriving TryToValue for enums and unions is not supported."
                 );
             }
             .into()
@@ -225,8 +225,8 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
     fields.extend(field_impls.into_iter());
 
     let impl_block = quote! {
-        impl #impl_generics #dxr::ToDXR for #name #ty_generics #where_clause {
-            fn to_dxr(&self) -> Result<#dxr::Value, #dxr::DxrError> {
+        impl #impl_generics #dxr::TryToValue for #name #ty_generics #where_clause {
+            fn try_to_value(&self) -> Result<#dxr::Value, #dxr::DxrError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
                 use #dxr::Value;
@@ -235,7 +235,7 @@ pub fn to_dxr(input: TokenStream) -> TokenStream {
 
                 #fields
 
-                HashMap::to_dxr(&map)
+                HashMap::try_to_value(&map)
             }
         }
     };

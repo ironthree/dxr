@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
 use dxr::chrono::{DateTime, Utc};
-use dxr::{FromDXR, ToDXR};
+use dxr::{TryFromValue, TryToValue};
 
-#[derive(ToDXR)]
+#[derive(TryToValue)]
 pub struct ToCollectibles<'a> {
     strings: Vec<String>,
     ints: [i32; 42],
@@ -18,7 +18,7 @@ pub struct ToCollectibles<'a> {
     recursive: [Box<ToCollectibles<'a>>; 2],
 }
 
-#[derive(FromDXR, ToDXR)]
+#[derive(TryFromValue, TryToValue)]
 pub struct Collectibles {
     strings: Vec<String>,
     ints: Vec<i32>,

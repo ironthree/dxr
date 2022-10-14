@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use dxr_shared::{DxrError, FromDXR, MethodCall, ToParams, Value};
+use dxr_shared::{DxrError, MethodCall, TryFromValue, TryToParams, Value};
 
 /// # XML-RPC method call
 ///
@@ -9,8 +9,8 @@ use dxr_shared::{DxrError, FromDXR, MethodCall, ToParams, Value};
 #[derive(Debug)]
 pub struct Call<'a, P, R>
 where
-    P: ToParams,
-    R: FromDXR,
+    P: TryToParams,
+    R: TryFromValue,
 {
     method: &'a str,
     params: P,
@@ -19,13 +19,13 @@ where
 
 impl<'a, P, R> Call<'a, P, R>
 where
-    P: ToParams,
-    R: FromDXR,
+    P: TryToParams,
+    R: TryFromValue,
 {
     /// constructor for [`Call`] values from method name and method parameters
     ///
     /// This method accepts every type of value for the `params` argument if it implements the
-    /// [`ToParams`] trait. This includes:
+    /// [`TryToParams`] trait. This includes:
     ///
     /// - primitives (`i32`, `i64`, `String`, `f64`, `DateTime`, bytes / `Vec<u8`, etc.)
     /// - arrays and slices of values of the same type (i.e. `Vec<T`, `[T]`, `&[T]`)
@@ -53,6 +53,6 @@ where
     }
 
     fn params(&self) -> Result<Vec<Value>, DxrError> {
-        self.params.to_params()
+        self.params.try_to_params()
     }
 }

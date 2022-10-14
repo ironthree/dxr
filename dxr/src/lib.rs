@@ -17,7 +17,7 @@
 //! The APIs for implementing both clients and servers are designed to require no boilerplate code
 //! (outside this crate, that is), and implements type conversions from Rust to XML-RPC types
 //! automatically for all supported data types. Custom struct types are also supported, if they
-//! derive or manually implement the [`FromDXR`] and / or [`ToDXR`] traits.
+//! derive or manually implement the [`TryFromValue`] and / or [`TryToValue`] traits.
 //!
 //! ## Client interface
 //!
@@ -76,16 +76,14 @@
 //! before building the [`server_axum::axum::Router`].
 //!
 //! ```
-//! # #[cfg(feature = "axum-server")] {
-//! use dxr::server::axum::http::HeaderMap;
-//! use dxr::server::{HandlerFn, RouteBuilder};
-//! use dxr::{Fault, FromParams, ToDXR, Value};
+//! # #[cfg(feature = "server-axum")] {
+//! use dxr::server::{HandlerFn, HandlerResult};
+//! use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder};
+//! use dxr::{Fault, TryFromParams, TryToValue, Value};
 //!
-//! fn hello_handler(params: &[Value], _headers: &HeaderMap) -> Result<Option<Value>, Fault> {
-//!     let name = String::from_params(params)?;
-//!     Ok(Some(
-//!         format!("Handler function says: Hello, {}!", name).to_dxr()?,
-//!     ))
+//! fn hello_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
+//!     let name = String::try_from_params(params)?;
+//!     Ok(format!("Handler function says: Hello, {}!", name).try_to_value()?)
 //! }
 //!
 //! let route = RouteBuilder::new()
@@ -152,3 +150,9 @@ pub use dxr_server as server;
 pub use dxr_server_axum as server_axum;
 
 pub use dxr_shared::*;
+
+#[cfg(test)]
+mod checks;
+
+#[cfg(test)]
+mod tests;

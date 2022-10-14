@@ -2,9 +2,9 @@
 #![warn(clippy::unwrap_used)]
 
 use dxr::client::{Call, ClientBuilder, Url};
-use dxr::{DxrError, FromDXR, ToDXR, Value};
+use dxr::{DxrError, TryFromValue, TryToValue, Value};
 
-#[derive(Debug, FromDXR, ToDXR)]
+#[derive(Debug, TryFromValue, TryToValue)]
 pub struct Build {
     pub build_id: i32,
     //cg_id: Option<?>,

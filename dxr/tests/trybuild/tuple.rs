@@ -1,6 +1,6 @@
-use dxr::FromDXR;
+use dxr::TryFromValue;
 
-#[derive(FromDXR)]
+#[derive(TryFromValue)]
 pub struct TupleStruct(String);
 
 fn main() {}

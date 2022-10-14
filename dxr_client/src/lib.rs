@@ -19,7 +19,7 @@ use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT}
 // re-export url::URL, as it is exposed in the the public API
 pub use url::Url;
 
-use dxr_shared::{DxrError, Fault, FaultResponse, FromDXR, MethodCall, MethodResponse, ToParams};
+use dxr_shared::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, TryFromValue, TryToParams};
 
 mod call;
 pub use call::*;
@@ -145,7 +145,7 @@ impl Client {
     ///
     /// Fault responses from the XML-RPC server are transparently converted into [`Fault`] errors.
     /// Invalid XML-RPC responses or faults will result in an appropriate [`DxrError`].
-    pub async fn call<P: ToParams, R: FromDXR>(&self, call: Call<'_, P, R>) -> Result<R, anyhow::Error> {
+    pub async fn call<P: TryToParams, R: TryFromValue>(&self, call: Call<'_, P, R>) -> Result<R, anyhow::Error> {
         // serialize XML-RPC method call
         let request = call.as_xml_rpc()?;
         let body = request_to_body(&request)?;
@@ -159,6 +159,6 @@ impl Client {
         let result = response_to_result(&contents)?;
 
         // extract return value
-        Ok(R::from_dxr(&result.inner())?)
+        Ok(R::try_from_value(&result.inner())?)
     }
 }

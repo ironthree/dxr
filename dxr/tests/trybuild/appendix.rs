@@ -1,7 +1,7 @@
 use dxr::chrono::{DateTime, Utc};
-use dxr::ToDXR;
+use dxr::TryToValue;
 
-#[derive(ToDXR)]
+#[derive(TryToValue)]
 pub struct Appendix<'a> {
     string: &'a str,
     int: &'a i32,

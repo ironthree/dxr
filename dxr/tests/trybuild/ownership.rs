@@ -1,7 +1,7 @@
 use dxr::chrono::{DateTime, Utc};
-use dxr::{FromDXR, ToDXR};
+use dxr::{TryFromValue, TryToValue};
 
-#[derive(FromDXR, ToDXR)]
+#[derive(TryFromValue, TryToValue)]
 pub struct Ownership {
     string: String,
     int: i32,

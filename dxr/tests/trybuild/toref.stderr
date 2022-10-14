@@ -1,4 +1,4 @@
-error: Deriving FromDXR is not possible for structs that contain reference types. Try using a std::borrow::Cow here.
+error: Deriving TryFromValue is not possible for structs that contain reference types. Try using a std::borrow::Cow here.
  --> tests/trybuild/toref.rs:5:13
   |
 5 |     string: &'a str,

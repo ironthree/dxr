@@ -1,4 +1,4 @@
-error: Deriving FromDXR for tuple structs is not supported.
+error: Deriving TryFromValue for tuple structs is not supported.
  --> tests/trybuild/tuple.rs:4:12
   |
 4 | pub struct TupleStruct(String);

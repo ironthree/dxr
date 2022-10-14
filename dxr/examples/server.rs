@@ -25,7 +25,7 @@ use std::sync::RwLock;
 
 use dxr::server::{async_trait, Handler, HandlerFn, HandlerResult};
 use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
-use dxr::{FromParams, ToDXR, Value};
+use dxr::{TryFromParams, TryToValue, Value};
 
 struct CounterHandler {
     counter: RwLock<u32>,
@@ -43,20 +43,20 @@ impl CounterHandler {
 impl Handler for CounterHandler {
     async fn handle(&self, _params: &[Value], _headers: HeaderMap) -> HandlerResult {
         let mut value = self.counter.write().unwrap();
-        let result = (*value as i32).to_dxr()?;
+        let result = (*value as i32).try_to_value()?;
         *value += 1;
         Ok(result)
     }
 }
 
 fn hello_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
-    let name = String::from_params(params)?;
-    Ok(format!("Handler function says: Hello, {}!", name).to_dxr()?)
+    let name = String::try_from_params(params)?;
+    Ok(format!("Handler function says: Hello, {}!", name).try_to_value()?)
 }
 
 fn adder_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
-    let (a, b): (i32, i32) = FromParams::from_params(params)?;
-    Ok((a + b).to_dxr()?)
+    let (a, b): (i32, i32) = TryFromParams::try_from_params(params)?;
+    Ok((a + b).try_to_value()?)
 }
 
 #[tokio::main]

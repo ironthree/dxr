@@ -4,19 +4,19 @@ use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 
 use crate::error::DxrError;
-use crate::traits::FromDXR;
+use crate::traits::TryFromValue;
 use crate::values::{Type, Value};
 
 use super::utils::*;
 
-impl FromDXR for Value {
-    fn from_dxr(value: &Value) -> Result<Value, DxrError> {
+impl TryFromValue for Value {
+    fn try_from_value(value: &Value) -> Result<Value, DxrError> {
         Ok(value.clone())
     }
 }
 
-impl FromDXR for i32 {
-    fn from_dxr(value: &Value) -> Result<i32, DxrError> {
+impl TryFromValue for i32 {
+    fn try_from_value(value: &Value) -> Result<i32, DxrError> {
         match value.inner() {
             Type::Integer(int) => Ok(*int),
             t => Err(DxrError::wrong_type(t.name(), "i4")),
@@ -26,8 +26,8 @@ impl FromDXR for i32 {
 
 #[cfg(feature = "i8")]
 #[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
-impl FromDXR for i64 {
-    fn from_dxr(value: &Value) -> Result<i64, DxrError> {
+impl TryFromValue for i64 {
+    fn try_from_value(value: &Value) -> Result<i64, DxrError> {
         match value.inner() {
             Type::Long(long) => Ok(*long),
             t => Err(DxrError::wrong_type(t.name(), "i8")),
@@ -35,8 +35,8 @@ impl FromDXR for i64 {
     }
 }
 
-impl FromDXR for bool {
-    fn from_dxr(value: &Value) -> Result<bool, DxrError> {
+impl TryFromValue for bool {
+    fn try_from_value(value: &Value) -> Result<bool, DxrError> {
         match value.inner() {
             Type::Boolean(boo) => Ok(*boo),
             t => Err(DxrError::wrong_type(t.name(), "boolean")),
@@ -44,8 +44,8 @@ impl FromDXR for bool {
     }
 }
 
-impl FromDXR for String {
-    fn from_dxr(value: &Value) -> Result<String, DxrError> {
+impl TryFromValue for String {
+    fn try_from_value(value: &Value) -> Result<String, DxrError> {
         match value.inner() {
             Type::String(string) => Value::string_unescape(string),
             t => Err(DxrError::wrong_type(t.name(), "string")),
@@ -53,8 +53,8 @@ impl FromDXR for String {
     }
 }
 
-impl FromDXR for f64 {
-    fn from_dxr(value: &Value) -> Result<f64, DxrError> {
+impl TryFromValue for f64 {
+    fn try_from_value(value: &Value) -> Result<f64, DxrError> {
         match value.inner() {
             Type::Double(double) => Ok(*double),
             t => Err(DxrError::wrong_type(t.name(), "double")),
@@ -62,8 +62,8 @@ impl FromDXR for f64 {
     }
 }
 
-impl FromDXR for DateTime<Utc> {
-    fn from_dxr(value: &Value) -> Result<DateTime<Utc>, DxrError> {
+impl TryFromValue for DateTime<Utc> {
+    fn try_from_value(value: &Value) -> Result<DateTime<Utc>, DxrError> {
         match value.inner() {
             Type::DateTime(date) => Ok(*date),
             t => Err(DxrError::wrong_type(t.name(), "dateTime.iso8861")),
@@ -71,8 +71,8 @@ impl FromDXR for DateTime<Utc> {
     }
 }
 
-impl FromDXR for Vec<u8> {
-    fn from_dxr(value: &Value) -> Result<Vec<u8>, DxrError> {
+impl TryFromValue for Vec<u8> {
+    fn try_from_value(value: &Value) -> Result<Vec<u8>, DxrError> {
         match value.inner() {
             Type::Base64(bytes) => Ok(bytes.clone()),
             t => Err(DxrError::wrong_type(t.name(), "base64")),
@@ -82,56 +82,56 @@ impl FromDXR for Vec<u8> {
 
 #[cfg(feature = "nil")]
 #[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
-impl<T> FromDXR for Option<T>
+impl<T> TryFromValue for Option<T>
 where
-    T: FromDXR,
+    T: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Option<T>, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Option<T>, DxrError> {
         if let Type::Nil = value.inner() {
             Ok(None)
         } else {
-            Ok(Some(T::from_dxr(value)?))
+            Ok(Some(T::try_from_value(value)?))
         }
     }
 }
 
-impl<T> FromDXR for Cow<'_, T>
+impl<T> TryFromValue for Cow<'_, T>
 where
-    T: FromDXR + Clone,
+    T: TryFromValue + Clone,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
-        Ok(Cow::Owned(T::from_dxr(value)?))
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
+        Ok(Cow::Owned(T::try_from_value(value)?))
     }
 }
 
-impl<T> FromDXR for Box<T>
+impl<T> TryFromValue for Box<T>
 where
-    T: FromDXR,
+    T: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
-        Ok(Box::new(T::from_dxr(value)?))
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
+        Ok(Box::new(T::try_from_value(value)?))
     }
 }
 
-impl<T> FromDXR for Vec<T>
+impl<T> TryFromValue for Vec<T>
 where
-    T: FromDXR,
+    T: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Vec<T>, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Vec<T>, DxrError> {
         let values = match value.inner() {
             Type::Array { data } => Ok(data.inner()),
             t => Err(DxrError::wrong_type(t.name(), "array")),
         };
 
-        values?.iter().map(|value| T::from_dxr(value)).collect()
+        values?.iter().map(|value| T::try_from_value(value)).collect()
     }
 }
 
-impl<T, const N: usize> FromDXR for [T; N]
+impl<T, const N: usize> TryFromValue for [T; N]
 where
-    T: FromDXR,
+    T: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         let values = match value.inner() {
             Type::Array { data } => Ok(data.inner()),
             t => Err(DxrError::wrong_type(t.name(), "array")),
@@ -139,7 +139,7 @@ where
 
         let mapped: Vec<T> = values
             .iter()
-            .map(|value| T::from_dxr(value))
+            .map(|value| T::try_from_value(value))
             .collect::<Result<Vec<T>, DxrError>>()?;
         let len = mapped.len();
 
@@ -147,11 +147,11 @@ where
     }
 }
 
-impl<T> FromDXR for HashMap<String, T>
+impl<T> TryFromValue for HashMap<String, T>
 where
-    T: FromDXR,
+    T: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<HashMap<String, T>, DxrError> {
+    fn try_from_value(value: &Value) -> Result<HashMap<String, T>, DxrError> {
         let values = match value.inner() {
             Type::Struct { members } => Ok(members),
             t => Err(DxrError::wrong_type(t.name(), "struct")),
@@ -161,7 +161,7 @@ where
             .iter()
             .map(|v| {
                 let name = v.name().to_string();
-                match T::from_dxr(v.inner()) {
+                match T::try_from_value(v.inner()) {
                     Ok(value) => Ok((name, value)),
                     Err(error) => Err(error),
                 }
@@ -171,8 +171,8 @@ where
 }
 
 // some implementations for exact numbers of values (with possibly different types)
-impl FromDXR for () {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+impl TryFromValue for () {
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         match value.inner() {
             Type::Array { data } => {
                 let values = data.inner();
@@ -189,11 +189,11 @@ impl FromDXR for () {
     }
 }
 
-impl<T> FromDXR for (T,)
+impl<T> TryFromValue for (T,)
 where
-    T: FromDXR,
+    T: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
             values_to_tuple_1(values)
@@ -203,12 +203,12 @@ where
     }
 }
 
-impl<A, B> FromDXR for (A, B)
+impl<A, B> TryFromValue for (A, B)
 where
-    A: FromDXR,
-    B: FromDXR,
+    A: TryFromValue,
+    B: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
             values_to_tuple_2(values)
@@ -218,13 +218,13 @@ where
     }
 }
 
-impl<A, B, C> FromDXR for (A, B, C)
+impl<A, B, C> TryFromValue for (A, B, C)
 where
-    A: FromDXR,
-    B: FromDXR,
-    C: FromDXR,
+    A: TryFromValue,
+    B: TryFromValue,
+    C: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
             values_to_tuple_3(values)
@@ -234,14 +234,14 @@ where
     }
 }
 
-impl<A, B, C, D> FromDXR for (A, B, C, D)
+impl<A, B, C, D> TryFromValue for (A, B, C, D)
 where
-    A: FromDXR,
-    B: FromDXR,
-    C: FromDXR,
-    D: FromDXR,
+    A: TryFromValue,
+    B: TryFromValue,
+    C: TryFromValue,
+    D: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
             values_to_tuple_4(values)
@@ -251,15 +251,15 @@ where
     }
 }
 
-impl<A, B, C, D, E> FromDXR for (A, B, C, D, E)
+impl<A, B, C, D, E> TryFromValue for (A, B, C, D, E)
 where
-    A: FromDXR,
-    B: FromDXR,
-    C: FromDXR,
-    D: FromDXR,
-    E: FromDXR,
+    A: TryFromValue,
+    B: TryFromValue,
+    C: TryFromValue,
+    D: TryFromValue,
+    E: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
             values_to_tuple_5(values)
@@ -269,16 +269,16 @@ where
     }
 }
 
-impl<A, B, C, D, E, F> FromDXR for (A, B, C, D, E, F)
+impl<A, B, C, D, E, F> TryFromValue for (A, B, C, D, E, F)
 where
-    A: FromDXR,
-    B: FromDXR,
-    C: FromDXR,
-    D: FromDXR,
-    E: FromDXR,
-    F: FromDXR,
+    A: TryFromValue,
+    B: TryFromValue,
+    C: TryFromValue,
+    D: TryFromValue,
+    E: TryFromValue,
+    F: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
             values_to_tuple_6(values)
@@ -288,17 +288,17 @@ where
     }
 }
 
-impl<A, B, C, D, E, F, G> FromDXR for (A, B, C, D, E, F, G)
+impl<A, B, C, D, E, F, G> TryFromValue for (A, B, C, D, E, F, G)
 where
-    A: FromDXR,
-    B: FromDXR,
-    C: FromDXR,
-    D: FromDXR,
-    E: FromDXR,
-    F: FromDXR,
-    G: FromDXR,
+    A: TryFromValue,
+    B: TryFromValue,
+    C: TryFromValue,
+    D: TryFromValue,
+    E: TryFromValue,
+    F: TryFromValue,
+    G: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
             values_to_tuple_7(values)
@@ -308,18 +308,18 @@ where
     }
 }
 
-impl<A, B, C, D, E, F, G, H> FromDXR for (A, B, C, D, E, F, G, H)
+impl<A, B, C, D, E, F, G, H> TryFromValue for (A, B, C, D, E, F, G, H)
 where
-    A: FromDXR,
-    B: FromDXR,
-    C: FromDXR,
-    D: FromDXR,
-    E: FromDXR,
-    F: FromDXR,
-    G: FromDXR,
-    H: FromDXR,
+    A: TryFromValue,
+    B: TryFromValue,
+    C: TryFromValue,
+    D: TryFromValue,
+    E: TryFromValue,
+    F: TryFromValue,
+    G: TryFromValue,
+    H: TryFromValue,
 {
-    fn from_dxr(value: &Value) -> Result<Self, DxrError> {
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         if let Type::Array { data } = value.inner() {
             let values = data.inner();
             values_to_tuple_8(values)

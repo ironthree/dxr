@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 use crate::error::DxrError;
-use crate::traits::FromDXR;
+use crate::traits::TryFromValue;
 use crate::values::FaultResponse;
 
 /// XML-RPC server fault (numeric error code and message)
@@ -52,8 +52,8 @@ impl TryFrom<FaultResponse> for Fault {
             return Err(DxrError::missing_field("fault", "faultString"));
         };
 
-        let code: i32 = i32::from_dxr(fault_code)?;
-        let string: String = String::from_dxr(fault_string)?;
+        let code: i32 = i32::try_from_value(fault_code)?;
+        let string: String = String::try_from_value(fault_string)?;
 
         Ok(Fault::new(code, string))
     }

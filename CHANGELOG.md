@@ -1,3 +1,15 @@
+## Unreleased (0.5.0)
+
+**Changed**:
+
+All public traits were renamed to match Rust conventions for conversions ("try" prefix for
+fallible conversions, "to" for conversions that don't take ownership):
+
+- `FromParams` was renamed to `TryFromParams`
+- `FromDXR` was renamed to `TryFromValue`
+- `ToParams` was renamed to `TryToParams`
+- `ToDXR` was renamed to `TryToValue`
+
 ## Release 0.4.0
 
 **Changed**:

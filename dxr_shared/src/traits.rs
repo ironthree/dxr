@@ -1,26 +1,39 @@
 use crate::error::DxrError;
 use crate::values::Value;
 
-/// conversion trait from XML-RPC values to Rust types
-pub trait FromDXR: Sized {
-    /// fallible conversion method from an XML-RPC value into the target type
-    ///
-    /// If the value contains a type that is not compatible with the target type, the conversion
-    /// will fail.
-    fn from_dxr(value: &Value) -> Result<Self, DxrError>;
-}
-
 /// conversion trait from Rust types to XML-RPC values
-pub trait ToDXR: Sized {
+pub trait TryToValue: Sized {
     /// fallible conversion method from types into XML-RPC values
     ///
     /// The resulting XML-RPC value will automatically have a compatible type, so this conversion
     /// can only fail if strings cannot un-escaped from XML correctly.
-    fn to_dxr(&self) -> Result<Value, DxrError>;
+    fn try_to_value(&self) -> Result<Value, DxrError>;
+}
+
+/// conversion trait from XML-RPC values to Rust types
+pub trait TryFromValue: Sized {
+    /// fallible conversion method from an XML-RPC value into the target type
+    ///
+    /// If the value contains a type that is not compatible with the target type, the conversion
+    /// will fail.
+    fn try_from_value(value: &Value) -> Result<Self, DxrError>;
+}
+
+/// conversion trait from Rust types to XML-RPC method call argument lists
+pub trait TryToParams: Sized {
+    /// conversion method from types into XML-RPC method call argument lists
+    ///
+    /// For primitive types and maps, calling this method just calls their [`TryToValue`]
+    /// implementation in turn. For collections ([`Vec`] and tuples), their values are converted to
+    /// [`Value`]s, but they are treated as a list of arguments, not as a single argument that is a
+    /// list.
+    ///
+    /// This trait can be used for argument conversion in XML-RPC clients.
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError>;
 }
 
 /// conversion trait from an XML-RPC call argument list to Rust types
-pub trait FromParams: Sized {
+pub trait TryFromParams: Sized {
     /// conversion method from XML-RPC method call argument lists to Rust types
     ///
     /// The conversion aims to do the "expected" thing, depending on the input XML-RPC value type
@@ -35,17 +48,5 @@ pub trait FromParams: Sized {
     ///   target type. This returns an error if any list value does not match the target type.
     ///
     /// This trait can be used for argument conversion in XML-RPC servers.
-    fn from_params(values: &[Value]) -> Result<Self, DxrError>;
-}
-
-/// conversion trait from Rust types to XML-RPC method call argument lists
-pub trait ToParams: Sized {
-    /// conversion method from types into XML-RPC method call argument lists
-    ///
-    /// For primitive types and maps, calling this method just calls their [`ToDXR`] implementation
-    /// in turn. For collections ([`Vec`] and tuples), their values are converted to [`Value`]s,
-    /// but they are treated as a list of arguments, not as a single argument that is a list.
-    ///
-    /// This trait can be used for argument conversion in XML-RPC clients.
-    fn to_params(&self) -> Result<Vec<Value>, DxrError>;
+    fn try_from_params(values: &[Value]) -> Result<Self, DxrError>;
 }

@@ -1,4 +1,4 @@
-error: Deriving FromDXR for enums and unions is not supported.
+error: Deriving TryFromValue for enums and unions is not supported.
  --> tests/trybuild/enum.rs:4:10
   |
 4 | pub enum Enum {

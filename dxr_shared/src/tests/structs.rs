@@ -99,23 +99,14 @@ fn from_value_struct() {
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
 
-#[cfg(feature = "derive")]
-#[test]
-fn roundtrip_struct_empty() {
-    use crate::{FromDXR, ToDXR};
-
-    #[derive(Debug, Eq, PartialEq, FromDXR, ToDXR)]
-    struct Test {}
-
-    let value = Test {};
-    assert_eq!(Test::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
-}
-
 #[cfg(feature = "nil")]
 #[test]
 fn roundtrip_option_none() {
-    use crate::{FromDXR, ToDXR};
+    use crate::{TryFromValue, TryToValue};
 
     let value: Option<i32> = None;
-    assert_eq!(<Option<i32>>::from_dxr(&value.to_dxr().unwrap()).unwrap(), value);
+    assert_eq!(
+        <Option<i32>>::try_from_value(&value.try_to_value().unwrap()).unwrap(),
+        value
+    );
 }

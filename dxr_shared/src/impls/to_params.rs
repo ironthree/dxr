@@ -3,256 +3,256 @@ use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 
 use crate::error::DxrError;
-use crate::traits::{ToDXR, ToParams};
+use crate::traits::{TryToParams, TryToValue};
 use crate::values::Value;
 
 use super::utils::*;
 
-// for simple values, use ToDXR to convert them
+// for simple values, use TryToValue to convert them
 
-impl ToParams for Value {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for Value {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl ToParams for &Value {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for &Value {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl ToParams for i32 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for i32 {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
 #[cfg(feature = "i8")]
 #[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
-impl ToParams for i64 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for i64 {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl ToParams for bool {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for bool {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl ToParams for String {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for String {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl ToParams for &str {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for &str {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl ToParams for f64 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for f64 {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl ToParams for DateTime<Utc> {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for DateTime<Utc> {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl ToParams for Vec<u8> {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for Vec<u8> {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl<const N: usize> ToParams for [u8; N] {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl<const N: usize> TryToParams for [u8; N] {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl ToParams for &[u8] {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
-    }
-}
-
-#[cfg(feature = "nil")]
-#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
-impl<T> ToParams for Option<T>
-where
-    T: ToDXR,
-{
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+impl TryToParams for &[u8] {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
 #[cfg(feature = "nil")]
 #[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
-impl<T> ToParams for &Option<T>
+impl<T> TryToParams for Option<T>
 where
-    T: ToDXR,
+    T: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
+    }
+}
+
+#[cfg(feature = "nil")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
+impl<T> TryToParams for &Option<T>
+where
+    T: TryToValue,
+{
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
 // use collections as they are without wrapping them in another Vec
 
-impl<T> ToParams for Vec<T>
+impl<T> TryToParams for Vec<T>
 where
-    T: ToDXR,
+    T: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        self.iter().map(|v| v.to_dxr()).collect()
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        self.iter().map(|v| v.try_to_value()).collect()
     }
 }
 
-impl<T, const N: usize> ToParams for [T; N]
+impl<T, const N: usize> TryToParams for [T; N]
 where
-    T: ToDXR,
+    T: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        self.iter().map(|v| v.to_dxr()).collect()
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        self.iter().map(|v| v.try_to_value()).collect()
     }
 }
 
-impl<T> ToParams for &[T]
+impl<T> TryToParams for &[T]
 where
-    T: ToDXR,
+    T: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        self.iter().map(|v| v.to_dxr()).collect()
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        self.iter().map(|v| v.try_to_value()).collect()
     }
 }
 
 // treat maps as a single value of a struct
 
-impl<T> ToParams for HashMap<String, T>
+impl<T> TryToParams for HashMap<String, T>
 where
-    T: ToDXR,
+    T: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
-impl<T> ToParams for HashMap<&str, T>
+impl<T> TryToParams for HashMap<&str, T>
 where
-    T: ToDXR,
+    T: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
-        Ok(vec![self.to_dxr()?])
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
     }
 }
 
 // treat tuples as collections of values of different types
 
-impl<T> ToParams for (T,)
+impl<T> TryToParams for (T,)
 where
-    T: ToDXR,
+    T: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
         tuple_to_values_1(self)
     }
 }
 
-impl<A, B> ToParams for (A, B)
+impl<A, B> TryToParams for (A, B)
 where
-    A: ToDXR,
-    B: ToDXR,
+    A: TryToValue,
+    B: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
         tuple_to_values_2(self)
     }
 }
 
-impl<A, B, C> ToParams for (A, B, C)
+impl<A, B, C> TryToParams for (A, B, C)
 where
-    A: ToDXR,
-    B: ToDXR,
-    C: ToDXR,
+    A: TryToValue,
+    B: TryToValue,
+    C: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
         tuple_to_values_3(self)
     }
 }
 
-impl<A, B, C, D> ToParams for (A, B, C, D)
+impl<A, B, C, D> TryToParams for (A, B, C, D)
 where
-    A: ToDXR,
-    B: ToDXR,
-    C: ToDXR,
-    D: ToDXR,
+    A: TryToValue,
+    B: TryToValue,
+    C: TryToValue,
+    D: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
         tuple_to_values_4(self)
     }
 }
 
-impl<A, B, C, D, E> ToParams for (A, B, C, D, E)
+impl<A, B, C, D, E> TryToParams for (A, B, C, D, E)
 where
-    A: ToDXR,
-    B: ToDXR,
-    C: ToDXR,
-    D: ToDXR,
-    E: ToDXR,
+    A: TryToValue,
+    B: TryToValue,
+    C: TryToValue,
+    D: TryToValue,
+    E: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
         tuple_to_values_5(self)
     }
 }
 
-impl<A, B, C, D, E, F> ToParams for (A, B, C, D, E, F)
+impl<A, B, C, D, E, F> TryToParams for (A, B, C, D, E, F)
 where
-    A: ToDXR,
-    B: ToDXR,
-    C: ToDXR,
-    D: ToDXR,
-    E: ToDXR,
-    F: ToDXR,
+    A: TryToValue,
+    B: TryToValue,
+    C: TryToValue,
+    D: TryToValue,
+    E: TryToValue,
+    F: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
         tuple_to_values_6(self)
     }
 }
 
-impl<A, B, C, D, E, F, G> ToParams for (A, B, C, D, E, F, G)
+impl<A, B, C, D, E, F, G> TryToParams for (A, B, C, D, E, F, G)
 where
-    A: ToDXR,
-    B: ToDXR,
-    C: ToDXR,
-    D: ToDXR,
-    E: ToDXR,
-    F: ToDXR,
-    G: ToDXR,
+    A: TryToValue,
+    B: TryToValue,
+    C: TryToValue,
+    D: TryToValue,
+    E: TryToValue,
+    F: TryToValue,
+    G: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
         tuple_to_values_7(self)
     }
 }
 
-impl<A, B, C, D, E, F, G, H> ToParams for (A, B, C, D, E, F, G, H)
+impl<A, B, C, D, E, F, G, H> TryToParams for (A, B, C, D, E, F, G, H)
 where
-    A: ToDXR,
-    B: ToDXR,
-    C: ToDXR,
-    D: ToDXR,
-    E: ToDXR,
-    F: ToDXR,
-    G: ToDXR,
-    H: ToDXR,
+    A: TryToValue,
+    B: TryToValue,
+    C: TryToValue,
+    D: TryToValue,
+    E: TryToValue,
+    F: TryToValue,
+    G: TryToValue,
+    H: TryToValue,
 {
-    fn to_params(&self) -> Result<Vec<Value>, DxrError> {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
         tuple_to_values_8(self)
     }
 }

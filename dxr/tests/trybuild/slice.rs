@@ -1,6 +1,6 @@
-use dxr::{FromDXR, ToDXR};
+use dxr::{TryFromValue, TryToValue};
 
-#[derive(FromDXR, ToDXR)]
+#[derive(TryFromValue, TryToValue)]
 pub struct Slice {
     slice: [i32],
 }

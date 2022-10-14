@@ -9,9 +9,9 @@
 #![warn(unreachable_pub)]
 #![warn(clippy::unwrap_used)]
 
-//! # dxr_axum
+//! # dxr_server_axum
 //!
-//! This crate provides an XML-RPC server implementation `dxr` crate based on [`axum`].
+//! This crate provides an XML-RPC server implementation for the `dxr` crate based on [`axum`].
 
 use std::borrow::Cow;
 use std::collections::HashMap;

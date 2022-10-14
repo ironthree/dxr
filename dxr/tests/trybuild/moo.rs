@@ -1,9 +1,9 @@
 use std::borrow::Cow;
 
 use dxr::chrono::{DateTime, Utc};
-use dxr::{FromDXR, ToDXR};
+use dxr::{TryFromValue, TryToValue};
 
-#[derive(Clone, FromDXR, ToDXR)]
+#[derive(Clone, TryFromValue, TryToValue)]
 pub struct Moo<'a> {
     string: Cow<'a, String>,
     int: Cow<'a, i32>,

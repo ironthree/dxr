@@ -8,14 +8,14 @@ use dxr::chrono::{DateTime, SubsecRound, Utc};
 use dxr::client::{Call, ClientBuilder};
 use dxr::server::{HandlerFn, HandlerResult};
 use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
-use dxr::{DxrError, Fault, FromDXR, FromParams, ToDXR, Value};
+use dxr::{DxrError, Fault, TryFromParams, TryFromValue, TryToValue, Value};
 
 fn echo_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
-    let value: Value = Value::from_params(params)?;
-    Ok(value.to_dxr()?)
+    let value: Value = Value::try_from_params(params)?;
+    Ok(value.try_to_value()?)
 }
 
-#[derive(Clone, Debug, FromDXR, PartialEq, ToDXR)]
+#[derive(Clone, Debug, TryFromValue, TryToValue, PartialEq)]
 struct TestStruct {
     integer: i32,
     long: i64,

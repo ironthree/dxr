@@ -3,7 +3,7 @@ name = "dxr"
 description = "Declarative XML-RPC"
 license = "MIT OR Apache-2.0"
 
-version = "0.4.0"
+version = "0.5.0-dev"
 edition = "2021"
 rust-version = "1.60.0"
 
@@ -49,14 +49,19 @@ path = "tests/echo_one.rs"
 required-features = ["derive", "client", "server", "server-axum", "i8", "nil"]
 
 [dependencies]
-dxr_shared = { path = "../dxr_shared", version = "0.4.0" }
-dxr_derive = { path = "../dxr_derive", version = "0.4.0", optional = true }
-dxr_client = { path = "../dxr_client", version = "0.4.0", optional = true }
-dxr_server = { path = "../dxr_server", version = "0.4.0", optional = true }
-dxr_server_axum = { path = "../dxr_server_axum", version = "0.4.0", optional = true }
+dxr_shared = { path = "../dxr_shared", version = "0.5.0-dev" }
+dxr_derive = { path = "../dxr_derive", version = "0.5.0-dev", optional = true }
+dxr_client = { path = "../dxr_client", version = "0.5.0-dev", optional = true }
+dxr_server = { path = "../dxr_server", version = "0.5.0-dev", optional = true }
+dxr_server_axum = { path = "../dxr_server_axum", version = "0.5.0-dev", optional = true }
 
 [dev-dependencies]
-# used for example binaries and integration tests
+# integration tests use the "clock" feature of chrono
+chrono = { version = "0.4.19", features = ["clock"], default-features = false }
+# property-based tests for derive macros use quickcheck
+quickcheck = "1.0"
+quickcheck_macros = "1.0"
+# example binaries and integration tests use tokio
 tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }
 
 # used to compile and run async code in doctests
@@ -70,7 +75,7 @@ default = ["client"]
 derive = ["dep:dxr_derive"]
 client = ["dep:dxr_client"]
 server = ["dep:dxr_server"]
-server-axum = ["dep:dxr_server_axum"]
+server-axum = ["dep:dxr_server_axum", "server"]
 
 # support non-standard <i8> XML-RPC values
 i8 = [
