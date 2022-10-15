@@ -1,0 +1,81 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - '*'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        rust: ['stable', 'nightly', '1.60.0']
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Rust toolchain
+        run: rustup toolchain install ${{ matrix.rust }} --profile minimal
+
+      - name: Run "cargo check"
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          command: check
+          args: --workspace --verbose --all-features --tests --examples
+
+      # only run trybuild tests with nightly Rust
+
+      - name: Run "cargo test" (with trybuild tests)
+        uses: actions-rs/cargo@v1
+        if: ${{ matrix.rust == 'nightly' }}
+        with:
+          toolchain: ${{ matrix.rust }}
+          command: test
+          args: --workspace --verbose --all-features
+
+      - name: Run "cargo test" (without trybuild tests)
+        uses: actions-rs/cargo@v1
+        if: ${{ matrix.rust != 'nightly' }}
+        with:
+          toolchain: ${{ matrix.rust }}
+          command: test
+          args: --workspace --verbose --all-features -- --skip try_build
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Rust toolchain
+        run: rustup toolchain install stable --profile minimal
+
+      - name: Run "cargo clippy"
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          command: clippy
+          args: --workspace --verbose --all-features
+
+  rustfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Rust toolchain
+        run: rustup toolchain install nightly --profile minimal --component rustfmt
+
+      - name: Run "cargo fmt"
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: nightly
+          command: fmt
+          args: -- --check
