@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        rust: ['stable', 'nightly', '1.60.0']
+        rust: ['stable', 'nightly', '1.61.0']
 
     steps:
       - uses: actions/checkout@v2
