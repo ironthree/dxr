@@ -63,7 +63,7 @@ fn from_boolean() {
 
 #[test]
 fn to_str() {
-    let value = Value::string(String::from("Hello, World!"));
+    let value = Value::string("Hello, World!");
     let expected = "<value><string>Hello, World!</string></value>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -72,7 +72,7 @@ fn to_str() {
 #[test]
 fn from_string() {
     let value = "<value><string>Hello, World!</string></value>";
-    let expected = Value::string(String::from("Hello, World!"));
+    let expected = Value::string("Hello, World!");
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }

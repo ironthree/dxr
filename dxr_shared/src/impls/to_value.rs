@@ -52,7 +52,7 @@ impl TryToValue for String {
 
 impl TryToValue for &str {
     fn try_to_value(&self) -> Result<Value, DxrError> {
-        Value::string_escape(self)
+        Ok(Value::string(self))
     }
 }
 

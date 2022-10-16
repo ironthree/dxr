@@ -56,14 +56,14 @@ fn from_boolean() {
 #[test]
 fn to_string() {
     let value = "Hello, World!";
-    let expected = Value::string_escape("Hello, World!").unwrap();
+    let expected = Value::string("Hello, World!");
 
     assert_eq!(value.try_to_value().unwrap(), expected);
 }
 
 #[test]
 fn from_string() {
-    let value = Value::string_escape("Hello, World!").unwrap();
+    let value = Value::string("Hello, World!");
     let expected = "Hello, World!";
 
     assert_eq!(String::try_from_value(&value).unwrap(), expected);

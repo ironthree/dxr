@@ -17,7 +17,7 @@ anyhow = "1.0.53"
 dxr_shared = { path = "../dxr_shared", version = "0.5.0-dev" }
 http = "0.2.6"
 log = "0.4.13"
-quick-xml = { version = "0.23" , features = ["serialize"] }
+quick-xml = { version = "0.25" , features = ["serialize"] }
 reqwest = { version = "0.11", features = ["cookies"] }
 url = "2.2"
 

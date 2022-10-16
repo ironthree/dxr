@@ -56,8 +56,8 @@ fn from_to_boolean(boolean: bool) -> bool {
 fn to_from_string(string: String) -> bool {
     // This creates a new <string> value on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
-    let string = String::from_utf8(escape(string.trim().as_bytes()).to_vec()).unwrap();
-    let value = Value::string(string);
+    let string = escape(string.trim()).to_string();
+    let value = Value::string(&string);
 
     value == from_str::<Value>(&to_string(&value).unwrap()).unwrap()
 }
@@ -66,7 +66,7 @@ fn to_from_string(string: String) -> bool {
 fn from_to_string(string: String) -> bool {
     // This creates a new <string> value on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
-    let string = String::from_utf8(escape(string.trim().as_bytes()).to_vec()).unwrap();
+    let string = escape(string.trim()).to_string();
     let value = format!("<value><string>{}</string></value>", string);
 
     value == to_string(&from_str::<Value>(&value).unwrap()).unwrap()
@@ -145,10 +145,7 @@ fn roundtrip_string_escape_unescape(string: String) -> TestResult {
     // whitespace prefix and suffix are not preserved in XML
     let input = string.trim();
 
-    let escaped = match Value::string_escape(input) {
-        Ok(e) => e,
-        Err(_) => return TestResult::error(format!("Failed to escape string: {}", string)),
-    };
+    let escaped = Value::string(input);
 
     let inner = match escaped.inner() {
         Type::String(s) => s,

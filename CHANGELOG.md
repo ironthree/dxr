@@ -2,13 +2,16 @@
 
 **Changed**:
 
-All public traits were renamed to match Rust conventions for conversions ("try" prefix for
-fallible conversions, "to" for conversions that don't take ownership):
-
-- `FromParams` was renamed to `TryFromParams`
-- `FromDXR` was renamed to `TryFromValue`
-- `ToParams` was renamed to `TryToParams`
-- `ToDXR` was renamed to `TryToValue`
+- All public traits were renamed to match Rust conventions for conversions ("try" prefix for
+  fallible conversions, "to" for conversions that don't take ownership):
+  - `FromParams` was renamed to `TryFromParams`
+  - `FromDXR` was renamed to `TryFromValue`
+  - `ToParams` was renamed to `TryToParams`
+  - `ToDXR` was renamed to `TryToValue`
+- The fallible `Value::string_escape` constructor was removed and replaced by an infallible
+  `Value::string` constructor, following API changes of `quick_xml::escape::escape` with version
+  `0.24` and later.
+- Updated the `quick-xml` dependency from `0.23` to `0.25`.
 
 ## Release 0.4.0
 

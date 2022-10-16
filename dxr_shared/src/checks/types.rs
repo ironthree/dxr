@@ -53,7 +53,7 @@ fn from_to_boolean(boolean: bool) -> bool {
 fn to_from_string(string: String) -> bool {
     // This creates a new <string> type on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
-    let string = String::from_utf8(escape(string.trim().as_bytes()).to_vec()).unwrap();
+    let string = escape(string.trim()).to_string();
     let value = Type::String(string);
 
     value == from_str::<Type>(&to_string(&value).unwrap()).unwrap()
@@ -63,7 +63,7 @@ fn to_from_string(string: String) -> bool {
 fn from_to_string(string: String) -> bool {
     // This creates a new <string> type on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
-    let string = String::from_utf8(escape(string.trim().as_bytes()).to_vec()).unwrap();
+    let string = escape(string.trim()).to_string();
     let value = format!("<string>{}</string>", string);
 
     value == to_string(&from_str::<Type>(&value).unwrap()).unwrap()

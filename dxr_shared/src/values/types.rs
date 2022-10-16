@@ -57,26 +57,20 @@ impl Value {
         Value::new(Type::Boolean(value))
     }
 
-    pub(crate) fn string(value: String) -> Value {
-        Value::new(Type::String(value))
-    }
-
     /// constructor for `<string>` values
     ///
     /// Note that this constructor handles string escaping for safe inclusion in XML internally.
     /// Using the `TryFromValue` and `TryToValue` trait implementations for [`String`] and
     /// [`&str`][str] is recommended, as those handle escaping and un-escaping automatically.
-    pub fn string_escape(value: &str) -> Result<Value, DxrError> {
-        let string = String::from_utf8(escape(value.trim().as_bytes()).to_vec())
-            .map_err(|error| DxrError::invalid_data(error.to_string()))?;
-        Ok(Value::string(string))
+    pub fn string(value: &str) -> Value {
+        let string = escape(value.trim()).to_string();
+        Value::new(Type::String(string))
     }
 
     pub(crate) fn string_unescape(value: &str) -> Result<String, DxrError> {
-        match unescape(value.as_bytes()) {
-            Ok(bytes) => String::from_utf8(bytes.to_vec()).map_err(|error| DxrError::invalid_data(error.to_string())),
-            Err(error) => Err(DxrError::invalid_data(error.to_string())),
-        }
+        unescape(value)
+            .map(|s| s.to_string())
+            .map_err(|error| DxrError::invalid_data(error.to_string()))
     }
 
     /// constructor for `<double>` values (64-bit floating point numbers)
@@ -337,7 +331,7 @@ impl From<Fault> for FaultResponse {
                 value: FaultValue {
                     value: Struct::new(vec![
                         Member::new(String::from("faultCode"), Value::i4(fault.code())),
-                        Member::new(String::from("faultString"), Value::string(fault.string().to_owned())),
+                        Member::new(String::from("faultString"), Value::string(fault.string())),
                     ]),
                 },
             },

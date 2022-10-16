@@ -16,7 +16,7 @@ repository = "https://github.com/ironthree/dxr"
 async-trait = "0.1.53"
 dxr_shared = { path = "../dxr_shared", version = "0.5.0-dev" }
 http = "0.2.6"
-quick-xml = { version = "0.23" , features = ["serialize"] }
+quick-xml = { version = "0.25" , features = ["serialize"] }
 
 [features]
 # support non-standard <i8> XML-RPC values

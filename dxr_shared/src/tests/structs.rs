@@ -61,7 +61,7 @@ fn to_struct_two() {
         Member::new(String::from("answer"), Value::i4(42)),
         Member::new(
             String::from("question"),
-            Value::string(String::from("The answer to life, the the universe, and everything")),
+            Value::string("The answer to life, the the universe, and everything"),
         ),
     ]);
     let expected = "<struct><member><name>answer</name><value><i4>42</i4></value></member><member><name>question</name><value><string>The answer to life, the the universe, and everything</string></value></member></struct>";
@@ -76,7 +76,7 @@ fn from_struct_two() {
         Member::new(String::from("answer"), Value::i4(42)),
         Member::new(
             String::from("question"),
-            Value::string(String::from("The answer to life, the the universe, and everything")),
+            Value::string("The answer to life, the the universe, and everything"),
         ),
     ]);
 
