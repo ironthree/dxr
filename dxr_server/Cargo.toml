@@ -21,7 +21,6 @@ quick-xml = { version = "0.23" , features = ["serialize"] }
 [features]
 # support non-standard <i8> XML-RPC values
 i8 = ["dxr_shared/i8"]
-
 # support non-standard <nil> XML-RPC values
 nil = ["dxr_shared/nil"]
 

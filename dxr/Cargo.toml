@@ -63,10 +63,8 @@ quickcheck = "1.0"
 quickcheck_macros = "1.0"
 # example binaries and integration tests use tokio
 tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }
-
 # used to compile and run async code in doctests
 tokio-test = "0.4.2"
-
 # used for testing derive macros
 trybuild = "1.0.56"
 
@@ -76,21 +74,10 @@ derive = ["dep:dxr_derive"]
 client = ["dep:dxr_client"]
 server = ["dep:dxr_server"]
 server-axum = ["dep:dxr_server_axum", "server"]
-
 # support non-standard <i8> XML-RPC values
-i8 = [
-    "dxr_shared/i8",
-    "dxr_client?/i8",
-    "dxr_server?/i8",
-    "dxr_server_axum?/i8",
-]
+i8 = ["dxr_shared/i8", "dxr_client?/i8", "dxr_server?/i8", "dxr_server_axum?/i8"]
 # support non-standard <nil> XML-RPC values
-nil = [
-    "dxr_shared/nil",
-    "dxr_client?/nil",
-    "dxr_server?/nil",
-    "dxr_server_axum?/nil",
-]
+nil = ["dxr_shared/nil", "dxr_client?/nil", "dxr_server?/nil", "dxr_server_axum?/nil"]
 
 [package.metadata.docs.rs]
 all-features = true
