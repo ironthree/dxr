@@ -1,3 +1,4 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(unsafe_code)]
 #![warn(explicit_outlives_requirements)]
 #![warn(missing_copy_implementations)]
@@ -28,6 +29,7 @@ pub use call::*;
 pub const DEFAULT_USER_AGENT: &str = concat!("dxr-client-v", env!("CARGO_PKG_VERSION"));
 
 /// builder that takes parameters for constructing a [`Client`] based on [`reqwest`]
+#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 #[derive(Debug)]
 pub struct ClientBuilder {
     url: Url,
@@ -134,6 +136,7 @@ fn response_to_result(contents: &str) -> Result<MethodResponse, anyhow::Error> {
 ///
 /// This type provides a very simple XML-RPC client implementation based on [`reqwest`]. Initialize
 /// the [`Client`], submit a [`Call`], get a result (or a fault).
+#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 #[derive(Debug)]
 pub struct Client {
     url: Url,

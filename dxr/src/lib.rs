@@ -1,3 +1,4 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(unsafe_code)]
 #![warn(explicit_outlives_requirements)]
 #![warn(missing_copy_implementations)]
@@ -138,15 +139,19 @@
 //! - null values (`<nil/>`): mapped to [`Option`]`<T>`, enabled with the `nil` feature
 
 #[cfg(feature = "derive")]
+#[cfg_attr(docsrs, doc(cfg(feature = "derive")))]
 pub use dxr_derive::*;
 
 #[cfg(feature = "client")]
+#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 pub use dxr_client as client;
 
 #[cfg(feature = "server")]
+#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub use dxr_server as server;
 
 #[cfg(feature = "server-axum")]
+#[cfg_attr(docsrs, doc(cfg(feature = "server-axum")))]
 pub use dxr_server_axum as server_axum;
 
 pub use dxr_shared::*;
@@ -156,3 +161,11 @@ mod checks;
 
 #[cfg(test)]
 mod tests;
+
+// imports for intra-doc links
+#[cfg(doc)]
+#[cfg(feature = "server")]
+use self::server::{Handler, HandlerFn};
+#[cfg(doc)]
+#[cfg(feature = "server-axum")]
+use self::server_axum::{axum::Router, RouteBuilder};

@@ -1,3 +1,4 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(unsafe_code)]
 #![warn(explicit_outlives_requirements)]
 #![warn(missing_copy_implementations)]

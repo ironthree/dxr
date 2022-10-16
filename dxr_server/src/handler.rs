@@ -3,6 +3,7 @@ use http::HeaderMap;
 use crate::{Fault, Value};
 
 /// type alias for the result type of method handlers
+#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub type HandlerResult = Result<Value, Fault>;
 
 /// trait describing server methods that can be called via XML-RPC
@@ -12,6 +13,7 @@ pub type HandlerResult = Result<Value, Fault>;
 ///
 /// For method handlers that need to keep track of some state (or handle authentication, etc.), just
 /// implement this trait for your own struct.
+#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 #[async_trait::async_trait]
 pub trait Handler: Send + Sync {
     /// This method is called for handling incoming XML-RPC method requests with the method name
@@ -20,6 +22,7 @@ pub trait Handler: Send + Sync {
 }
 
 /// type alias for non-async handler functions without associated data
+#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub type HandlerFn = fn(params: &[Value], headers: HeaderMap) -> HandlerResult;
 
 #[async_trait::async_trait]

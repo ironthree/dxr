@@ -31,3 +31,4 @@ nil = ["dxr_shared/nil", "dxr_server/nil"]
 
 [package.metadata.docs.rs]
 all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

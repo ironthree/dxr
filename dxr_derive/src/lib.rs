@@ -1,3 +1,4 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(unsafe_code)]
 #![warn(explicit_outlives_requirements)]
 #![warn(missing_copy_implementations)]
@@ -34,6 +35,7 @@ fn use_dxr() -> TokenStream2 {
 }
 
 /// procedural macro for deriving the `TryFromValue` trait for structs
+#[cfg_attr(docsrs, doc(cfg(feature = "derive")))]
 #[proc_macro_derive(TryFromValue)]
 pub fn try_from_value(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
@@ -141,6 +143,7 @@ pub fn try_from_value(input: TokenStream) -> TokenStream {
 }
 
 /// procedural macro for deriving the `TryToValue` trait for structs
+#[cfg_attr(docsrs, doc(cfg(feature = "derive")))]
 #[proc_macro_derive(TryToValue)]
 pub fn try_to_value(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);

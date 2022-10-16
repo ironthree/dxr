@@ -125,6 +125,7 @@ pub(crate) enum Type {
     #[serde(rename = "i4", alias = "int")]
     Integer(#[serde(rename = "$value")] i32),
     #[cfg(feature = "i8")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
     #[serde(rename = "i8")]
     Long(#[serde(rename = "$value")] i64),
     #[serde(rename = "boolean", with = "super::ser_de::boolean")]
@@ -148,6 +149,7 @@ pub(crate) enum Type {
         data: ArrayData,
     },
     #[cfg(feature = "nil")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
     #[serde(rename = "nil")]
     Nil,
 }
