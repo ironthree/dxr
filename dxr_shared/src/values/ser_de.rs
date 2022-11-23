@@ -70,7 +70,7 @@ pub(crate) mod base64 {
     {
         let string = String::deserialize(deserializer)?;
 
-        match base64::decode(&string) {
+        match base64::decode(string) {
             Ok(value) => Ok(value),
             Err(error) => Err(serde::de::Error::custom(error.to_string())),
         }
