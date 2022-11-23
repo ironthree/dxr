@@ -1,3 +1,12 @@
+## Release 0.5.1
+
+**Changed**:
+
+The `Call.as_xml_rpc` method is now `pub` instead of only `pub(crate)`. This makes
+implementing third-party clients based on `dxr` (i.e. clients not based on `reqwest`)
+easier, and is a first step towards making the client functionality modular, similar
+to the server support.
+
 ## Release 0.5.0
 
 **Changed**:

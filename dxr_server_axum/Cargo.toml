@@ -3,7 +3,7 @@ name = "dxr_server_axum"
 description = "Declarative XML-RPC (axum server implementation)"
 license = "MIT OR Apache-2.0"
 
-version = "0.5.0"
+version = "0.5.1"
 edition = "2021"
 rust-version = "1.61.0"
 
@@ -15,8 +15,8 @@ repository = "https://github.com/ironthree/dxr"
 [dependencies]
 anyhow = "1.0.53"
 axum = "0.5.4"
-dxr_shared = { path = "../dxr_shared", version = "0.5.0" }
-dxr_server = { path = "../dxr_server", version = "0.5.0" }
+dxr_shared = { path = "../dxr_shared", version = "0.5.1" }
+dxr_server = { path = "../dxr_server", version = "0.5.1" }
 tokio = { version = "1.14", features = ["sync"] }
 
 [dev-dependencies]
