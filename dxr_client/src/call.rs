@@ -45,7 +45,8 @@ where
         }
     }
 
-    pub(crate) fn as_xml_rpc(&self) -> Result<MethodCall, DxrError> {
+    /// convert [`Call`] into [`MethodCall`] XML-RPC value
+    pub fn as_xml_rpc(&self) -> Result<MethodCall, DxrError> {
         Ok(MethodCall::new(self.method(), self.params()?))
     }
 
