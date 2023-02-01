@@ -99,7 +99,7 @@ fn to_datetime() {
     let datetime_str = datetime.format(XML_RPC_DATE_FORMAT).to_string();
 
     let value = Value::datetime(datetime);
-    let expected = format!("<value><dateTime.iso8601>{}</dateTime.iso8601></value>", datetime_str);
+    let expected = format!("<value><dateTime.iso8601>{datetime_str}</dateTime.iso8601></value>");
 
     assert_eq!(to_string(&value).unwrap(), expected);
 }
@@ -109,7 +109,7 @@ fn from_datetime() {
     let datetime = Utc::now().round_subsecs(0);
     let datetime_str = datetime.format(XML_RPC_DATE_FORMAT).to_string();
 
-    let value = format!("<value><dateTime.iso8601>{}</dateTime.iso8601></value>", datetime_str);
+    let value = format!("<value><dateTime.iso8601>{datetime_str}</dateTime.iso8601></value>");
     let expected = Value::datetime(datetime);
 
     assert_eq!(from_str::<Value>(&value).unwrap(), expected);
@@ -121,7 +121,7 @@ fn to_base64() {
     let encoded = base64::encode(contents);
 
     let value = Value::base64(contents.to_vec());
-    let expected = format!("<value><base64>{}</base64></value>", encoded);
+    let expected = format!("<value><base64>{encoded}</base64></value>");
 
     assert_eq!(to_string(&value).unwrap(), expected);
 }
@@ -131,7 +131,7 @@ fn from_base64() {
     let contents = b"you can't read this!";
     let encoded = base64::encode(contents);
 
-    let value = format!("<value><base64>{}</base64></value>", encoded);
+    let value = format!("<value><base64>{encoded}</base64></value>");
     let expected = Value::base64(contents.to_vec());
 
     assert_eq!(from_str::<Value>(&value).unwrap(), expected);

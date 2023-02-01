@@ -44,13 +44,13 @@ async fn main() -> Result<(), String> {
     let result = client.call(request).await.map_err(|error| error.to_string())?;
 
     // print query result
-    println!("{:#?}", result);
+    println!("{result:#?}");
 
     let request = Call::new("getPackage", ("syncthing", true));
     let result: Value = client.call(request).await.map_err(|error| error.to_string())?;
 
     // print query result
-    println!("{:#?}", result);
+    println!("{result:#?}");
 
     Ok(())
 }

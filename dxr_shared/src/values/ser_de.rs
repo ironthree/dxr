@@ -48,7 +48,7 @@ pub(crate) mod boolean {
         match string.as_str() {
             "1" => Ok(true),
             "0" => Ok(false),
-            x => Err(serde::de::Error::custom(format!("Unsupported boolean value: {}", x))),
+            x => Err(serde::de::Error::custom(format!("Unsupported boolean value: {x}"))),
         }
     }
 }

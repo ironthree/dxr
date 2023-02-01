@@ -14,7 +14,7 @@ async fn main() -> Result<(), String> {
     let result: String = client.call(request).await.map_err(|error| error.to_string())?;
 
     // print query result
-    println!("{}", result);
+    println!("{result}");
 
     Ok(())
 }

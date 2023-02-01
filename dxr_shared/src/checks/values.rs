@@ -17,7 +17,7 @@ fn to_from_i4(int: i32) -> bool {
 
 #[quickcheck]
 fn from_to_i4(int: i32) -> bool {
-    let value = format!("<value><i4>{}</i4></value>", int);
+    let value = format!("<value><i4>{int}</i4></value>");
 
     value == to_string(&from_str::<Value>(&value).unwrap()).unwrap()
 }
@@ -33,7 +33,7 @@ fn to_from_i8(long: i64) -> bool {
 #[cfg(feature = "i8")]
 #[quickcheck]
 fn from_to_i8(long: i64) -> bool {
-    let value = format!("<value><i8>{}</i8></value>", long);
+    let value = format!("<value><i8>{long}</i8></value>");
 
     value == to_string(&from_str::<Value>(&value).unwrap()).unwrap()
 }
@@ -67,7 +67,7 @@ fn from_to_string(string: String) -> bool {
     // This creates a new <string> value on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
     let string = escape(string.trim()).to_string();
-    let value = format!("<value><string>{}</string></value>", string);
+    let value = format!("<value><string>{string}</string></value>");
 
     value == to_string(&from_str::<Value>(&value).unwrap()).unwrap()
 }
@@ -89,7 +89,7 @@ fn from_to_double(double: f64) -> TestResult {
         return TestResult::discard();
     }
 
-    let value = format!("<value><double>{}</double></value>", double);
+    let value = format!("<value><double>{double}</double></value>");
 
     TestResult::from_bool(value == to_string(&from_str::<Value>(&value).unwrap()).unwrap())
 }
@@ -121,9 +121,9 @@ fn roundtrip_cow_string(string: String) -> bool {
     let value = <Cow<String>>::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
 
     println!("Expected:");
-    println!("{:#?}", expected);
+    println!("{expected:#?}");
     println!("Value:");
-    println!("{:#?}", value);
+    println!("{value:#?}");
 
     expected == value
 }
@@ -149,12 +149,12 @@ fn roundtrip_string_escape_unescape(string: String) -> TestResult {
 
     let inner = match escaped.inner() {
         Type::String(s) => s,
-        _ => return TestResult::error(format!("String got wrapped in the wrong Value type: {}", string)),
+        _ => return TestResult::error(format!("String got wrapped in the wrong Value type: {string}")),
     };
 
     let output = match Value::string_unescape(inner) {
         Ok(s) => s,
-        Err(_) => return TestResult::error(format!("String failed to be un-escaped: {}", inner)),
+        Err(_) => return TestResult::error(format!("String failed to be un-escaped: {inner}")),
     };
 
     TestResult::from_bool(output == input)
