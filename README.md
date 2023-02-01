@@ -12,9 +12,9 @@ common non-standard extensions.
 
 Documentation of the public API and a tutorial-style introduction are available on
 the [docs.rs](https://docs.rs/dxr/) page for this crate. Additionally, there are a few
-example binaries in the `examples` folder.
+example binaries in `dxr/examples`.
 
-The following features are already implemented:
+### Features
 
 - (de)serialization support for converting XML-RPC XML strings into strongly-typed Rust values
 - conversion traits between XML-RPC values and Rust primitives, arrays, slices, byte arrays,
@@ -31,7 +31,24 @@ All conversion methods (both between Rust XML-RPC values and XML strings, and be
 Rust primitives and Rust XML-RPC values) are extensively checked for correctness by unit
 tests and property-based tests using `quickcheck`.
 
-The project is split into six crates:
+### Limitations
+
+The implementation of XML-RPC provided by `dxr` also has a few limitations (which might or
+might not be deal-breakers for specific use cases):
+
+- Only valid UTF-8 is currently supported in both XML-RPC requests and responses. This is
+  a limitation of the `serde` support of `quick-xml`. Support for other encodings could
+  be added by implementing custom clients or servers which handle other encodings
+  transparently.
+- All `dateTime.iso8861` values are assumed to be UTC, as the `dateTime.iso8861` type of
+  XML-RPC does not include a timezone. Clients will need to adjust these values according
+  to the server timezone. 
+- The default client implementation (based on `reqwest`) is currently `async`-only.
+  However, adding a "blocking" client implementation based on `reqwest::blocking` should be
+  relatively straightforward.
+- The default server implementation (based on `axum`) and associated traits are `async`-only.
+
+### Architecture
 
 - `dxr`: top-level crate that exposes all publicly available functionality
 - `dxr_shared`: implementation of XML-RPC types, conversion traits between XML-RPC types and
@@ -44,7 +61,7 @@ The project is split into six crates:
 
 It is recommended to only add a direct dependency on `dxr` and to enable the required features.
 
-### Why another crate for XML-RPC?
+## Why another crate for XML-RPC?
 
 Searching for `xml-rpc` on crates.io yields a few results, but they all did not fit my
 use case, or were very hard to use. Either they didn't support implementing both clients
@@ -52,7 +69,7 @@ and servers, or no easy conversion methods from Rust types to XML-RPC types was 
 And none of the crates supports (de)serializing both Rust types *and* custom user-defined
 types by using derive macros.
 
-### Goals
+## Goals
 
 Because of this state of the XML-RPC crate ecosystem in Rust, the defining purpose of the
 `dxr` crate is that it should be opinionated, but also very easy to use, for implementing
@@ -64,7 +81,7 @@ Additionally, the crate is built on top of best-in-class (in my opinion) librari
 (de)serializing XML (`quick-xml`), HTTP client side (`reqwest`), HTTP server side
 (`axum`).
 
-### Examples
+## Examples
 
 The `/examples/` directory contains implementations of two simple clients and a simple
 server for demonstration purposes. They use the `tokio` runtime, which works great with
