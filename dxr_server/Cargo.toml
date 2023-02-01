@@ -3,7 +3,7 @@ name = "dxr_server"
 description = "Declarative XML-RPC (server implementation)"
 license = "MIT OR Apache-2.0"
 
-version = "0.5.1"
+version = "0.5.2"
 edition = "2021"
 rust-version = "1.61.0"
 
@@ -14,7 +14,7 @@ repository = "https://github.com/ironthree/dxr"
 
 [dependencies]
 async-trait = "0.1.53"
-dxr_shared = { path = "../dxr_shared", version = "0.5.1" }
+dxr_shared = { path = "../dxr_shared", version = "0.5.2" }
 http = "0.2.6"
 quick-xml = { version = "0.25" , features = ["serialize"] }
 

@@ -1,3 +1,8 @@
+## Release 0.5.2
+
+This is a small release that brings only internal clean-ups with no user-facing code
+changes. Documentation as rendered on <https://docs.rs/dxr> should be slightly improved.
+
 ## Release 0.5.1
 
 **Changed**:
