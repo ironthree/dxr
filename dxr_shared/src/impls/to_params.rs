@@ -29,7 +29,6 @@ impl TryToParams for i32 {
 }
 
 #[cfg(feature = "i8")]
-#[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
 impl TryToParams for i64 {
     fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
         Ok(vec![self.try_to_value()?])
@@ -85,7 +84,6 @@ impl TryToParams for &[u8] {
 }
 
 #[cfg(feature = "nil")]
-#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> TryToParams for Option<T>
 where
     T: TryToValue,
@@ -96,7 +94,6 @@ where
 }
 
 #[cfg(feature = "nil")]
-#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> TryToParams for &Option<T>
 where
     T: TryToValue,

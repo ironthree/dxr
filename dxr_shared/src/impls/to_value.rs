@@ -31,7 +31,6 @@ impl TryToValue for i32 {
 }
 
 #[cfg(feature = "i8")]
-#[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
 impl TryToValue for i64 {
     fn try_to_value(&self) -> Result<Value, DxrError> {
         Ok(Value::i8(*self))
@@ -87,7 +86,6 @@ impl TryToValue for &[u8] {
 }
 
 #[cfg(feature = "nil")]
-#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> TryToValue for Option<T>
 where
     T: TryToValue,

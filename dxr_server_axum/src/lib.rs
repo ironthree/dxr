@@ -1,4 +1,5 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![deny(unsafe_code)]
 #![warn(explicit_outlives_requirements)]
 #![warn(missing_copy_implementations)]
@@ -32,7 +33,6 @@ use tokio::sync::Notify;
 use dxr_server::{server, Handler, DEFAULT_SERVER_ROUTE};
 
 /// builder that takes parameters for constructing a standalone [`axum::Router`]
-#[cfg_attr(docsrs, doc(cfg(feature = "server-axum")))]
 #[derive(Default)]
 pub struct RouteBuilder {
     path: Cow<'static, str>,
@@ -88,7 +88,6 @@ impl RouteBuilder {
 /// # XML-RPC server implementation
 ///
 /// This type provides a very simple XML-RPC server implementation based on [`axum::Router`].
-#[cfg_attr(docsrs, doc(cfg(feature = "server-axum")))]
 #[derive(Debug)]
 pub struct Server {
     addr: SocketAddr,

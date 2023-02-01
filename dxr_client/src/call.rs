@@ -6,7 +6,6 @@ use dxr_shared::{DxrError, MethodCall, TryFromValue, TryToParams, Value};
 ///
 /// This type describes the data associated with an XML-RPC method call on the client side. This
 /// includes the method name, method parameters, and expected return type.
-#[cfg_attr(docsrs, doc(cfg(feature = "client")))]
 #[derive(Debug)]
 pub struct Call<'a, P, R>
 where

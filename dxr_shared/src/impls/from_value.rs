@@ -25,7 +25,6 @@ impl TryFromValue for i32 {
 }
 
 #[cfg(feature = "i8")]
-#[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
 impl TryFromValue for i64 {
     fn try_from_value(value: &Value) -> Result<i64, DxrError> {
         match value.inner() {
@@ -81,7 +80,6 @@ impl TryFromValue for Vec<u8> {
 }
 
 #[cfg(feature = "nil")]
-#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> TryFromValue for Option<T>
 where
     T: TryFromValue,

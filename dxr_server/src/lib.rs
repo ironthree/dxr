@@ -1,4 +1,5 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![deny(unsafe_code)]
 #![warn(explicit_outlives_requirements)]
 #![warn(missing_copy_implementations)]
@@ -40,7 +41,6 @@ pub type HandlerMap = Arc<HashMap<&'static str, Box<dyn Handler>>>;
 /// It takes a map of method handlers ([`HandlerMap`]), the request body, and the request headers
 /// as arguments, and returns a tuple of HTTP status code [`http::StatusCode`], request
 /// response headers, and response body.
-#[cfg_attr(docsrs, doc(cfg(feature = "server")))]
 pub async fn server(handlers: HandlerMap, body: &str, headers: HeaderMap) -> (StatusCode, HeaderMap, String) {
     if headers.get(CONTENT_LENGTH).is_none() {
         return fault_to_response(411, "Content-Length header missing.");

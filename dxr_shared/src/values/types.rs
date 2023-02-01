@@ -47,7 +47,6 @@ impl Value {
     /// This type is not part of the original XML-RPC spec, but is a widely used extension.
     /// Support for `<i8>` values is optional and can be enabled with the `i8` crate feature.
     #[cfg(feature = "i8")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
     pub fn i8(value: i64) -> Value {
         Value::new(Type::Long(value))
     }
@@ -108,7 +107,6 @@ impl Value {
     /// Rust [`Option`]s to either their contained [`Value`], or to a `<nil>` value. This is
     /// consistent with the XML-RPC implementation in the Python `xmlrpc` standard library module.
     #[cfg(feature = "nil")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
     pub fn nil() -> Value {
         Value::new(Type::Nil)
     }
@@ -119,7 +117,6 @@ pub(crate) enum Type {
     #[serde(rename = "i4", alias = "int")]
     Integer(#[serde(rename = "$value")] i32),
     #[cfg(feature = "i8")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
     #[serde(rename = "i8")]
     Long(#[serde(rename = "$value")] i64),
     #[serde(rename = "boolean", with = "super::ser_de::boolean")]
@@ -143,7 +140,6 @@ pub(crate) enum Type {
         data: ArrayData,
     },
     #[cfg(feature = "nil")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
     #[serde(rename = "nil")]
     Nil,
 }

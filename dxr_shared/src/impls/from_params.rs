@@ -25,7 +25,6 @@ impl TryFromParams for i32 {
 }
 
 #[cfg(feature = "i8")]
-#[cfg_attr(docsrs, doc(cfg(feature = "i8")))]
 impl TryFromParams for i64 {
     fn try_from_params(values: &[Value]) -> Result<Self, DxrError> {
         let (value,): (Self,) = TryFromParams::try_from_params(values)?;
@@ -73,7 +72,6 @@ impl TryFromParams for Vec<u8> {
 // - check whether it is a <nil> value
 
 #[cfg(feature = "nil")]
-#[cfg_attr(docsrs, doc(cfg(feature = "nil")))]
 impl<T> TryFromParams for Option<T>
 where
     T: TryFromValue,
