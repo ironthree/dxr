@@ -5,7 +5,7 @@ license = "MIT OR Apache-2.0"
 
 version = "0.5.2"
 edition = "2021"
-rust-version = "1.61.0"
+rust-version = "1.63.0"
 
 authors = ["Fabio Valentini <decathorpe@gmail.com>"]
 keywords = ["derive", "XML-RPC"]
