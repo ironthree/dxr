@@ -2,4 +2,4 @@ error: Deriving TryFromValue is not possible for structs that contain reference 
  --> tests/trybuild/toref.rs:5:13
   |
 5 |     string: &'a str,
-  |             ^^^^^^^
+  |             ^
