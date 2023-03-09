@@ -51,7 +51,7 @@ required-features = ["derive", "client", "server", "server-axum", "i8", "nil"]
 [dependencies]
 dxr_shared = { path = "../dxr_shared", version = "0.5.2" }
 dxr_derive = { path = "../dxr_derive", version = "0.5.2", optional = true }
-dxr_client = { path = "../dxr_client", version = "0.5.2", optional = true }
+dxr_client = { path = "../dxr_client", version = "0.5.2", default-features = false, optional = true }
 dxr_server = { path = "../dxr_server", version = "0.5.2", optional = true }
 dxr_server_axum = { path = "../dxr_server_axum", version = "0.5.2", optional = true }
 
@@ -69,11 +69,17 @@ tokio-test = "0.4.2"
 trybuild = "1.0.56"
 
 [features]
-default = ["client"]
+default = ["client", "client-default-tls"]
 derive = ["dep:dxr_derive"]
 client = ["dep:dxr_client"]
 server = ["dep:dxr_server"]
 server-axum = ["dep:dxr_server_axum", "server"]
+
+# client support for different TLS backends
+client-default-tls = ["client", "dxr_client?/default-tls"]
+client-native-tls = ["client", "dxr_client?/native-tls"]
+client-rustls-tls = ["client", "dxr_client?/rustls-tls"]
+
 # support non-standard <i8> XML-RPC values
 i8 = ["dxr_shared/i8", "dxr_client?/i8", "dxr_server?/i8", "dxr_server_axum?/i8"]
 # support non-standard <nil> XML-RPC values

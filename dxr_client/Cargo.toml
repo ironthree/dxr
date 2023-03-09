@@ -18,10 +18,16 @@ dxr_shared = { path = "../dxr_shared", version = "0.5.2" }
 http = "0.2.6"
 log = "0.4.13"
 quick-xml = { version = "0.25" , features = ["serialize"] }
-reqwest = { version = "0.11", features = ["cookies"] }
+reqwest = { version = "0.11", default-features = false, features = ["cookies"] }
 url = "2.2"
 
 [features]
+# use the default TLS backend of reqwest by default
+default = ["default-tls"]
+default-tls = ["reqwest/default-tls"]
+native-tls = ["reqwest/native-tls"]
+rustls-tls = ["reqwest/rustls-tls"]
+
 # support non-standard <i8> XML-RPC values
 i8 = ["dxr_shared/i8"]
 # support non-standard <nil> XML-RPC values
