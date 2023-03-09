@@ -32,11 +32,11 @@ jobs:
           command: check
           args: --workspace --verbose --all-features --tests --examples
 
-      # only run trybuild tests with nightly Rust
+      # only run trybuild tests with stable Rust
 
       - name: Run "cargo test" (with trybuild tests)
         uses: actions-rs/cargo@v1
-        if: ${{ matrix.rust == 'nightly' }}
+        if: ${{ matrix.rust == 'stable' }}
         with:
           toolchain: ${{ matrix.rust }}
           command: test
@@ -44,7 +44,7 @@ jobs:
 
       - name: Run "cargo test" (without trybuild tests)
         uses: actions-rs/cargo@v1
-        if: ${{ matrix.rust != 'nightly' }}
+        if: ${{ matrix.rust != 'stable' }}
         with:
           toolchain: ${{ matrix.rust }}
           command: test
