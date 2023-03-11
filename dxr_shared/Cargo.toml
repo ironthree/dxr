@@ -3,7 +3,7 @@ name = "dxr_shared"
 description = "Declarative XML-RPC (implementation details)"
 license = "MIT OR Apache-2.0"
 
-version = "0.5.2"
+version = "0.5.3"
 edition = "2021"
 rust-version = "1.63.0"
 

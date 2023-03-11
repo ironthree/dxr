@@ -1,3 +1,10 @@
+## Release 0.5.3
+
+This release adds feature flags for selecting a non-default TLS backend for `reqwest`
+in `dxr_client`. There should be no change to the default behaviour (the `default-tls`
+feature of `reqwest`). To use a different TLS backend (i.e. `rustls`), use `dxr` with
+`default-features = false` and enable the `client-rustls-tls` feature.
+
 ## Release 0.5.2
 
 This is a small release that brings only internal clean-ups with no user-facing code
