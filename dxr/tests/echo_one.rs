@@ -5,10 +5,10 @@ use std::collections::HashMap;
 use std::time::Duration;
 
 use dxr::chrono::{DateTime, SubsecRound, Utc};
-use dxr::client::{Call, ClientBuilder};
+use dxr::client::{Call, ClientBuilder, ClientError};
 use dxr::server::{HandlerFn, HandlerResult};
 use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
-use dxr::{DxrError, Fault, TryFromParams, TryFromValue, TryToValue, Value};
+use dxr::{DxrError, TryFromParams, TryFromValue, TryToValue, Value};
 
 fn echo_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let value: Value = Value::try_from_params(params)?;
@@ -121,18 +121,20 @@ async fn echo_one() {
         // type mismatch
         let value = -12i32;
         let call: Call<i32, String> = Call::new("echo", value);
-        assert!(client
-            .call(call)
-            .await
-            .unwrap_err()
-            .downcast::<DxrError>()
-            .unwrap()
-            .is_wrong_type());
+        assert!(matches!(
+            client.call(call).await.unwrap_err(),
+            ClientError::RPC {
+                error: DxrError::WrongType { .. }
+            }
+        ));
 
         // server-side parameter number mismatch
         let value = vec![-12i32, 42i32];
         let call: Call<Vec<i32>, Vec<i32>> = Call::new("echo", value);
-        let _fault = client.call(call).await.unwrap_err().downcast::<Fault>().unwrap();
+        assert!(matches!(
+            client.call(call).await.unwrap_err(),
+            ClientError::Fault { .. }
+        ));
     };
 
     tokio::spawn(calls()).await.unwrap();

@@ -120,7 +120,7 @@ impl Server {
     ///
     /// Requests with invalid input, calls of unknown methods, and failed methods are converted
     /// into fault responses.
-    pub async fn serve(self) -> Result<(), anyhow::Error> {
+    pub async fn serve(self) -> Result<(), hyper::Error> {
         if let Some(barrier) = &self.barrier {
             Ok(axum::Server::bind(&self.addr)
                 .serve(self.route.into_make_service())

@@ -2,10 +2,10 @@
 
 use std::time::Duration;
 
-use dxr::client::{Call, ClientBuilder};
+use dxr::client::{Call, ClientBuilder, ClientError};
 use dxr::server::{HandlerFn, HandlerResult};
 use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
-use dxr::{Fault, TryFromParams, TryToValue, Value};
+use dxr::{TryFromParams, TryToValue, Value};
 
 fn adder_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let (a, b): (i32, i32) = TryFromParams::try_from_params(params)?;
@@ -57,12 +57,18 @@ async fn adder() {
         // argument number mismatch
         let (a, b, c) = (2i32, 3i32, 4i32);
         let call: Call<_, i32> = Call::new("add", (a, b, c));
-        let _fault = client.call(call).await.unwrap_err().downcast::<Fault>().unwrap();
+        assert!(matches!(
+            client.call(call).await.unwrap_err(),
+            ClientError::Fault { .. }
+        ));
 
         // argument type mismatch
         let (a, b) = ("12", "24");
         let call: Call<_, i32> = Call::new("add", (a, b));
-        let _fault = client.call(call).await.unwrap_err().downcast::<Fault>().unwrap();
+        assert!(matches!(
+            client.call(call).await.unwrap_err(),
+            ClientError::Fault { .. }
+        ));
     };
 
     tokio::spawn(calls()).await.unwrap();

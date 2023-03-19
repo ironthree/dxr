@@ -17,6 +17,7 @@
 //! an XML-RPC client based on [`reqwest`].
 
 use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
+use thiserror::Error;
 
 // re-export url::URL, as it is exposed in the the public API
 pub use url::Url;
@@ -28,6 +29,32 @@ pub use call::*;
 
 /// default value of the `User-Agent` HTTP header for XML-RPC requests
 pub const DEFAULT_USER_AGENT: &str = concat!("dxr-client-v", env!("CARGO_PKG_VERSION"));
+
+/// error type for XML-RPC clients
+#[derive(Debug, Error)]
+pub enum ClientError {
+    /// error variant for XML-RPC server faults
+    #[error("{}", fault)]
+    Fault {
+        /// fault returned by the server
+        #[from]
+        fault: Fault,
+    },
+    /// error variant for XML-RPC errors
+    #[error("{}", error)]
+    RPC {
+        /// XML-RPC parsing error
+        #[from]
+        error: DxrError,
+    },
+    /// error variant for networking errors
+    #[error("{}", error)]
+    Net {
+        /// networking error returned by [`reqwest`]
+        #[from]
+        error: reqwest::Error,
+    },
+}
 
 /// builder that takes parameters for constructing a [`Client`] based on [`reqwest`]
 #[derive(Debug)]
@@ -102,7 +129,7 @@ fn request_to_body(call: &MethodCall) -> Result<String, DxrError> {
     Ok(body)
 }
 
-fn response_to_result(contents: &str) -> Result<MethodResponse, anyhow::Error> {
+fn response_to_result(contents: &str) -> Result<MethodResponse, ClientError> {
     // need to check for FaultResponse first:
     // - a missing <params> tag is ambiguous (can be either an empty response, or a fault response)
     // - a present <fault> tag is unambiguous
@@ -147,7 +174,7 @@ impl Client {
     ///
     /// Fault responses from the XML-RPC server are transparently converted into [`Fault`] errors.
     /// Invalid XML-RPC responses or faults will result in an appropriate [`DxrError`].
-    pub async fn call<P: TryToParams, R: TryFromValue>(&self, call: Call<'_, P, R>) -> Result<R, anyhow::Error> {
+    pub async fn call<P: TryToParams, R: TryFromValue>(&self, call: Call<'_, P, R>) -> Result<R, ClientError> {
         // serialize XML-RPC method call
         let request = call.as_xml_rpc()?;
         let body = request_to_body(&request)?;

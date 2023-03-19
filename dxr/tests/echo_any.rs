@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::time::Duration;
 
 use dxr::chrono::{DateTime, SubsecRound, Utc};
-use dxr::client::{Call, ClientBuilder};
+use dxr::client::{Call, ClientBuilder, ClientError};
 use dxr::server::{HandlerFn, HandlerResult};
 use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
 use dxr::{DxrError, TryFromValue, TryToValue, Value};
@@ -163,24 +163,22 @@ async fn echo() {
         // type mismatch
         let value = -12i32;
         let call: Call<(i32,), (String,)> = Call::new("echo", (value,));
-        assert!(client
-            .call(call)
-            .await
-            .unwrap_err()
-            .downcast::<DxrError>()
-            .unwrap()
-            .is_wrong_type());
+        assert!(matches!(
+            client.call(call).await.unwrap_err(),
+            ClientError::RPC {
+                error: DxrError::WrongType { .. }
+            }
+        ));
 
         // parameter number mismatch
         let value = vec![2i32, 3i32];
         let call: Call<Vec<i32>, (i32, i32, i32)> = Call::new("echo", value);
-        assert!(client
-            .call(call)
-            .await
-            .unwrap_err()
-            .downcast::<DxrError>()
-            .unwrap()
-            .is_parameter_mismatch());
+        assert!(matches!(
+            client.call(call).await.unwrap_err(),
+            ClientError::RPC {
+                error: DxrError::ParameterMismatch { .. }
+            }
+        ));
     };
 
     tokio::spawn(calls()).await.unwrap();

@@ -13,11 +13,11 @@ repository.workspace = true
 
 [dependencies]
 dxr_shared.workspace = true
-anyhow = "1.0.53"
 http = "0.2.6"
 log = "0.4.13"
 quick-xml = { version = "0.25" , features = ["serialize"] }
 reqwest = { version = "0.11", default-features = false, features = ["cookies"] }
+thiserror = "1"
 url = "2.2"
 
 [features]
