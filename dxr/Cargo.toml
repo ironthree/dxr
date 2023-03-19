@@ -1,17 +1,16 @@
 [package]
 name = "dxr"
 description = "Declarative XML-RPC"
-license = "MIT OR Apache-2.0"
-
-version = "0.5.3"
-edition = "2021"
-rust-version = "1.63.0"
-
-authors = ["Fabio Valentini <decathorpe@gmail.com>"]
 categories = ["network-programming", "encoding"]
 keywords = ["XML-RPC", "client", "server", "derive"]
-repository = "https://github.com/ironthree/dxr"
 exclude = ["/wip/"]
+
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+repository.workspace = true
 
 [[example]]
 name = "client"
@@ -49,11 +48,11 @@ path = "tests/echo_one.rs"
 required-features = ["derive", "client", "server", "server-axum", "i8", "nil"]
 
 [dependencies]
-dxr_shared = { path = "../dxr_shared", version = "0.5.3" }
-dxr_derive = { path = "../dxr_derive", version = "0.5.3", optional = true }
-dxr_client = { path = "../dxr_client", version = "0.5.3", default-features = false, optional = true }
-dxr_server = { path = "../dxr_server", version = "0.5.3", optional = true }
-dxr_server_axum = { path = "../dxr_server_axum", version = "0.5.3", optional = true }
+dxr_shared = { workspace = true }
+dxr_derive = { workspace = true, optional = true }
+dxr_client = { workspace = true, default-features = false, optional = true }
+dxr_server = { workspace = true, optional = true }
+dxr_server_axum = { workspace = true, optional = true }
 
 [dev-dependencies]
 # integration tests use the "clock" feature of chrono
