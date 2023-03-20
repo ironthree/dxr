@@ -14,7 +14,7 @@ repository.workspace = true
 [dependencies]
 dxr_shared.workspace = true
 dxr_server.workspace = true
-axum = "0.5.4"
+axum = "0.6"
 hyper = "0.14"
 tokio = { version = "1.14", features = ["sync"] }
 
