@@ -5,8 +5,8 @@ use quick_xml::{de::from_str, se::to_string};
 use quickcheck::TestResult;
 use quickcheck_macros::quickcheck;
 
-use crate::traits::{TryFromValue, TryToValue};
 use crate::values::{Type, Value};
+use crate::{TryFromValue, TryToValue};
 
 #[quickcheck]
 fn to_from_i4(int: i32) -> bool {
@@ -158,4 +158,72 @@ fn roundtrip_string_escape_unescape(string: String) -> TestResult {
     };
 
     TestResult::from_bool(output == input)
+}
+
+#[cfg(feature = "derive")]
+#[test]
+fn roundtrip_struct_empty() {
+    use crate::{TryFromValue, TryToValue};
+
+    #[derive(Debug, Eq, PartialEq, TryFromValue, TryToValue)]
+    struct Test {}
+
+    let value = Test {};
+    assert_eq!(Test::try_from_value(&value.try_to_value().unwrap()).unwrap(), value);
+}
+
+#[cfg(feature = "derive")]
+#[quickcheck]
+fn roundtrip_struct_cow_static(string: String) -> bool {
+    #[derive(Debug, Eq, PartialEq, TryFromValue, TryToValue)]
+    struct TestCow {
+        string: Cow<'static, String>,
+    }
+
+    let expected = TestCow {
+        string: Cow::Owned(string.trim().to_owned()),
+    };
+    let value = TestCow::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
+
+    expected == value
+}
+
+#[cfg(feature = "derive")]
+#[quickcheck]
+fn roundtrip_struct_cow_string(string: String) -> bool {
+    #[derive(Debug, Eq, PartialEq, TryFromValue, TryToValue)]
+    struct TestCow<'a> {
+        string: Cow<'a, String>,
+    }
+
+    let expected = TestCow {
+        string: Cow::Owned(string.trim().to_owned()),
+    };
+    let value = TestCow::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
+
+    expected == value
+}
+
+#[cfg(all(feature = "derive", feature = "nil"))]
+#[quickcheck]
+fn roundtrip_struct(int: i32, string: String, boolean: bool, optional: Option<f64>) -> TestResult {
+    if matches!(optional, Some(f) if f.is_nan()) {
+        return TestResult::discard();
+    }
+
+    #[derive(Debug, PartialEq, TryFromValue, TryToValue)]
+    struct Test {
+        int: i32,
+        string: String,
+        boolean: bool,
+        optional: Option<f64>,
+    }
+
+    let value = Test {
+        int,
+        string: string.trim().to_string(),
+        boolean,
+        optional,
+    };
+    TestResult::from_bool(Test::try_from_value(&value.try_to_value().unwrap()).unwrap() == value)
 }

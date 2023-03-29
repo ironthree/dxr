@@ -3,8 +3,8 @@
 //! Run this example with `cargo run --example server --features server`. It will listen on
 //! <http://0.0.0.0:3000> for incoming XML-RPC requests.
 //!
-//! Testing this local server is straightforward, either with the included `client` example, or
-//! with three lines of python:
+//! Testing this local server is straightforward, either with the `client` example included
+//! in the `dxr_client` crate, or with three lines of python:
 //!
 //! ```python3
 //! >>> import xmlrpc.client
@@ -23,9 +23,9 @@
 
 use std::sync::RwLock;
 
-use dxr::server::{async_trait, Handler, HandlerFn, HandlerResult};
-use dxr::server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
 use dxr::{TryFromParams, TryToValue, Value};
+use dxr_server::{async_trait, Handler, HandlerFn, HandlerResult};
+use dxr_server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
 
 struct CounterHandler {
     counter: RwLock<u32>,

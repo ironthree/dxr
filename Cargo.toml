@@ -2,10 +2,10 @@
 members = [
     "dxr",
     "dxr_derive",
-    "dxr_shared",
     "dxr_client",
     "dxr_server",
     "dxr_server_axum",
+    "dxr_tests",
 ]
 
 [workspace.package]
@@ -17,7 +17,7 @@ authors = ["Fabio Valentini <decathorpe@gmail.com>"]
 repository = "https://github.com/ironthree/dxr"
 
 [workspace.dependencies]
-dxr_shared = { path = "./dxr_shared", version = "0.6.0-dev" }
+dxr = { path = "./dxr", version = "0.6.0-dev" }
 dxr_derive = { path = "./dxr_derive", version = "0.6.0-dev" }
 dxr_client = { path = "./dxr_client", version = "0.6.0-dev" }
 dxr_server = { path = "./dxr_server", version = "0.6.0-dev" }
@@ -25,5 +25,6 @@ dxr_server_axum = { path = "./dxr_server_axum", version = "0.6.0-dev" }
 
 [profile.release]
 codegen-units = 1
+lto = true
 opt-level = 3
 

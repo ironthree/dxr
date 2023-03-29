@@ -45,12 +45,12 @@ def check(package: str, feature_list: list[str]):
 def main():
     os.environ["QUICKCHECK_TESTS"] = "100000"
 
-    check("dxr", ["derive", "client", "server", "server-axum", "i8", "nil"])
+    check("dxr", ["derive", "i8", "nil"])
     check("dxr_derive", [])
-    check("dxr_shared", ["i8", "nil"])
-    check("dxr_client", ["i8", "nil"])
-    check("dxr_server", ["i8", "nil"])
-    check("dxr_server_axum", ["i8", "nil"])
+    check("dxr_client", ["default", "default-tls", "native-tls", "rustls-tls"])
+    check("dxr_server", [])
+    check("dxr_server_axum", [])
+    check("dxr_tests", [])
 
 
 if __name__ == "__main__":

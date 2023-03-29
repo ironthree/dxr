@@ -12,7 +12,7 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
-dxr_shared.workspace = true
+dxr.workspace = true
 http = "0.2.6"
 log = "0.4.13"
 quick-xml = { version = "0.25" , features = ["serialize"] }
@@ -20,17 +20,16 @@ reqwest = { version = "0.11", default-features = false, features = ["cookies"] }
 thiserror = "1"
 url = "2.2"
 
+[dev-dependencies]
+# dependencies for examples
+tokio = { version = "1.14", features = ["macros", "rt-multi-thread"] }
+
 [features]
 # use the default TLS backend of reqwest by default
 default = ["default-tls"]
 default-tls = ["reqwest/default-tls"]
 native-tls = ["reqwest/native-tls"]
 rustls-tls = ["reqwest/rustls-tls"]
-
-# support non-standard <i8> XML-RPC values
-i8 = ["dxr_shared/i8"]
-# support non-standard <nil> XML-RPC values
-nil = ["dxr_shared/nil"]
 
 [package.metadata.docs.rs]
 all-features = true

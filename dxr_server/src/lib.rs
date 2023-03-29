@@ -13,8 +13,7 @@
 
 //! # dxr_server
 //!
-//! This crate is an implementation detail of the `dxr` crate, which provides a basic implementation
-//! of an XML-RPC server.
+//! This crate provides generic XML-RPC server functionality based on [`dxr`].
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -22,7 +21,7 @@ use std::sync::Arc;
 use http::header::{CONTENT_LENGTH, CONTENT_TYPE};
 use http::{HeaderMap, HeaderValue, StatusCode};
 
-use dxr_shared::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Value};
+use dxr::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Value};
 
 mod handler;
 pub use handler::*;

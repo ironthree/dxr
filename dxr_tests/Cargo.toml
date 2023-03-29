@@ -1,0 +1,52 @@
+[package]
+name = "dxr_tests"
+description = "Declarative XML-RPC (integration tests)"
+categories = ["network-programming", "encoding"]
+
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[[example]]
+name = "koji"
+path = "examples/koji.rs"
+
+[[example]]
+name = "client"
+path = "examples/client.rs"
+
+[[example]]
+name = "server"
+path = "examples/server.rs"
+
+[[test]]
+name = "adder"
+path = "tests/adder.rs"
+
+[[test]]
+name = "echo_any"
+path = "tests/echo_any.rs"
+
+[[test]]
+name = "echo_one"
+path = "tests/echo_one.rs"
+
+[dependencies]
+
+[dev-dependencies]
+dxr = { workspace = true, features = ["derive", "i8", "nil"] }
+dxr_derive.workspace = true
+dxr_client.workspace = true
+dxr_server.workspace = true
+dxr_server_axum.workspace = true
+
+chrono = { version = "0.4.19", features = ["clock"], default-features = false }
+tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

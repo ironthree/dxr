@@ -13,7 +13,8 @@
 
 //! # dxr_server_axum
 //!
-//! This crate provides an XML-RPC server implementation for the `dxr` crate based on [`axum`].
+//! This crate provides an implementation of an XML-RPC server based on [`axum`] built on top of
+//! [`dxr`] and [`dxr_server`].
 
 use std::borrow::Cow;
 use std::collections::HashMap;

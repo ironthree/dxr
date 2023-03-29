@@ -1,6 +1,6 @@
 use http::HeaderMap;
 
-use crate::{Fault, Value};
+use dxr::{Fault, Value};
 
 /// type alias for the result type of method handlers
 pub type HandlerResult = Result<Value, Fault>;

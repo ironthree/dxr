@@ -13,8 +13,8 @@
 
 //! # dxr_client
 //!
-//! This crate is an implementation detail of the `dxr` crate, which provides an implementation of
-//! an XML-RPC client based on [`reqwest`].
+//! This crate provides an implementation of an XML-RPC client based on [`reqwest`] built on top of
+//! [`dxr`].
 
 use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
 use thiserror::Error;
@@ -22,7 +22,7 @@ use thiserror::Error;
 // re-export url::URL, as it is exposed in the the public API
 pub use url::Url;
 
-use dxr_shared::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, TryFromValue, TryToParams};
+use dxr::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, TryFromValue, TryToParams};
 
 mod call;
 pub use call::*;

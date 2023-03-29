@@ -12,77 +12,32 @@ rust-version.workspace = true
 authors.workspace = true
 repository.workspace = true
 
-[[example]]
-name = "client"
-path = "examples/client.rs"
-required-features = ["client"]
-
-[[example]]
-name = "koji"
-path = "examples/koji.rs"
-required-features = ["client", "derive", "nil"]
-
-[[example]]
-name = "server"
-path = "examples/server.rs"
-required-features = ["server", "server-axum"]
-
-[[test]]
-name = "adder"
-path = "tests/adder.rs"
-required-features = ["derive", "client", "server", "server-axum"]
-
 [[test]]
 name = "derive"
 path = "tests/derive.rs"
 required-features = ["derive", "i8", "nil"]
 
-[[test]]
-name = "echo_any"
-path = "tests/echo_any.rs"
-required-features = ["derive", "client", "server", "server-axum", "i8", "nil"]
-
-[[test]]
-name = "echo_one"
-path = "tests/echo_one.rs"
-required-features = ["derive", "client", "server", "server-axum", "i8", "nil"]
-
 [dependencies]
-dxr_shared = { workspace = true }
 dxr_derive = { workspace = true, optional = true }
-dxr_client = { workspace = true, default-features = false, optional = true }
-dxr_server = { workspace = true, optional = true }
-dxr_server_axum = { workspace = true, optional = true }
+base64 = "0.13"
+chrono = { version = "0.4.19", features = ["std"], default-features = false }
+quick-xml = { version = "0.25", features = ["serialize"] }
+serde = { version = "1.0.104", features = ["derive"] }
+thiserror = "1.0.30"
 
 [dev-dependencies]
-# integration tests use the "clock" feature of chrono
-chrono = { version = "0.4.19", features = ["clock"], default-features = false }
-# property-based tests for derive macros use quickcheck
+chrono = { version = "0.4.19", features = ["clock", "std"], default-features = false }
 quickcheck = "1.0"
 quickcheck_macros = "1.0"
-# example binaries and integration tests use tokio
-tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }
-# used to compile and run async code in doctests
-tokio-test = "0.4.2"
-# used for testing derive macros
-trybuild = "1.0.56"
+trybuild = "1"
 
 [features]
-default = ["client", "client-default-tls"]
-derive = ["dep:dxr_derive"]
-client = ["dep:dxr_client"]
-server = ["dep:dxr_server"]
-server-axum = ["dep:dxr_server_axum", "server"]
-
-# client support for different TLS backends
-client-default-tls = ["client", "dxr_client?/default-tls"]
-client-native-tls = ["client", "dxr_client?/native-tls"]
-client-rustls-tls = ["client", "dxr_client?/rustls-tls"]
-
+# support for derive macros
+derive =["dep:dxr_derive"]
 # support non-standard <i8> XML-RPC values
-i8 = ["dxr_shared/i8", "dxr_client?/i8", "dxr_server?/i8", "dxr_server_axum?/i8"]
+i8 = []
 # support non-standard <nil> XML-RPC values
-nil = ["dxr_shared/nil", "dxr_client?/nil", "dxr_server?/nil", "dxr_server_axum?/nil"]
+nil = []
 
 [package.metadata.docs.rs]
 all-features = true

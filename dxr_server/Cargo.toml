@@ -12,16 +12,10 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
-dxr_shared.workspace = true
+dxr.workspace = true
 async-trait = "0.1.53"
 http = "0.2.6"
 quick-xml = { version = "0.25" , features = ["serialize"] }
-
-[features]
-# support non-standard <i8> XML-RPC values
-i8 = ["dxr_shared/i8"]
-# support non-standard <nil> XML-RPC values
-nil = ["dxr_shared/nil"]
 
 [package.metadata.docs.rs]
 all-features = true

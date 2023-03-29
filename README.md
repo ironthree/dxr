@@ -1,92 +1,99 @@
-# DXR: declarative XML-RPC
+# dxr: Declarative XML-RPC
 
-[![crates.io](https://img.shields.io/crates/v/dxr.svg)](https://crates.io/crates/dxr/)
-[![crates.io](https://img.shields.io/crates/d/dxr.svg)](https://crates.io/crates/dxr/)
-[![crates.io](https://img.shields.io/crates/l/dxr.svg)](https://crates.io/crates/dxr/)
-[![docs.rs](https://docs.rs/dxr/badge.svg)](https://docs.rs/dxr/)
+The `dxr` crate provides types, macros, and other functionality which can be used to write
+fast and correct XML-RPC clients and servers in Rust conveniently.
 
-The dxr project provides crates for writing XML-RPC API clients and servers in Rust.
-The goal is to match the [XML-RPC Specification](http://xmlrpc.com/spec.md) -- even
-though some parts of it are under-specified -- and provide optional support for some
-common non-standard extensions.
+The APIs for implementing both clients (in the `dxr_client` crate) and servers (in the
+`dxr_server` and `dxr_server_axum` crates) are designed to require no boilerplate code, and
+implement type conversions from Rust to XML-RPC types automatically for all supported data
+types. Custom struct types are also supported, if they derive or manually implement the
+[`TryFromValue`] and / or [`TryToValue`] traits from the `dxr` crate.
 
-Documentation of the public API and a tutorial-style introduction are available on
-the [docs.rs](https://docs.rs/dxr/) page for this crate. Additionally, there are a few
-example binaries in `dxr/examples`.
+## Client interface
 
-### Features
+A new XML-RPC client is initialized by creating a [`dxr_client::ClientBuilder`] instance for a
+specific XML-RPC server URL, modifying it with custom settings, and then building it into a
+[`dxr_client::Client`].
 
-- (de)serialization support for converting XML-RPC XML strings into strongly-typed Rust values
-- conversion traits between XML-RPC values and Rust primitives, arrays, slices, byte arrays,
-  tuples, hashmaps, and custom structs (via derive macros)
-- built-in XML-escaping and un-escaping of string arguments
-- built-in date & time parsing for the `dateTime.iso8861` value type
-- built-in base64 en- and decoding of byte vectors for the `base64` type
-- optional support for (non-standard) `<i8>` (64-bit unsigned integer) and `<nil/>` values
-- support for arbitrary method call argument types without needing to convert values
-  first (for up to 8 arguments; support for more could be implemented, if needed)
-- basic support for both XML-RPC clients (with `reqwest`) and servers (with `axum`)
+```rust
+use dxr_client::{Client, ClientBuilder, Url};
 
-All conversion methods (both between Rust XML-RPC values and XML strings, and between
-Rust primitives and Rust XML-RPC values) are extensively checked for correctness by unit
-tests and property-based tests using `quickcheck`.
+let url = Url::parse("https://example.com/xml-rpc/").unwrap();
+let client: Client = ClientBuilder::new(url)
+    .user_agent("dxr-client-example")
+    .build();
+```
 
-### Limitations
+This client can then be used to issue Remote Procedure [`dxr_client::Call`]s:
 
-The implementation of XML-RPC provided by `dxr` also has a few limitations (which might or
-might not be deal-breakers for specific use cases):
+```rust
+use dxr_client::Call;
 
-- Only valid UTF-8 is currently supported in both XML-RPC requests and responses. This is
-  a limitation of the `serde` support of `quick-xml`. Support for other encodings could
-  be added by implementing custom clients or servers which handle other encodings
-  transparently.
-- All `dateTime.iso8861` values are assumed to be UTC, as the `dateTime.iso8861` type of
-  XML-RPC does not include a timezone. Clients will need to adjust these values according
-  to the server timezone. 
-- The default client implementation (based on `reqwest`) is currently `async`-only.
-  However, adding a "blocking" client implementation based on `reqwest::blocking` should be
-  relatively straightforward.
-- The default server implementation (based on `axum`) and associated traits are `async`-only.
+// create an RPC request with one string argument and an expected string return value
+let request = Call::new("hello", "DXR");
+let result: String = client.call(request).await.unwrap();
+```
 
-### Architecture
+The `dxr_tests/examples/client.rs` file contains a complete implementation of a simple
+"client" binary, which can be used to issue an RPC request to the server provided by the
+"server" example.
 
-- `dxr`: top-level crate that exposes all publicly available functionality
-- `dxr_shared`: implementation of XML-RPC types, conversion traits between XML-RPC types and
-  Rust types, and (de)serialization implementations for converting between XML strings and
-  XML-RPC values
-- `dxr_derive`: `ToDXR` and `FromDXR` derive macros for custom data types
-- `dxr_client`: XML-RPC client implementation using `reqwest`
-- `dxr_server`: generic XML-RPC server functionality
-- `dxr_server_axum`: XML-RPC server implementation using `axum`
+## Server interface
 
-It is recommended to only add a direct dependency on `dxr` and to enable the required features.
+The APIs for setting up an XML-RPC server are intended to be similarly straight-forward,
+and allow embedding the XML-RPC server endpoint route into other servers. First, set up a
+[`dxr_server_axum::RouteBuilder`], set up all method handlers, build it into an
+[`dxr_server_axum::axum::Router`], and then either use this route as part of a larger server,
+or create a standalone service from it.
 
-## Why another crate for XML-RPC?
+```rust
+use dxr_server::RouteBuilder;
+let route = RouteBuilder::new().build();
+```
 
-Searching for `xml-rpc` on crates.io yields a few results, but they all did not fit my
-use case, or were very hard to use. Either they didn't support implementing both clients
-and servers, or no easy conversion methods from Rust types to XML-RPC types was available.
-And none of the crates supports (de)serializing both Rust types *and* custom user-defined
-types by using derive macros.
+Now, this is not a very useful XML-RPC endpoint, since it does not know about any method calls.
+An arbitrary number of method handlers can be registered with the [`dxr_server_axum::RouteBuilder`]
+before building the [`dxr_server_axum::axum::Router`].
 
-## Goals
+```rust
+use dxr::{Fault, TryFromParams, TryToValue, Value};
+use dxr_server::{HandlerFn, HandlerResult};
+use dxr_server_axum::{axum::http::HeaderMap, RouteBuilder};
 
-Because of this state of the XML-RPC crate ecosystem in Rust, the defining purpose of the
-`dxr` crate is that it should be opinionated, but also very easy to use, for implementing
-both XML-RPC clients and servers, with first-class support for (de)serializing custom
-types, in addition to built-in support for transparently converting Rust primitives to
-XML-RPC values.
+fn hello_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
+    let name = String::try_from_params(params)?;
+    Ok(format!("Handler function says: Hello, {}!", name).try_to_value()?)
+}
 
-Additionally, the crate is built on top of best-in-class (in my opinion) libraries for
-(de)serializing XML (`quick-xml`), HTTP client side (`reqwest`), HTTP server side
-(`axum`).
+let route = RouteBuilder::new()
+    .set_path("/")
+    .add_method("hello", Box::new(hello_handler as HandlerFn))
+    .build();
+```
 
-## Examples
+Method handlers must either implement [`dxr_server::Handler`] themselves, or align with the
+[`dxr_server::HandlerFn`] function pointer type, for which this trait implementation is
+already provided.
 
-The `/examples/` directory contains implementations of two simple clients and a simple
-server for demonstration purposes. They use the `tokio` runtime, which works great with
-both `reqwest` and `axum`.
+Using this route in a standalone server with only an XML-RPC endpoint is straightforward:
 
-Note that the amount of code that is required for writing simple XML-RPC clients and
-servers is very small. The `client` example has only ~10 LOC, and the `server` example
-only needs ~15 LOC, but both examples even include error handling.
+```rust
+use dxr_server::Server;
+
+let server = Server::from_route("0.0.0.0:3000".parse().unwrap(), route);
+server.serve().await.unwrap();
+```
+
+The `dxr_tests/examples/server.rs` file contains an implementation of a simple server binary, which
+provides a `hello(String)` method that returns a welcome message, and a `countme()` method that
+returns the number of times the `countme()` method has been called since the server was started.
+
+## Optional Features
+
+The `dxr` crate provides functionality for deriving the `TryFromDXR` and `TryToDXR` traits
+if the `derive` feature is enabled.
+
+There is also optional support for two common, non-standard XML-RPC extensions:
+
+- "long" 64-bit integers (`<i8>`): mapped to [`i64`], enabled with the `i8` feature
+- "null" values (`<nil/>`): mapped to [`Option`]`<T>`, enabled with the `nil` feature

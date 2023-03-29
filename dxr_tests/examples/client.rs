@@ -1,8 +1,9 @@
 //! # Simple example client
 //!
-//! Run this example to test interaction with the `server` example.
+//! Run this example to test interaction with the `server` example from the
+//! `dxr_server_axum` crate.
 
-use dxr::client::{Call, ClientBuilder, Url};
+use dxr_client::{Call, ClientBuilder, Url};
 
 #[tokio::main]
 async fn main() -> Result<(), String> {

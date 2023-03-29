@@ -12,7 +12,7 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
-dxr_shared.workspace = true
+dxr.workspace = true
 dxr_server.workspace = true
 axum = "0.6"
 hyper = "0.14"
@@ -21,12 +21,6 @@ tokio = { version = "1.14", features = ["sync"] }
 [dev-dependencies]
 # used for example binaries and integration tests
 tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }
-
-[features]
-# support non-standard <i8> XML-RPC values
-i8 = ["dxr_shared/i8", "dxr_server/i8"]
-# support non-standard <nil> XML-RPC values
-nil = ["dxr_shared/nil", "dxr_server/nil"]
 
 [package.metadata.docs.rs]
 all-features = true
