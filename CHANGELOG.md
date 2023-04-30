@@ -1,3 +1,9 @@
+## Release 0.5.4
+
+This release includes a fix for string-typed values, which were previously accidentally
+escaped (and unescaped) twice, resulting in XML that wasn't compatible with other
+XML-RPC implementations.
+
 ## Release 0.5.3
 
 This release adds feature flags for selecting a non-default TLS backend for `reqwest`
