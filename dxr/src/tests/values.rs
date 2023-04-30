@@ -78,6 +78,22 @@ fn from_string() {
 }
 
 #[test]
+fn to_str_with_escape() {
+    let value = Value::string("a&b");
+    let expected = "<value><string>a&amp;b</string></value>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_string_with_escape() {
+    let value = "<value><string>a&amp;b</string></value>";
+    let expected = Value::string("a&b");
+
+    assert_eq!(from_str::<Value>(value).unwrap(), expected);
+}
+
+#[test]
 fn to_double() {
     let value = Value::double(1.5);
     let expected = "<value><double>1.5</double></value>";

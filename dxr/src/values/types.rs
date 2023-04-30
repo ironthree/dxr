@@ -1,10 +1,8 @@
 //! definitions of XML-RPC data types with (de)serialization implementations
 
 use chrono::{DateTime, Utc};
-use quick_xml::escape::{escape, unescape};
 use serde::{Deserialize, Serialize};
 
-use crate::error::DxrError;
 use crate::fault::Fault;
 
 /// # XML-RPC value type
@@ -57,19 +55,8 @@ impl Value {
     }
 
     /// constructor for `<string>` values
-    ///
-    /// Note that this constructor handles string escaping for safe inclusion in XML internally.
-    /// Using the `TryFromValue` and `TryToValue` trait implementations for [`String`] and
-    /// [`&str`][str] is recommended, as those handle escaping and un-escaping automatically.
     pub fn string(value: &str) -> Value {
-        let string = escape(value.trim()).to_string();
-        Value::new(Type::String(string))
-    }
-
-    pub(crate) fn string_unescape(value: &str) -> Result<String, DxrError> {
-        unescape(value)
-            .map(|s| s.to_string())
-            .map_err(|error| DxrError::invalid_data(error.to_string()))
+        Value::new(Type::String(value.to_string()))
     }
 
     /// constructor for `<double>` values (64-bit floating point numbers)

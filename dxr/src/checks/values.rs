@@ -5,7 +5,7 @@ use quick_xml::{de::from_str, se::to_string};
 use quickcheck::TestResult;
 use quickcheck_macros::quickcheck;
 
-use crate::values::{Type, Value};
+use crate::values::Value;
 use crate::{TryFromValue, TryToValue};
 
 #[quickcheck]
@@ -138,26 +138,6 @@ fn roundtrip_cow_i4(i4: i32) -> bool {
 fn roundtrip_array(a: i32, b: i32) -> bool {
     let value = vec![a, b];
     <Vec<i32>>::try_from_value(&value.try_to_value().unwrap()).unwrap() == value
-}
-
-#[quickcheck]
-fn roundtrip_string_escape_unescape(string: String) -> TestResult {
-    // whitespace prefix and suffix are not preserved in XML
-    let input = string.trim();
-
-    let escaped = Value::string(input);
-
-    let inner = match escaped.inner() {
-        Type::String(s) => s,
-        _ => return TestResult::error(format!("String got wrapped in the wrong Value type: {string}")),
-    };
-
-    let output = match Value::string_unescape(inner) {
-        Ok(s) => s,
-        Err(_) => return TestResult::error(format!("String failed to be un-escaped: {inner}")),
-    };
-
-    TestResult::from_bool(output == input)
 }
 
 #[cfg(feature = "derive")]
