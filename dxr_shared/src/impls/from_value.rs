@@ -46,7 +46,7 @@ impl TryFromValue for bool {
 impl TryFromValue for String {
     fn try_from_value(value: &Value) -> Result<String, DxrError> {
         match value.inner() {
-            Type::String(string) => Value::string_unescape(string),
+            Type::String(string) => Ok(string.to_owned()),
             t => Err(DxrError::wrong_type(t.name(), "string")),
         }
     }
