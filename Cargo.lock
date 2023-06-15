@@ -255,6 +255,7 @@ dependencies = [
  "dxr",
  "dxr_server",
  "hyper",
+ "thiserror",
  "tokio",
 ]
 

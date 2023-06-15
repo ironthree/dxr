@@ -16,6 +16,7 @@ dxr.workspace = true
 dxr_server.workspace = true
 axum = "0.6"
 hyper = "0.14"
+thiserror = "1"
 tokio = { version = "1.14", features = ["sync"] }
 
 [dev-dependencies]

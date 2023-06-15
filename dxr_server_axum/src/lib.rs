@@ -29,9 +29,29 @@ use axum::http::HeaderMap;
 use axum::routing::post;
 use axum::Router;
 
+use thiserror::Error;
 use tokio::sync::Notify;
 
 use dxr_server::{server, Handler, DEFAULT_SERVER_ROUTE};
+
+/// error type for XML-RPC servers
+#[derive(Debug, Error)]
+pub enum ServerError {
+    /// error variant for HTTP server errors
+    #[error("{}", error)]
+    Http {
+        /// HTTP server error
+        #[from]
+        error: hyper::Error,
+    },
+    /// error variant for networking errors
+    #[error("{}", error)]
+    Net {
+        /// error returned by [`TcpListener::bind`]
+        #[from]
+        error: std::io::Error,
+    },
+}
 
 /// builder that takes parameters for constructing a standalone [`axum::Router`]
 #[derive(Default)]
@@ -111,24 +131,23 @@ impl Server {
         barrier
     }
 
-    /// This method launches an [`axum::Server`] with the configured route of the XML-RPC endpoint
-    /// as the only route that will accept requests.
+    /// This method launches an [`axum::Server`] that listens at the specified socket address
+    /// with the configured route of the XML-RPC endpoint as the only route that will accept
+    /// requests.
     ///
     /// Requests with invalid input, calls of unknown methods, and failed methods are converted
     /// into fault responses.
-    pub async fn serve(self, addr: SocketAddr) -> Result<(), hyper::Error> {
-        let listener = TcpListener::bind(addr).unwrap_or_else(|e| {
-            panic!("error binding to {}: {}", addr, e);
-        });
+    pub async fn serve(self, addr: SocketAddr) -> Result<(), ServerError> {
+        let listener = TcpListener::bind(addr)?;
         self.serve_listener(listener).await
     }
 
-    /// This method launches an [`axum::Server`] with the configured route of the XML-RPC endpoint
-    /// as the only route that will accept requests.
+    /// This method launches an [`axum::Server`] that uses the supplied [`TcpListener`] and with
+    /// the configured route of the XML-RPC endpoint as the only route that will accept requests.
     ///
     /// Requests with invalid input, calls of unknown methods, and failed methods are converted
     /// into fault responses.
-    pub async fn serve_listener(self, listener: TcpListener) -> Result<(), hyper::Error> {
+    pub async fn serve_listener(self, listener: TcpListener) -> Result<(), ServerError> {
         if let Some(barrier) = &self.barrier {
             Ok(axum::Server::from_tcp(listener)?
                 .serve(self.route.into_make_service())
