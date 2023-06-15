@@ -19,10 +19,10 @@ async fn adder() {
         .add_method("add", Box::new(adder_handler as HandlerFn))
         .build();
 
-    let mut server = Server::from_route("0.0.0.0:3000".parse().unwrap(), route);
+    let mut server = Server::from_route(route);
     let trigger = server.shutdown_trigger();
 
-    let serve = tokio::spawn(server.serve());
+    let serve = tokio::spawn(server.serve("0.0.0.0:3000".parse().unwrap()));
     tokio::time::sleep(Duration::from_secs(1)).await;
 
     let calls = || async {
