@@ -19,7 +19,7 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
-use std::net::SocketAddr;
+use std::net::{SocketAddr, TcpListener};
 use std::sync::Arc;
 
 // re-export axum, as it is exposed in the the public API
@@ -91,7 +91,6 @@ impl RouteBuilder {
 /// This type provides a very simple XML-RPC server implementation based on [`axum::Router`].
 #[derive(Debug)]
 pub struct Server {
-    addr: SocketAddr,
     route: Router,
     barrier: Option<Arc<Notify>>,
 }
@@ -99,12 +98,8 @@ pub struct Server {
 impl Server {
     /// This method can be used to construct a [`Server`] from a standalone [`axum::Router`], which
     /// will only handle requests at that one route.
-    pub fn from_route(addr: SocketAddr, route: Router) -> Server {
-        Server {
-            addr,
-            route,
-            barrier: None,
-        }
+    pub fn from_route(route: Router) -> Server {
+        Server { route, barrier: None }
     }
 
     /// This method adds a barrier / notifier to the server that will trigger graceful shutdown,
@@ -121,14 +116,26 @@ impl Server {
     ///
     /// Requests with invalid input, calls of unknown methods, and failed methods are converted
     /// into fault responses.
-    pub async fn serve(self) -> Result<(), hyper::Error> {
+    pub async fn serve(self, addr: SocketAddr) -> Result<(), hyper::Error> {
+        let listener = TcpListener::bind(addr).unwrap_or_else(|e| {
+            panic!("error binding to {}: {}", addr, e);
+        });
+        self.serve_listener(listener).await
+    }
+
+    /// This method launches an [`axum::Server`] with the configured route of the XML-RPC endpoint
+    /// as the only route that will accept requests.
+    ///
+    /// Requests with invalid input, calls of unknown methods, and failed methods are converted
+    /// into fault responses.
+    pub async fn serve_listener(self, listener: TcpListener) -> Result<(), hyper::Error> {
         if let Some(barrier) = &self.barrier {
-            Ok(axum::Server::bind(&self.addr)
+            Ok(axum::Server::from_tcp(listener)?
                 .serve(self.route.into_make_service())
                 .with_graceful_shutdown(barrier.notified())
                 .await?)
         } else {
-            Ok(axum::Server::bind(&self.addr)
+            Ok(axum::Server::from_tcp(listener)?
                 .serve(self.route.into_make_service())
                 .await?)
         }

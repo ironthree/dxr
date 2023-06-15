@@ -70,7 +70,10 @@ async fn main() {
         .add_method("add", Box::new(adder_handler as HandlerFn))
         .build();
 
-    let server = Server::from_route("0.0.0.0:3000".parse().unwrap(), route);
+    let server = Server::from_route(route);
 
-    server.serve().await.expect("Failed to run server.")
+    server
+        .serve("0.0.0.0:3000".parse().unwrap())
+        .await
+        .expect("Failed to run server.")
 }

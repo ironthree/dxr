@@ -80,8 +80,8 @@ Using this route in a standalone server with only an XML-RPC endpoint is straigh
 ```rust
 use dxr_server::Server;
 
-let server = Server::from_route("0.0.0.0:3000".parse().unwrap(), route);
-server.serve().await.unwrap();
+let server = Server::from_route(route);
+server.serve("0.0.0.0:3000".parse().unwrap()).await.unwrap();
 ```
 
 The `dxr_tests/examples/server.rs` file contains an implementation of a simple server binary, which
