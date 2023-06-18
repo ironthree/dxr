@@ -94,6 +94,22 @@ fn from_string_with_escape() {
 }
 
 #[test]
+fn from_untyped_string() {
+    let value = "<value>Hello, World!</value>";
+    let expected = Value::string("Hello, World!");
+
+    assert_eq!(from_str::<Value>(value).unwrap(), expected);
+}
+
+#[test]
+fn from_untyped_string_with_escape() {
+    let value = "<value>a&amp;b</value>";
+    let expected = Value::string("a&b");
+
+    assert_eq!(from_str::<Value>(value).unwrap(), expected);
+}
+
+#[test]
 fn to_double() {
     let value = Value::double(1.5);
     let expected = "<value><double>1.5</double></value>";

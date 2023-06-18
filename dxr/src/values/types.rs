@@ -19,7 +19,7 @@ use crate::fault::Fault;
 /// recommended, as they provide a consistent interface across all types, including [`Vec`],
 /// arrays, slices, tuples, `HashMap`s, and even custom structs, when using the `TryFromValue` and
 /// `TryToValue` derive macros.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 #[serde(rename = "value")]
 pub struct Value {
     #[serde(rename = "$value")]
