@@ -63,10 +63,7 @@ pub(crate) mod base64 {
     use serde::{Deserialize, Deserializer, Serializer};
 
     pub(crate) fn from_str(s: &str) -> Result<Vec<u8>, base64::DecodeError> {
-        match base64::decode(s) {
-            Ok(value) => Ok(value),
-            Err(error) => Err(error),
-        }
+        base64::decode(s)
     }
 
     pub(crate) fn serialize<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error>
@@ -87,9 +84,10 @@ pub(crate) mod base64 {
 }
 
 /// This mod contains the deserialization logic for the XML-RPC value types.
-/// This manual deserialization is necessary to support scalar values without
-/// a type element, e.g. <value>foo</value> instead of
-/// <value><string>foo</string></value>.
+///
+/// This manual deserialization is necessary to support scalar string values
+/// without a `<type>` element, e.g. `<value>foo</value>` instead of
+/// `<value><string>foo</string></value>` (which are both valid XML-RPC).
 pub(crate) mod value {
     use serde::{
         de::{self, Deserializer, Visitor},
@@ -112,7 +110,7 @@ pub(crate) mod value {
         where
             A: serde::de::MapAccess<'de>,
         {
-            const FIELDS: &'static [&'static str] = &[
+            const FIELDS: &[&str] = &[
                 "i4",
                 "int",
                 #[cfg(feature = "i8")]
