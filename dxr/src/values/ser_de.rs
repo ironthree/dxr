@@ -187,51 +187,49 @@ pub(crate) mod value {
                 match key {
                     Field::I4 => {
                         let value = map.next_value()?;
-                        return Ok(Value::i4(value));
+                        Ok(Value::i4(value))
                     },
                     #[cfg(feature = "i8")]
                     Field::I8 => {
                         let value = map.next_value()?;
-                        return Ok(Value::i8(value));
+                        Ok(Value::i8(value))
                     },
                     Field::Boolean => {
                         let string: String = map.next_value()?;
-                        return super::boolean::from_str(&string)
+                        super::boolean::from_str(&string)
                             .map(Value::boolean)
-                            .map_err(de::Error::custom);
+                            .map_err(de::Error::custom)
                     },
                     Field::String => {
                         let value: String = map.next_value()?;
-                        return Ok(Value::string(&value));
+                        Ok(Value::string(&value))
                     },
                     Field::Double => {
                         let value = map.next_value()?;
-                        return Ok(Value::double(value));
+                        Ok(Value::double(value))
                     },
                     Field::DateTime => {
                         let string: String = map.next_value()?;
-                        return super::datetime::from_str(&string)
+                        super::datetime::from_str(&string)
                             .map(Value::datetime)
-                            .map_err(de::Error::custom);
+                            .map_err(de::Error::custom)
                     },
                     Field::Base64 => {
                         let string: String = map.next_value()?;
-                        return super::base64::from_str(&string)
+                        super::base64::from_str(&string)
                             .map(Value::base64)
-                            .map_err(de::Error::custom);
+                            .map_err(de::Error::custom)
                     },
                     Field::Struct => {
                         let value = map.next_value()?;
-                        return Ok(Value::structure(value));
+                        Ok(Value::structure(value))
                     },
                     Field::Array => {
                         let value = map.next_value()?;
-                        return Ok(Value::array(value));
+                        Ok(Value::array(value))
                     },
                     #[cfg(feature = "nil")]
-                    Field::Nil => {
-                        return Ok(Value::nil());
-                    },
+                    Field::Nil => Ok(Value::nil()),
                 }
             } else {
                 // <value></value>
