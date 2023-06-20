@@ -233,9 +233,10 @@ pub(crate) mod value {
                         return Ok(Value::nil());
                     },
                 }
+            } else {
+                // <value></value>
+                Ok(Value::string(""))
             }
-
-            Err(de::Error::missing_field("$value"))
         }
     }
 

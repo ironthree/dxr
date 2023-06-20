@@ -102,6 +102,14 @@ fn from_untyped_string() {
 }
 
 #[test]
+fn from_untyped_empty_string() {
+    let value = "<value></value>";
+    let expected = Value::string("");
+
+    assert_eq!(from_str::<Value>(value).unwrap(), expected);
+}
+
+#[test]
 fn from_untyped_string_with_escape() {
     let value = "<value>a&amp;b</value>";
     let expected = Value::string("a&b");
