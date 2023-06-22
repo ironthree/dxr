@@ -70,9 +70,25 @@ fn to_str() {
 }
 
 #[test]
+fn to_str_empty() {
+    let value = Type::String(String::new());
+    let expected = "<string/>";
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[test]
 fn from_string() {
     let value = "<string>Hello, World!</string>";
     let expected = Type::String(String::from("Hello, World!"));
+
+    assert_eq!(from_str::<Type>(value).unwrap(), expected);
+}
+
+#[test]
+fn from_string_empty() {
+    let value = "<string />";
+    let expected = Type::String(String::from(""));
 
     assert_eq!(from_str::<Type>(value).unwrap(), expected);
 }
@@ -128,12 +144,32 @@ fn to_base64() {
 }
 
 #[test]
+fn to_base64_empty() {
+    let contents = b"";
+    let value = Type::Base64(contents.to_vec());
+    let expected = format!("<base64/>");
+
+    assert_eq!(to_string(&value).unwrap(), expected);
+}
+
+#[allow(deprecated)]
+#[test]
 fn from_base64() {
     let contents = b"you can't read this!";
     #[allow(deprecated)]
     let encoded = base64::encode(contents);
 
     let value = format!("<base64>{encoded}</base64>");
+    let expected = Type::Base64(contents.to_vec());
+
+    assert_eq!(from_str::<Type>(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_base64_empty() {
+    let contents = b"";
+
+    let value = format!("<base64 />");
     let expected = Type::Base64(contents.to_vec());
 
     assert_eq!(from_str::<Type>(&value).unwrap(), expected);

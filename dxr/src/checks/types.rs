@@ -60,13 +60,17 @@ fn to_from_string(string: String) -> bool {
 }
 
 #[quickcheck]
-fn from_to_string(string: String) -> bool {
+fn from_to_string(string: String) -> TestResult {
+    if string.is_empty() {
+        return TestResult::discard();
+    }
+
     // This creates a new <string> type on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
     let string = escape(string.trim()).to_string();
     let value = format!("<string>{string}</string>");
 
-    value == to_string(&from_str::<Type>(&value).unwrap()).unwrap()
+    TestResult::from_bool(value == to_string(&from_str::<Type>(&value).unwrap()).unwrap())
 }
 
 #[quickcheck]
@@ -99,9 +103,13 @@ fn to_from_base64(bytes: Vec<u8>) -> bool {
 }
 
 #[quickcheck]
-fn from_to_base64(bytes: Vec<u8>) -> bool {
+fn from_to_base64(bytes: Vec<u8>) -> TestResult {
+    if bytes.is_empty() {
+        return TestResult::discard();
+    }
+
     #[allow(deprecated)]
     let value = format!("<base64>{}</base64>", base64::encode(bytes));
 
-    value == to_string(&from_str::<Type>(&value).unwrap()).unwrap()
+    TestResult::from_bool(value == to_string(&from_str::<Type>(&value).unwrap()).unwrap())
 }
