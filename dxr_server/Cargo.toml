@@ -15,7 +15,7 @@ repository.workspace = true
 dxr.workspace = true
 async-trait = "0.1.53"
 http = "0.2.6"
-quick-xml = { version = "0.25" , features = ["serialize"] }
+quick-xml = { version = "0.26" , features = ["serialize"] }
 
 [package.metadata.docs.rs]
 all-features = true
