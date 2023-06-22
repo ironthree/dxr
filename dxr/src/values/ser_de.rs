@@ -63,6 +63,7 @@ pub(crate) mod base64 {
     use serde::{Deserialize, Deserializer, Serializer};
 
     pub(crate) fn from_str(s: &str) -> Result<Vec<u8>, base64::DecodeError> {
+        #[allow(deprecated)]
         base64::decode(s)
     }
 
@@ -70,6 +71,7 @@ pub(crate) mod base64 {
     where
         S: Serializer,
     {
+        #[allow(deprecated)]
         let string = base64::encode(bytes);
         serializer.serialize_str(&string)
     }

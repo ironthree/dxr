@@ -100,6 +100,7 @@ fn to_from_base64(bytes: Vec<u8>) -> bool {
 
 #[quickcheck]
 fn from_to_base64(bytes: Vec<u8>) -> bool {
+    #[allow(deprecated)]
     let value = format!("<base64>{}</base64>", base64::encode(bytes));
 
     value == to_string(&from_str::<Type>(&value).unwrap()).unwrap()
