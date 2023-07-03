@@ -55,8 +55,8 @@ let route = RouteBuilder::new().build();
 ```
 
 Now, this is not a very useful XML-RPC endpoint, since it does not know about any method calls.
-An arbitrary number of method handlers can be registered with the [`dxr_server::RouteBuilder`]
-before building the [`dxr_server::axum::Router`].
+An arbitrary number of method handlers can be registered with the `dxr_server::RouteBuilder`
+before building the `dxr_server::axum::Router`.
 
 ```rust
 use dxr::{Fault, TryFromParams, TryToValue, Value};
@@ -98,5 +98,5 @@ if the `derive` feature is enabled.
 
 There is also optional support for two common, non-standard XML-RPC extensions:
 
-- "long" 64-bit integers (`<i8>`): mapped to [`i64`], enabled with the `i8` feature
-- "null" values (`<nil/>`): mapped to [`Option`]`<T>`, enabled with the `nil` feature
+- "long" 64-bit integers (`<i8>`): mapped to `i64`, enabled with the `i8` feature
+- "null" values (`<nil/>`): mapped to `Option<T>`, enabled with the `nil` feature
