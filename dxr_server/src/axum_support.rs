@@ -22,9 +22,6 @@ use std::fmt::{Debug, Formatter};
 use std::net::{SocketAddr, TcpListener};
 use std::sync::Arc;
 
-// re-export axum, as it is exposed in the the public API
-pub use axum;
-
 use axum::http::HeaderMap;
 use axum::routing::post;
 use axum::Router;
@@ -32,7 +29,7 @@ use axum::Router;
 use thiserror::Error;
 use tokio::sync::Notify;
 
-use dxr_server::{server, Handler, DEFAULT_SERVER_ROUTE};
+use crate::{server, Handler, DEFAULT_SERVER_ROUTE};
 
 /// error type for XML-RPC servers
 #[derive(Debug, Error)]

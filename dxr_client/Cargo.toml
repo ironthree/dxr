@@ -13,23 +13,24 @@ repository.workspace = true
 
 [dependencies]
 dxr.workspace = true
-http = "0.2.6"
 log = "0.4.13"
 quick-xml = { version = "0.26" , features = ["serialize"] }
-reqwest = { version = "0.11", default-features = false, features = ["cookies"] }
-thiserror = "1"
-url = "2.2"
 
-[dev-dependencies]
-# dependencies for examples
-tokio = { version = "1.14", features = ["macros", "rt-multi-thread"] }
+# reqwest support
+http = { version = "0.2.6", optional = true }
+reqwest = { version = "0.11", default-features = false, features = ["cookies"], optional = true }
+thiserror = { version = "1", optional = true }
+url = { version = "2.2", optional = true }
 
 [features]
-# use the default TLS backend of reqwest by default
-default = ["default-tls"]
-default-tls = ["reqwest/default-tls"]
-native-tls = ["reqwest/native-tls"]
-rustls-tls = ["reqwest/rustls-tls"]
+# use the default TLS backend by default
+default = ["reqwest?/default-tls"]
+
+reqwest = ["dep:http", "dep:reqwest", "dep:thiserror", "dep:url"]
+
+default-tls = ["reqwest?/default-tls"]
+native-tls = ["reqwest?/native-tls"]
+rustls-tls = ["reqwest?/rustls-tls"]
 
 [package.metadata.docs.rs]
 all-features = true

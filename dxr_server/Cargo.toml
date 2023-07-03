@@ -17,5 +17,15 @@ async-trait = "0.1.53"
 http = "0.2.6"
 quick-xml = { version = "0.26" , features = ["serialize"] }
 
+# axum support
+axum = { version = "0.6", optional = true }
+hyper = { version = "0.14", optional = true }
+thiserror = { version = "1", optional = true }
+tokio = { version = "1.14", features = ["sync"], optional = true }
+
+[features]
+default = []
+axum = ["dep:axum", "dep:hyper", "dep:thiserror", "dep:tokio"]
+
 [package.metadata.docs.rs]
 all-features = true

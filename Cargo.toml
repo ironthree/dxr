@@ -4,7 +4,6 @@ members = [
     "dxr_derive",
     "dxr_client",
     "dxr_server",
-    "dxr_server_axum",
     "dxr_tests",
 ]
 

@@ -4,8 +4,7 @@ use std::time::Duration;
 
 use dxr::{TryFromParams, TryToValue, Value};
 use dxr_client::{Call, ClientBuilder, ClientError};
-use dxr_server::{HandlerFn, HandlerResult};
-use dxr_server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
+use dxr_server::{HandlerFn, HandlerResult, axum::http::HeaderMap, RouteBuilder, Server};
 
 fn adder_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let (a, b): (i32, i32) = TryFromParams::try_from_params(params)?;

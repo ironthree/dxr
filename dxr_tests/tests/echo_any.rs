@@ -7,8 +7,7 @@ use std::time::Duration;
 use dxr::chrono::{DateTime, SubsecRound, Utc};
 use dxr::{DxrError, TryFromValue, TryToValue, Value};
 use dxr_client::{Call, ClientBuilder, ClientError};
-use dxr_server::{HandlerFn, HandlerResult};
-use dxr_server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
+use dxr_server::{HandlerFn, HandlerResult, axum::http::HeaderMap, RouteBuilder, Server};
 
 fn echo_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     Ok(params.try_to_value()?)

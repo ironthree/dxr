@@ -47,9 +47,8 @@ def main():
 
     check("dxr", ["derive", "i8", "nil"])
     check("dxr_derive", [])
-    check("dxr_client", ["default", "default-tls", "native-tls", "rustls-tls"])
-    check("dxr_server", [])
-    check("dxr_server_axum", [])
+    check("dxr_client", ["default", "reqwest", "default-tls", "native-tls", "rustls-tls"])
+    check("dxr_server", ["default", "axum"])
     check("dxr_tests", [])
 
 

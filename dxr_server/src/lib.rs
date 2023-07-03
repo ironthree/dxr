@@ -26,6 +26,15 @@ use dxr::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, Value};
 mod handler;
 pub use handler::*;
 
+#[cfg(feature = "axum")]
+mod axum_support;
+#[cfg(feature = "axum")]
+pub use self::axum_support::*;
+
+// re-export axum, as it is exposed in the the public API
+#[cfg(feature = "axum")]
+pub use axum;
+
 // re-export the async_trait macro, as it is exposed as part of the public API
 pub use async_trait::async_trait;
 

@@ -24,8 +24,7 @@
 use std::sync::RwLock;
 
 use dxr::{TryFromParams, TryToValue, Value};
-use dxr_server::{async_trait, Handler, HandlerFn, HandlerResult};
-use dxr_server_axum::{axum::http::HeaderMap, RouteBuilder, Server};
+use dxr_server::{async_trait, Handler, HandlerFn, HandlerResult, axum::http::HeaderMap, RouteBuilder, Server};
 
 struct CounterHandler {
     counter: RwLock<u32>,
