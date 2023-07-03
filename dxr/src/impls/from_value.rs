@@ -1,5 +1,7 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
+use std::rc::Rc;
+use std::sync::Arc;
 
 use chrono::NaiveDateTime;
 
@@ -108,6 +110,24 @@ where
 {
     fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         Ok(Box::new(T::try_from_value(value)?))
+    }
+}
+
+impl<T> TryFromValue for Rc<T>
+where
+    T: TryFromValue,
+{
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
+        Ok(Rc::new(T::try_from_value(value)?))
+    }
+}
+
+impl<T> TryFromValue for Arc<T>
+where
+    T: TryFromValue,
+{
+    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
+        Ok(Arc::new(T::try_from_value(value)?))
     }
 }
 

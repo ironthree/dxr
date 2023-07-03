@@ -1,5 +1,7 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
+use std::rc::Rc;
+use std::sync::Arc;
 
 use chrono::NaiveDateTime;
 
@@ -112,6 +114,24 @@ where
 }
 
 impl<T> TryToValue for Box<T>
+where
+    T: TryToValue,
+{
+    fn try_to_value(&self) -> Result<Value, DxrError> {
+        TryToValue::try_to_value(self.as_ref())
+    }
+}
+
+impl<T> TryToValue for Rc<T>
+where
+    T: TryToValue,
+{
+    fn try_to_value(&self) -> Result<Value, DxrError> {
+        TryToValue::try_to_value(self.as_ref())
+    }
+}
+
+impl<T> TryToValue for Arc<T>
 where
     T: TryToValue,
 {

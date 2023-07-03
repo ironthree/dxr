@@ -1,3 +1,6 @@
+use std::rc::Rc;
+use std::sync::Arc;
+
 use dxr::chrono::NaiveDateTime;
 use dxr::{TryFromValue, TryToValue};
 
@@ -13,6 +16,8 @@ pub struct Ownership {
     datetime: NaiveDateTime,
     option: Option<i32>,
     recursive: Box<Ownership>,
+    counted: Rc<String>,
+    atomically: Arc<Vec<u8>>,
 }
 
 fn main() {}

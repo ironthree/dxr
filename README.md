@@ -4,16 +4,17 @@ The `dxr` crate provides types, macros, and other functionality which can be use
 fast and correct XML-RPC clients and servers in Rust conveniently.
 
 The APIs for implementing both clients (in the `dxr_client` crate) and servers (in the
-`dxr_server` and `dxr_server_axum` crates) are designed to require no boilerplate code, and
-implement type conversions from Rust to XML-RPC types automatically for all supported data
-types. Custom struct types are also supported, if they derive or manually implement the
-[`TryFromValue`] and / or [`TryToValue`] traits from the `dxr` crate.
+`dxr_server` crate) are designed to require no boilerplate code, and implement type
+conversions from Rust to XML-RPC types automatically for all supported data types. Custom struct
+types are also supported, if they derive or manually implement the `TryFromValue` and / or
+`TryToValue` traits from the `dxr` crate.
 
 ## Client interface
 
-A new XML-RPC client is initialized by creating a [`dxr_client::ClientBuilder`] instance for a
+A new XML-RPC client is initialized by creating a `dxr_client::ClientBuilder` instance for a
 specific XML-RPC server URL, modifying it with custom settings, and then building it into a
-[`dxr_client::Client`].
+`dxr_client::Client`. This requires one client backend to be enabled (currently, only
+`reqwest` is supported).
 
 ```rust
 use dxr_client::{Client, ClientBuilder, Url};
@@ -24,7 +25,7 @@ let client: Client = ClientBuilder::new(url)
     .build();
 ```
 
-This client can then be used to issue Remote Procedure [`dxr_client::Call`]s:
+This client can then be used to issue Remote Procedure `dxr_client::Call`s:
 
 ```rust
 use dxr_client::Call;
@@ -42,9 +43,11 @@ The `dxr_tests/examples/client.rs` file contains a complete implementation of a 
 
 The APIs for setting up an XML-RPC server are intended to be similarly straight-forward,
 and allow embedding the XML-RPC server endpoint route into other servers. First, set up a
-[`dxr_server_axum::RouteBuilder`], set up all method handlers, build it into an
-[`dxr_server_axum::axum::Router`], and then either use this route as part of a larger server,
-or create a standalone service from it.
+`dxr_server::RouteBuilder`, set up all method handlers, build it into an
+`dxr_server::axum::Router`, and then either use this route as part of a larger server,
+or create a standalone service from it. This requires one server backend to be enabled
+(currently, only `axum` is supported).
+
 
 ```rust
 use dxr_server::RouteBuilder;
@@ -52,13 +55,13 @@ let route = RouteBuilder::new().build();
 ```
 
 Now, this is not a very useful XML-RPC endpoint, since it does not know about any method calls.
-An arbitrary number of method handlers can be registered with the [`dxr_server_axum::RouteBuilder`]
-before building the [`dxr_server_axum::axum::Router`].
+An arbitrary number of method handlers can be registered with the [`dxr_server::RouteBuilder`]
+before building the [`dxr_server::axum::Router`].
 
 ```rust
 use dxr::{Fault, TryFromParams, TryToValue, Value};
 use dxr_server::{HandlerFn, HandlerResult};
-use dxr_server_axum::{axum::http::HeaderMap, RouteBuilder};
+use dxr_server::{axum::http::HeaderMap, RouteBuilder};
 
 fn hello_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let name = String::try_from_params(params)?;
@@ -71,8 +74,8 @@ let route = RouteBuilder::new()
     .build();
 ```
 
-Method handlers must either implement [`dxr_server::Handler`] themselves, or align with the
-[`dxr_server::HandlerFn`] function pointer type, for which this trait implementation is
+Method handlers must either implement `dxr_server::Handler` themselves, or align with the
+`dxr_server::HandlerFn` function pointer type, for which this trait implementation is
 already provided.
 
 Using this route in a standalone server with only an XML-RPC endpoint is straightforward:

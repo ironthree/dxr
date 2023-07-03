@@ -39,8 +39,8 @@
 //! between XML-RPC value types and Rust types) are implemented for
 //!
 //! - [`Vec<T>`], slices `&[T]`, and fixed-size arrays `[T; N]`,
-//! - smart pointer types like [`Box<T>`], and [`Cow<T>`],
-//! - mappings like [`HashMap<String, T>`],
+//! - smart pointer types like [`Box<T>`], [`Cow<T>`], [`Rc<T>`], and [`Arc<T>`],
+//! - mappings like [`HashMap<String, T>`] / [`HashMap<&str, T>`],
 //! - tuples `(T, ...)` with up to eight members
 //!
 //! (as long as the inner type `T` also implement these traits).
@@ -56,7 +56,7 @@
 
 // imports for intra-doc links
 #[cfg(doc)]
-use std::{borrow::Cow, collections::HashMap};
+use std::{borrow::Cow, collections::HashMap, rc::Rc, sync::Arc};
 
 // re-export chrono: DateTime / Utc are part of the public API
 pub use chrono;
