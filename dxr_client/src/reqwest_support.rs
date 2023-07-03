@@ -4,7 +4,7 @@ use url::Url;
 
 use dxr::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, TryFromValue, TryToParams};
 
-use crate::{DEFAULT_USER_AGENT, Call};
+use crate::{Call, DEFAULT_USER_AGENT};
 
 /// error type for XML-RPC clients based on [`reqwest`]
 #[derive(Debug, Error)]

@@ -7,7 +7,7 @@ use std::time::Duration;
 use dxr::chrono::{DateTime, SubsecRound, Utc};
 use dxr::{DxrError, TryFromParams, TryFromValue, TryToValue, Value};
 use dxr_client::{Call, ClientBuilder, ClientError};
-use dxr_server::{HandlerFn, HandlerResult, axum::http::HeaderMap, RouteBuilder, Server};
+use dxr_server::{axum::http::HeaderMap, HandlerFn, HandlerResult, RouteBuilder, Server};
 
 fn echo_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let value: Value = Value::try_from_params(params)?;
