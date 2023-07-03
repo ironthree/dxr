@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::{DateTime, Utc};
+use chrono::NaiveDateTime;
 
 use crate::error::DxrError;
 use crate::traits::{TryFromParams, TryFromValue};
@@ -53,7 +53,7 @@ impl TryFromParams for f64 {
     }
 }
 
-impl TryFromParams for DateTime<Utc> {
+impl TryFromParams for NaiveDateTime {
     fn try_from_params(values: &[Value]) -> Result<Self, DxrError> {
         let (value,): (Self,) = TryFromParams::try_from_params(values)?;
         Ok(value)

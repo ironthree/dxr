@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
 
-use chrono::{DateTime, Utc};
+use chrono::NaiveDateTime;
 
 use crate::error::DxrError;
 use crate::traits::TryFromValue;
@@ -61,8 +61,8 @@ impl TryFromValue for f64 {
     }
 }
 
-impl TryFromValue for DateTime<Utc> {
-    fn try_from_value(value: &Value) -> Result<DateTime<Utc>, DxrError> {
+impl TryFromValue for NaiveDateTime {
+    fn try_from_value(value: &Value) -> Result<NaiveDateTime, DxrError> {
         match value.inner() {
             Type::DateTime(date) => Ok(*date),
             t => Err(DxrError::wrong_type(t.name(), "dateTime.iso8861")),

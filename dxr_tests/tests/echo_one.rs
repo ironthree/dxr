@@ -4,7 +4,7 @@
 use std::collections::HashMap;
 use std::time::Duration;
 
-use dxr::chrono::{DateTime, SubsecRound, Utc};
+use dxr::chrono::{NaiveDateTime, SubsecRound, Utc};
 use dxr::{DxrError, TryFromParams, TryFromValue, TryToValue, Value};
 use dxr_client::{Call, ClientBuilder, ClientError};
 use dxr_server::{axum::http::HeaderMap, HandlerFn, HandlerResult, RouteBuilder, Server};
@@ -73,9 +73,9 @@ async fn echo_one() {
         assert_eq!(value, r);
 
         // datetime
-        let value = Utc::now().round_subsecs(0);
+        let value = Utc::now().round_subsecs(0).naive_utc();
         let call = Call::new("echo", value);
-        let r: DateTime<Utc> = client.call(call).await.unwrap();
+        let r: NaiveDateTime = client.call(call).await.unwrap();
         assert_eq!(value, r);
 
         // bytes

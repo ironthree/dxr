@@ -1,6 +1,6 @@
 //! definitions of XML-RPC data types with (de)serialization implementations
 
-use chrono::{DateTime, Utc};
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 use crate::fault::Fault;
@@ -67,8 +67,8 @@ impl Value {
     /// constructor for `<dateTime.iso8601>` values (date & time)
     ///
     /// Note that the date & time format used by XML-RPC does not include sub-second precision, nor
-    /// any timezone information. This crate assumes [`Utc`] is used on the server.
-    pub fn datetime(value: DateTime<Utc>) -> Value {
+    /// any timezone information.
+    pub fn datetime(value: NaiveDateTime) -> Value {
         Value::new(Type::DateTime(value))
     }
 
@@ -113,7 +113,7 @@ pub(crate) enum Type {
     #[serde(rename = "double")]
     Double(#[serde(rename = "$value")] f64),
     #[serde(rename = "dateTime.iso8601", with = "super::ser_de::datetime")]
-    DateTime(#[serde(rename = "$value")] DateTime<Utc>),
+    DateTime(#[serde(rename = "$value")] NaiveDateTime),
     #[serde(rename = "base64", with = "super::ser_de::base64")]
     Base64(#[serde(rename = "$value")] Vec<u8>),
     #[serde(rename = "struct")]

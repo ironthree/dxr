@@ -1,4 +1,4 @@
-use dxr::chrono::{DateTime, Utc};
+use dxr::chrono::NaiveDateTime;
 use dxr::TryToValue;
 
 #[derive(TryToValue)]
@@ -11,7 +11,7 @@ pub struct Appendix<'a> {
     tuple: (&'a str, &'a i32),
     byte_slice: &'a [u8],
     byte_vec_ref: &'a Vec<u8>,
-    datetime: &'a DateTime<Utc>,
+    datetime: &'a NaiveDateTime,
     ref_option: &'a Option<i32>,
     option_ref: Option<&'a i32>,
     recursive: &'a Appendix<'a>,

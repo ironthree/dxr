@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{NaiveDateTime, Utc};
 
 use crate::traits::{TryFromValue, TryToValue};
 use crate::values::Value;
@@ -87,7 +87,7 @@ fn from_double() {
 
 #[test]
 fn to_datetime() {
-    let now = Utc::now();
+    let now = Utc::now().naive_utc();
 
     let value = now;
     let expected = Value::datetime(now);
@@ -97,12 +97,12 @@ fn to_datetime() {
 
 #[test]
 fn from_datetime() {
-    let now = Utc::now();
+    let now = Utc::now().naive_utc();
 
     let value = Value::datetime(now);
     let expected = now;
 
-    assert_eq!(DateTime::try_from_value(&value).unwrap(), expected);
+    assert_eq!(NaiveDateTime::try_from_value(&value).unwrap(), expected);
 }
 
 #[test]

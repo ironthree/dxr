@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use dxr::chrono::{DateTime, Utc};
+use dxr::chrono::NaiveDateTime;
 use dxr::{TryFromValue, TryToValue};
 
 #[derive(TryToValue)]
@@ -12,7 +12,7 @@ pub struct ToCollectibles<'a> {
     doubles: Vec<f64>,
     tuples: (Vec<String>, [i32; 4]),
     byte_array: [u8; 16],
-    datetimes: Vec<DateTime<Utc>>,
+    datetimes: Vec<NaiveDateTime>,
     options: [Option<String>; 24],
     map: HashMap<&'a str, [bool; 12]>,
     recursive: [Box<ToCollectibles<'a>>; 2],
@@ -26,7 +26,7 @@ pub struct Collectibles {
     booleans: [bool; 69],
     doubles: Vec<f64>,
     tuples: (Vec<String>, Vec<i32>),
-    datetimes: Vec<DateTime<Utc>>,
+    datetimes: Vec<NaiveDateTime>,
     options: Vec<Option<String>>,
     map: HashMap<String, Vec<String>>,
     recursive: Vec<Collectibles>,

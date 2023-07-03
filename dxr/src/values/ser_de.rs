@@ -1,17 +1,17 @@
 pub(crate) mod datetime {
-    use chrono::{DateTime, TimeZone, Utc};
+    use chrono::NaiveDateTime;
     use serde::{Deserialize, Deserializer, Serializer};
 
     use crate::values::XML_RPC_DATE_FORMAT;
 
-    pub(crate) fn from_str(s: &str) -> Result<DateTime<Utc>, String> {
-        match Utc.datetime_from_str(s, XML_RPC_DATE_FORMAT) {
+    pub(crate) fn from_str(s: &str) -> Result<NaiveDateTime, String> {
+        match NaiveDateTime::parse_from_str(s, XML_RPC_DATE_FORMAT) {
             Ok(date) => Ok(date),
             Err(error) => Err(format!("Invalid date format: {}", error)),
         }
     }
 
-    pub(crate) fn serialize<S>(datetime: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
+    pub(crate) fn serialize<S>(datetime: &NaiveDateTime, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
@@ -19,7 +19,7 @@ pub(crate) mod datetime {
         serializer.serialize_str(&string)
     }
 
-    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error>
     where
         D: Deserializer<'de>,
     {

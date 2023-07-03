@@ -143,7 +143,7 @@ fn from_double() {
 
 #[test]
 fn to_datetime() {
-    let datetime = Utc::now();
+    let datetime = Utc::now().naive_utc();
     let datetime_str = datetime.format(XML_RPC_DATE_FORMAT).to_string();
 
     let value = Value::datetime(datetime);
@@ -154,7 +154,7 @@ fn to_datetime() {
 
 #[test]
 fn from_datetime() {
-    let datetime = Utc::now().round_subsecs(0);
+    let datetime = Utc::now().round_subsecs(0).naive_utc();
     let datetime_str = datetime.format(XML_RPC_DATE_FORMAT).to_string();
 
     let value = format!("<value><dateTime.iso8601>{datetime_str}</dateTime.iso8601></value>");
