@@ -10,10 +10,6 @@ The goal is to match the [XML-RPC Specification](http://xmlrpc.com/spec.md) -- e
 though some parts of it are under-specified -- and provide optional support for some
 common non-standard extensions.
 
-Documentation of the public API and a tutorial-style introduction are available on
-the [docs.rs](https://docs.rs/dxr/) page for this crate. Additionally, there are a few
-example binaries in `dxr/examples`.
-
 ## Features
 
 - (de)serialization support for converting XML-RPC XML strings into strongly-typed Rust values
@@ -33,20 +29,9 @@ tests and property-based tests using `quickcheck`.
 
 ## Limitations
 
-The implementation of XML-RPC provided by `dxr` also has a few limitations (which might or
-might not be deal-breakers for specific use cases):
-
-- Only valid UTF-8 is currently supported in both XML-RPC requests and responses. This is
-  a limitation of the `serde` support of `quick-xml`. Support for other encodings could
-  be added by implementing custom clients or servers which handle other encodings
-  transparently.
-- All `dateTime.iso8861` values are assumed to be UTC, as the `dateTime.iso8861` type of
-  XML-RPC does not include a timezone. Clients will need to adjust these values according
-  to the server timezone. 
-- The default client implementation (based on `reqwest`) is currently `async`-only.
-  However, adding a "blocking" client implementation based on `reqwest::blocking` should be
-  relatively straightforward.
-- The default server implementation (based on `axum`) and associated traits are `async`-only.
+Only valid UTF-8 is currently supported in both XML-RPC requests and responses. Support for
+other encodings can be handled manually by implementing a custom client or server which
+handles other encodings transparently.
 
 ## Components
 
@@ -56,7 +41,6 @@ might not be deal-breakers for specific use cases):
 - `dxr_derive`: `TryFromDXR` and `TryToDxr` derive macros for custom data types
 - `dxr_client`: XML-RPC client implementation using `reqwest`
 - `dxr_server`: generic XML-RPC server functionality
-- `dxr_server_axum`: XML-RPC server implementation using `axum`
 
 ## Why another crate for XML-RPC?
 

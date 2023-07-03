@@ -14,12 +14,18 @@
 //! # dxr_derive
 //!
 //! This crate is an implementation detail of the `dxr` crate, which provides the derive macros.
+//! It should be used only indirectly (i.e. by enabling the "derive" feature of the `dxr` crate).
+
+#[cfg(doc)]
+use std::borrow::Cow;
 
 use proc_macro::TokenStream;
 
 use proc_macro2::{Span, TokenStream as TokenStream2};
 use proc_macro_crate::{crate_name, FoundCrate};
+
 use quote::{quote, quote_spanned, ToTokens};
+
 use syn::spanned::Spanned;
 use syn::{parse_macro_input, parse_quote, Data, DeriveInput, Fields, GenericParam, Ident, Type};
 
@@ -35,7 +41,17 @@ fn use_dxr() -> TokenStream2 {
     }
 }
 
-/// procedural macro for deriving the `TryFromValue` trait for structs
+/// Procedural macro for deriving an implementation of the `TryFromValue` trait for structs.
+///
+/// Deriving this trait for enums, unions, tuple structs, or unit structs is not supported,
+/// since there would be no canonical way of representing these types as XML-RPC values.
+///
+/// Additionally, the following types of struct members are not supported:
+///
+/// - non-fixed-size arrays `[T]` (i.e. the struct does not implement `Sized`): use a `Vec<T>` or a
+///   fixed-size array `[T; N]` instead
+/// - borrowed values `&T` (i.e. borrowed value does not live long enough): use an owned type `T` or
+///   a `Cow<T>` instead
 #[proc_macro_derive(TryFromValue)]
 pub fn try_from_value(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);
@@ -142,7 +158,13 @@ pub fn try_from_value(input: TokenStream) -> TokenStream {
     proc_macro::TokenStream::from(impl_block)
 }
 
-/// procedural macro for deriving the `TryToValue` trait for structs
+/// Procedural macro for deriving an implementation of the `TryToValue` trait for structs.
+///
+/// Deriving this trait for enums, unions, tuple structs, or unit structs is not supported,
+/// since there would be no canonical way of translating these types to XML-RPC values.
+///
+/// Additionally, non-fixed-size arrays `[T]` (i.e. the struct does not implement `Sized`)
+/// are not supported.
 #[proc_macro_derive(TryToValue)]
 pub fn try_to_value(input: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(input as DeriveInput);

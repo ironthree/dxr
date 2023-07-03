@@ -4,7 +4,10 @@ use crate::error::DxrError;
 use crate::traits::TryFromValue;
 use crate::values::FaultResponse;
 
-/// XML-RPC server fault (numeric error code and message)
+/// XML-RPC server fault (consisting of a numeric error code and a message)
+///
+/// *Note*: There are no standardized numeric error codes, and they will likely be
+/// specific to the server application.
 #[derive(Clone, Debug, Eq, Error, PartialEq)]
 #[error("Server Fault {}: {}", .code, .string)]
 pub struct Fault {
@@ -13,17 +16,17 @@ pub struct Fault {
 }
 
 impl Fault {
-    /// constructor for a new [`Fault`]
+    /// Construct a new [`Fault`] from numeric error code and an error message.
     pub fn new(code: i32, string: String) -> Fault {
         Fault { code, string }
     }
 
-    /// error code associated with the fault
+    /// Retrieve the numeric error code from the [`Fault`].
     pub fn code(&self) -> i32 {
         self.code
     }
 
-    /// error message associated with the fault
+    /// Retrieve the error message from the [`Fault`].
     pub fn string(&self) -> &str {
         self.string.as_str()
     }

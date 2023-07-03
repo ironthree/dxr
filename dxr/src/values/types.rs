@@ -5,20 +5,23 @@ use serde::{Deserialize, Serialize};
 
 use crate::fault::Fault;
 
+// imports for intra-doc links
+#[cfg(doc)]
+use crate::{TryFromValue, TryToValue};
+#[cfg(doc)]
+use std::collections::HashMap;
+
 /// # XML-RPC value type
 ///
 /// The [`Value`] type is the Rust equivalent of valid XML-RPC values. It provides constructors
 /// from all compatible primitive types, (de)serialization support from and to XML-RPC value
 /// strings, and fallible conversion from and to [`Value`] with implementations of the
-/// `TryFromValue` and `TryToValue` traits.
+/// [`TryFromValue`] and [`TryToValue`] traits.
 ///
-/// Note that the constructors for all primitive value types are infallible, except for the string
-/// type, which can fail if the string argument fails to be escaped properly for XML.
-///
-/// In general, using methods from the fallible `TryFromValue` and `TryToValue` conversion traits is
-/// recommended, as they provide a consistent interface across all types, including [`Vec`],
-/// arrays, slices, tuples, `HashMap`s, and even custom structs, when using the `TryFromValue` and
-/// `TryToValue` derive macros.
+/// In general, using methods from the fallible [`TryFromValue`] and [`TryToValue`] conversion
+/// traits is recommended, as they provide a consistent interface across all types, including
+/// [`Vec`], arrays, slices, tuples, [`HashMap`]s, and even custom structs, when using the
+/// [`TryFromValue`] and [`TryToValue`] derive macros (or implementing the traits manually).
 #[derive(Clone, Debug, PartialEq, Serialize)]
 #[serde(rename = "value")]
 pub struct Value {
@@ -64,7 +67,7 @@ impl Value {
         Value::new(Type::Double(value))
     }
 
-    /// constructor for `<dateTime.iso8601>` values (date & time)
+    /// constructor for `<dateTime.iso8601>` values (timezone-unaware date & time)
     ///
     /// Note that the date & time format used by XML-RPC does not include sub-second precision, nor
     /// any timezone information.
@@ -72,7 +75,7 @@ impl Value {
         Value::new(Type::DateTime(value))
     }
 
-    /// constructor for `<base64>` values (base64-encoded, arbitrary bytes)
+    /// constructor for `<base64>` values (base64-encoded arbitrary bytes)
     pub fn base64(value: Vec<u8>) -> Value {
         Value::new(Type::Base64(value))
     }
@@ -91,8 +94,11 @@ impl Value {
     /// Support for `<nil>` values is optional and can be enabled with the `nil` crate feature.
     ///
     /// If enabled, this type is used to emulate support for optional values in XML-RPC, by mapping
-    /// Rust [`Option`]s to either their contained [`Value`], or to a `<nil>` value. This is
-    /// consistent with the XML-RPC implementation in the Python `xmlrpc` standard library module.
+    /// Rust [`Option`]s to either their contained [`Value`] if the value is [`Some<T>`], or to a
+    /// `<nil/>` the value is [`None`].
+    ///
+    /// This is consistent with the XML-RPC implementation in the Python `xmlrpc` standard library
+    /// module, which also maps `None` values to `<nil/>`.
     #[cfg(feature = "nil")]
     pub fn nil() -> Value {
         Value::new(Type::Nil)
@@ -227,6 +233,10 @@ impl ArrayData {
 /// The [`MethodCall`] type is the Rust equivalent of the contents of an XML-RPC method call.
 ///
 /// It contains the name of the method, and a list of dynamically typed method call parameters.
+///
+/// The `dxr_client::Call::as_xml_rpc` method from the `dxr_client` crate provides a convenient
+/// way of constructing new [`MethodCall`] values that does not require converting method call
+/// paramters into [`Value`]s manually.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodCall")]
 pub struct MethodCall {
@@ -295,6 +305,14 @@ impl MethodResponse {
 /// # XML-RPC fault response type
 ///
 /// The [`FaultResponse`] type is the Rust equivalent of the contents of an XML-RPC fault response.
+/// Values of this type can be constructed from [`Fault`]s:
+///
+/// ```
+/// use dxr::{Fault, FaultResponse};
+///
+/// let fault = Fault::new(404, String::from("Not Found"));
+/// let _response: FaultResponse = fault.into();
+/// ```
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodResponse")]
 pub struct FaultResponse {
