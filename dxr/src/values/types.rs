@@ -58,8 +58,8 @@ impl Value {
     }
 
     /// constructor for `<string>` values
-    pub fn string(value: &str) -> Value {
-        Value::new(Type::String(value.to_string()))
+    pub fn string(value: String) -> Value {
+        Value::new(Type::String(value))
     }
 
     /// constructor for `<double>` values (64-bit floating point numbers)
@@ -332,7 +332,7 @@ impl From<Fault> for FaultResponse {
                 value: FaultValue {
                     value: Struct::new(vec![
                         Member::new(String::from("faultCode"), Value::i4(fault.code())),
-                        Member::new(String::from("faultString"), Value::string(fault.string())),
+                        Member::new(String::from("faultString"), Value::string(fault.string().to_owned())),
                     ]),
                 },
             },

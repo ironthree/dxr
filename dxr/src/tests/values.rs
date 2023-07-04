@@ -63,7 +63,7 @@ fn from_boolean() {
 
 #[test]
 fn to_str() {
-    let value = Value::string("Hello, World!");
+    let value = Value::string(String::from("Hello, World!"));
     let expected = "<value><string>Hello, World!</string></value>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -72,14 +72,14 @@ fn to_str() {
 #[test]
 fn from_string() {
     let value = "<value><string>Hello, World!</string></value>";
-    let expected = Value::string("Hello, World!");
+    let expected = Value::string(String::from("Hello, World!"));
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
 
 #[test]
 fn to_str_with_escape() {
-    let value = Value::string("a&b");
+    let value = Value::string(String::from("a&b"));
     let expected = "<value><string>a&amp;b</string></value>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -88,7 +88,7 @@ fn to_str_with_escape() {
 #[test]
 fn from_string_with_escape() {
     let value = "<value><string>a&amp;b</string></value>";
-    let expected = Value::string("a&b");
+    let expected = Value::string(String::from("a&b"));
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
@@ -96,7 +96,7 @@ fn from_string_with_escape() {
 #[test]
 fn from_untyped_string() {
     let value = "<value>Hello, World!</value>";
-    let expected = Value::string("Hello, World!");
+    let expected = Value::string(String::from("Hello, World!"));
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
@@ -104,7 +104,7 @@ fn from_untyped_string() {
 #[test]
 fn from_untyped_empty_string() {
     let value = "<value></value>";
-    let expected = Value::string("");
+    let expected = Value::string(String::new());
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
@@ -112,7 +112,7 @@ fn from_untyped_empty_string() {
 #[test]
 fn from_untyped_empty_string_self_closing() {
     let value = "<value />";
-    let expected = Value::string("");
+    let expected = Value::string(String::new());
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
@@ -120,7 +120,7 @@ fn from_untyped_empty_string_self_closing() {
 #[test]
 fn from_untyped_string_with_escape() {
     let value = "<value>a&amp;b</value>";
-    let expected = Value::string("a&b");
+    let expected = Value::string(String::from("a&b"));
 
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }

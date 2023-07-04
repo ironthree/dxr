@@ -57,7 +57,7 @@ fn to_from_string(string: String) -> bool {
     // This creates a new <string> value on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
     let string = escape(string.trim()).to_string();
-    let value = Value::string(&string);
+    let value = Value::string(string);
 
     value == from_str::<Value>(&to_string(&value).unwrap()).unwrap()
 }

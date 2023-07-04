@@ -41,7 +41,7 @@ fn from_array_one() {
 
 #[test]
 fn to_array_two() {
-    let value = Array::new(vec![Value::i4(-12), Value::string("minus twelve")]);
+    let value = Array::new(vec![Value::i4(-12), Value::string(String::from("minus twelve"))]);
     let expected =
         "<array><data><value><i4>-12</i4></value><value><string>minus twelve</string></value></data></array>";
 
@@ -51,7 +51,7 @@ fn to_array_two() {
 #[test]
 fn from_array_two() {
     let value = "<array><data><value><i4>-12</i4></value><value><string>minus twelve</string></value></data></array>";
-    let expected = Array::new(vec![Value::i4(-12), Value::string("minus twelve")]);
+    let expected = Array::new(vec![Value::i4(-12), Value::string(String::from("minus twelve"))]);
 
     assert_eq!(from_str::<Array>(value).unwrap(), expected);
 }

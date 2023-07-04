@@ -53,7 +53,7 @@ impl TryToValue for String {
 
 impl TryToValue for &str {
     fn try_to_value(&self) -> Result<Value, DxrError> {
-        Ok(Value::string(self))
+        Ok(Value::string(String::from(*self)))
     }
 }
 

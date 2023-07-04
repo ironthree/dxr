@@ -204,7 +204,7 @@ pub(crate) mod value {
                     },
                     Field::String => {
                         let value: String = map.next_value()?;
-                        Ok(Value::string(&value))
+                        Ok(Value::string(value))
                     },
                     Field::Double => {
                         let value = map.next_value()?;
@@ -235,7 +235,7 @@ pub(crate) mod value {
                 }
             } else {
                 // <value></value>
-                Ok(Value::string(""))
+                Ok(Value::string(String::new()))
             }
         }
     }

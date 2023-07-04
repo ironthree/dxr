@@ -25,7 +25,7 @@ fn from_method_call_no_args() {
 
 #[test]
 fn to_method_call_one_arg() {
-    let value = MethodCall::new(String::from("hello"), vec![Value::string("xmlrpc")]);
+    let value = MethodCall::new(String::from("hello"), vec![Value::string(String::from("xmlrpc"))]);
     let expected = "<methodCall><methodName>hello</methodName><params><param><value><string>xmlrpc</string></value></param></params></methodCall>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
@@ -34,7 +34,7 @@ fn to_method_call_one_arg() {
 #[test]
 fn from_method_call_one_arg() {
     let value = "<methodCall><methodName>hello</methodName><params><param><value><string>xmlrpc</string></value></param></params></methodCall>";
-    let expected = MethodCall::new(String::from("hello"), vec![Value::string("xmlrpc")]);
+    let expected = MethodCall::new(String::from("hello"), vec![Value::string(String::from("xmlrpc"))]);
 
     assert_eq!(from_str::<MethodCall>(value).unwrap(), expected);
 }
