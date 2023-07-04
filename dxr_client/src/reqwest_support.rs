@@ -1,38 +1,40 @@
+use std::collections::HashMap;
+
 use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
 use thiserror::Error;
 use url::Url;
 
-use dxr::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, TryFromValue, TryToParams};
+use dxr::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, TryFromValue, TryToParams, Value};
 
 use crate::{Call, DEFAULT_USER_AGENT};
 
-/// error type for XML-RPC clients based on [`reqwest`]
+/// Error type for XML-RPC clients based on [`reqwest`].
 #[derive(Debug, Error)]
 pub enum ClientError {
-    /// error variant for XML-RPC server faults
+    /// Error variant for XML-RPC server faults.
     #[error("{}", fault)]
     Fault {
-        /// fault returned by the server
+        /// Fault returned by the server.
         #[from]
         fault: Fault,
     },
-    /// error variant for XML-RPC errors
+    /// Error variant for XML-RPC errors.
     #[error("{}", error)]
     RPC {
-        /// XML-RPC parsing error
+        /// XML-RPC parsing error.
         #[from]
         error: DxrError,
     },
-    /// error variant for networking errors
+    /// Error variant for networking errors.
     #[error("{}", error)]
     Net {
-        /// networking error returned by [`reqwest`]
+        /// Networking error returned by [`reqwest`].
         #[from]
         error: reqwest::Error,
     },
 }
 
-/// builder that takes parameters for constructing a [`Client`] based on [`reqwest`]
+/// Builder that takes parameters for constructing a [`Client`] based on [`reqwest::Client`].
 #[derive(Debug)]
 pub struct ClientBuilder {
     url: Url,
@@ -41,7 +43,7 @@ pub struct ClientBuilder {
 }
 
 impl ClientBuilder {
-    /// constructor for [`ClientBuilder`] from the URL of the XML-RPC server
+    /// Constructor for [`ClientBuilder`] from the URL of the XML-RPC server.
     ///
     /// This also sets up the default `Content-Type: text/xml` HTTP header for XML-RPC requests.
     pub fn new(url: Url) -> Self {
@@ -55,13 +57,13 @@ impl ClientBuilder {
         }
     }
 
-    /// method for overriding the default User-Agent header
+    /// Method for overriding the default User-Agent header.
     pub fn user_agent(mut self, user_agent: &'static str) -> Self {
         self.user_agent = Some(user_agent);
         self
     }
 
-    /// method for providing additional custom HTTP headers
+    /// Method for providing additional custom HTTP headers.
     ///
     /// Using [`HeaderName`] constants for the header name is recommended. The [`HeaderValue`]
     /// argument needs to be parsed (probably from a string) with [`HeaderValue::from_str`] to
@@ -71,7 +73,7 @@ impl ClientBuilder {
         self
     }
 
-    /// build the [`Client`] by setting up and initializing the internal [`reqwest::Client`]
+    /// Build the [`Client`] by setting up and initializing the internal [`reqwest::Client`].
     ///
     /// If no custom value was provided for `User-Agent`, the default value
     /// ([`DEFAULT_USER_AGENT`]) will be used.
@@ -103,7 +105,12 @@ pub struct Client {
 }
 
 impl Client {
-    /// asynchronous method for handling remote procedure calls with XML-RPC
+    /// Constructor for a [`Client`] from a [`reqwest::Client`] that was already initialized.
+    pub fn with_client(url: Url, client: reqwest::Client) -> Self {
+        Client { url, client }
+    }
+
+    /// Asynchronous method for handling remote procedure calls with XML-RPC.
     ///
     /// Fault responses from the XML-RPC server are transparently converted into [`Fault`] errors.
     /// Invalid XML-RPC responses or faults will result in an appropriate [`DxrError`].
@@ -122,6 +129,52 @@ impl Client {
 
         // extract return value
         Ok(R::try_from_value(&result.inner())?)
+    }
+
+    /// Asynchronous method for handling "system.multicall" calls.
+    pub async fn multicall<P: TryToParams>(
+        &self,
+        call: Call<'_, P, Vec<Value>>,
+    ) -> Result<Vec<Result<Value, Fault>>, ClientError> {
+        let expected = call.params()?.len();
+        let response = self.call(call).await?;
+
+        if response.len() != expected {
+            // length of results must match number of method calls
+            return Err(ClientError::RPC {
+                error: DxrError::parameter_mismatch(response.len(), expected),
+            });
+        }
+
+        let mut results = Vec::new();
+        for result in response {
+            // return values for successful calls are arrays that contain a single value
+            if let Ok((value,)) = <(Value,)>::try_from_value(&result) {
+                results.push(Ok(value));
+            };
+
+            // return values for failed calls are structs with two members
+            if let Ok(mut value) = <HashMap<String, Value>>::try_from_value(&result) {
+                let code = match value.remove("faultCode") {
+                    Some(code) => code,
+                    None => return Err(DxrError::missing_field("Fault", "faultCode").into()),
+                };
+
+                let string = match value.remove("faultString") {
+                    Some(string) => string,
+                    None => return Err(DxrError::missing_field("Fault", "faultString").into()),
+                };
+
+                // The value might still contain other struct fields:
+                // Rather than return an error because they are unexpected, they are ignored,
+                // since the required "faultCode" and "faultString" members were present.
+
+                let fault = Fault::new(i32::try_from_value(&code)?, String::try_from_value(&string)?);
+                results.push(Err(fault));
+            }
+        }
+
+        Ok(results)
     }
 }
 

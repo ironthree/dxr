@@ -72,6 +72,9 @@ pub use fault::*;
 
 mod impls;
 
+mod multicall;
+pub use multicall::*;
+
 mod traits;
 pub use traits::*;
 

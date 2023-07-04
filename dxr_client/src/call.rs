@@ -22,7 +22,7 @@ where
     P: TryToParams,
     R: TryFromValue,
 {
-    /// constructor for [`Call`] values from method name and method parameters
+    /// Constructor for [`Call`] values from method name and method parameters.
     ///
     /// This method accepts every type of value for the `params` argument if it implements the
     /// [`TryToParams`] trait. This includes:
@@ -49,11 +49,66 @@ where
         Ok(MethodCall::new(self.method(), self.params()?))
     }
 
-    fn method(&self) -> String {
+    pub(crate) fn method(&self) -> String {
         String::from(self.method)
     }
 
-    fn params(&self) -> Result<Vec<Value>, DxrError> {
+    pub(crate) fn params(&self) -> Result<Vec<Value>, DxrError> {
         self.params.try_to_params()
+    }
+}
+
+impl<P> Call<'static, P, Vec<Value>>
+where
+    P: TryToParams,
+{
+    /// Constructor for [`Call`] values for `system.multicall` calls.
+    // FIXME: adapt type of return value: `Vec<Result<Value, Fault>>`
+    pub fn multicall(calls: Vec<(String, P)>) -> Result<Call<'static, Value, Vec<Value>>, DxrError> {
+        let calls = dxr::multicall(calls)?;
+        Ok(Call::new("system.multicall", calls))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used)]
+    use super::*;
+
+    #[test]
+    fn to_multicall() {
+        let call = Call::multicall(vec![(String::from("add"), (1, 2)), (String::from("sub"), (2, 1))]).unwrap();
+        let string = quick_xml::se::to_string(&call.as_xml_rpc().unwrap()).unwrap();
+
+        let expected = "\
+<methodCall>
+<methodName>system.multicall</methodName>
+<params>
+
+<param>
+<value>
+<array><data>
+
+<value>
+<struct>
+<member><name>methodName</name><value><string>add</string></value></member>
+<member><name>params</name><value><array><data><value><i4>1</i4></value><value><i4>2</i4></value></data></array></value></member>
+</struct>
+</value>
+
+<value>
+<struct>
+<member><name>methodName</name><value><string>sub</string></value></member>
+<member><name>params</name><value><array><data><value><i4>2</i4></value><value><i4>1</i4></value></data></array></value></member>
+</struct>
+</value>
+
+</data></array>
+</value>
+</param>
+
+</params>
+</methodCall>".replace('\n', "");
+        assert_eq!(string, expected);
     }
 }
