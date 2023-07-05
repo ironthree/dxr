@@ -1,10 +1,13 @@
+#[cfg(feature = "multicall")]
 use std::collections::HashMap;
 
 use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT};
 use thiserror::Error;
 use url::Url;
 
-use dxr::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, TryFromValue, TryToParams, Value};
+#[cfg(feature = "multicall")]
+use dxr::Value;
+use dxr::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, TryFromValue, TryToParams};
 
 use crate::{Call, DEFAULT_USER_AGENT};
 
@@ -132,19 +135,15 @@ impl Client {
     }
 
     /// Asynchronous method for handling "system.multicall" calls.
+    ///
+    /// *Note*: This method does not check if the number of method calls matches the number of
+    /// returned results.
+    #[cfg(feature = "multicall")]
     pub async fn multicall<P: TryToParams>(
         &self,
         call: Call<'_, P, Vec<Value>>,
     ) -> Result<Vec<Result<Value, Fault>>, ClientError> {
-        let expected = call.params()?.len();
         let response = self.call(call).await?;
-
-        if response.len() != expected {
-            // length of results must match number of method calls
-            return Err(ClientError::RPC {
-                error: DxrError::parameter_mismatch(response.len(), expected),
-            });
-        }
 
         let mut results = Vec::new();
         for result in response {
@@ -177,7 +176,6 @@ impl Client {
         Ok(results)
     }
 }
-
 
 fn request_to_body(call: &MethodCall) -> Result<String, DxrError> {
     let body = [

@@ -25,6 +25,10 @@ tokio = { version = "1.14", features = ["sync"], optional = true }
 
 [features]
 default = []
+
+# multicall support
+multicall = ["dxr/multicall"]
+
 axum = ["dep:axum", "dep:hyper", "dep:thiserror", "dep:tokio"]
 
 [package.metadata.docs.rs]

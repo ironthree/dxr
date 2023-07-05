@@ -38,10 +38,10 @@ path = "tests/echo_one.rs"
 [dependencies]
 
 [dev-dependencies]
-dxr = { workspace = true, features = ["derive", "i8", "nil"] }
+dxr = { workspace = true, features = ["derive", "multicall", "i8", "nil"] }
 dxr_derive.workspace = true
-dxr_client = { workspace = true, features = ["reqwest"] }
-dxr_server = { workspace = true, features = ["axum"] }
+dxr_client = { workspace = true, features = ["multicall", "reqwest"] }
+dxr_server = { workspace = true, features = ["multicall", "axum"] }
 
 chrono = { version = "0.4.19", features = ["clock"], default-features = false }
 tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }

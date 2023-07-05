@@ -72,7 +72,9 @@ pub use fault::*;
 
 mod impls;
 
+#[cfg(feature = "multicall")]
 mod multicall;
+#[cfg(feature = "multicall")]
 pub use multicall::*;
 
 mod traits;

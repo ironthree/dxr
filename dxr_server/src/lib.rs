@@ -58,10 +58,48 @@ pub async fn server(handlers: HandlerMap, body: &str, headers: HeaderMap) -> (St
         Ok(call) => call,
         Err(error) => {
             let e = DxrError::invalid_data(error.to_string());
-            let f = Fault::new(400, e.to_string());
+            let f = Fault::from(e);
             return fault_to_response(f.code(), f.string());
         },
     };
+
+    #[cfg(feature = "multicall")]
+    if call.name() == "system.multicall" {
+        let calls = match dxr::from_multicall_params(call.params()) {
+            Ok(calls) => calls,
+            Err(error) => {
+                let f = Fault::from(error);
+                return fault_to_response(f.code(), f.string());
+            },
+        };
+
+        let mut results = Vec::new();
+
+        for multi in calls {
+            match multi {
+                Ok((name, params)) => {
+                    let handler = match handlers.get(name.as_str()) {
+                        Some(handler) => handler,
+                        None => {
+                            results.push(Err(Fault::new(404, String::from("Unknown method."))));
+                            continue;
+                        },
+                    };
+
+                    let result = handler.handle(&params, headers.clone()).await;
+                    results.push(result);
+                },
+                Err(error) => {
+                    results.push(Err(Fault::from(error)));
+                    continue;
+                },
+            }
+        }
+
+        let value = dxr::into_multicall_response(results);
+
+        return success_to_response(value);
+    }
 
     let handler = match handlers.get(call.name()) {
         Some(handler) => handler,

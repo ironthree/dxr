@@ -96,7 +96,32 @@ returns the number of times the `countme()` method has been called since the ser
 The `dxr` crate provides functionality for deriving the `TryFromDXR` and `TryToDXR` traits
 if the `derive` feature is enabled.
 
-There is also optional support for two common, non-standard XML-RPC extensions:
+There is also optional support for common, non-standard XML-RPC extensions:
 
 - "long" 64-bit integers (`<i8>`): mapped to `i64`, enabled with the `i8` feature
 - "null" values (`<nil/>`): mapped to `Option<T>`, enabled with the `nil` feature
+- "system.multicall" support for processing multiple RPC calls within a single request,
+  enabled with the `multicall` feature
+
+## Development
+
+This repository contains two helper scripts for helping with development:
+
+- `./checkall.py`: Runs `cargo check`, `cargo clippy`, and `cargo test` for all crates and all
+  combinations of enabled optional features. There should be no warnings or errors for any
+  combination of enabled features. When adding new feature to one of the crates, the list of
+  features of each crate needs to be updated in this script as well.
+- `./coverage.sh`: Builds the crate with coverage instrumentation enabled, runs
+  `cargo test --workspace --all-features`, and generates a test coverage report with `grcov`, which
+  can then be viewed in `target/debug/coverage/`.
+
+## License
+
+This project is licensed under either of
+
+ * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or
+   https://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or
+   https://opensource.org/licenses/MIT)
+
+at your option.

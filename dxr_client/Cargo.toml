@@ -26,6 +26,9 @@ url = { version = "2.2", optional = true }
 # use the default TLS backend by default
 default = ["reqwest?/default-tls"]
 
+# multicall support
+multicall = ["dxr/multicall"]
+
 reqwest = ["dep:http", "dep:reqwest", "dep:thiserror", "dep:url"]
 
 default-tls = ["reqwest?/default-tls"]

@@ -34,8 +34,13 @@ trybuild = "1"
 [features]
 # support for derive macros
 derive =["dep:dxr_derive"]
+
+# utilities for multicall support
+multicall = []
+
 # support non-standard <i8> XML-RPC values
 i8 = []
+
 # support non-standard <nil> XML-RPC values
 nil = []
 

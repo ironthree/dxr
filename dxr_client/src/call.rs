@@ -58,14 +58,14 @@ where
     }
 }
 
+#[cfg(feature = "multicall")]
 impl<P> Call<'static, P, Vec<Value>>
 where
     P: TryToParams,
 {
     /// Constructor for [`Call`] values for `system.multicall` calls.
-    // FIXME: adapt type of return value: `Vec<Result<Value, Fault>>`
     pub fn multicall(calls: Vec<(String, P)>) -> Result<Call<'static, Value, Vec<Value>>, DxrError> {
-        let calls = dxr::multicall(calls)?;
+        let calls = dxr::into_multicall_params(calls)?;
         Ok(Call::new("system.multicall", calls))
     }
 }
@@ -73,8 +73,11 @@ where
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
+
+    #[cfg(feature = "multicall")]
     use super::*;
 
+    #[cfg(feature = "multicall")]
     #[test]
     fn to_multicall() {
         let call = Call::multicall(vec![(String::from("add"), (1, 2)), (String::from("sub"), (2, 1))]).unwrap();
@@ -109,6 +112,7 @@ mod tests {
 
 </params>
 </methodCall>".replace('\n', "");
+
         assert_eq!(string, expected);
     }
 }

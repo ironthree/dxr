@@ -4,7 +4,7 @@ use thiserror::Error;
 
 use crate::fault::Fault;
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, PartialEq)]
 /// Error type representing conversion errors between XML-RPC values and Rust values.
 pub enum DxrError {
     /// Error variant for XML parser errors.

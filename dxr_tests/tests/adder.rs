@@ -2,7 +2,7 @@
 
 use std::time::Duration;
 
-use dxr::{TryFromParams, TryToValue, Value};
+use dxr::{Fault, TryFromParams, TryToValue, Value};
 use dxr_client::{Call, ClientBuilder, ClientError};
 use dxr_server::{axum::http::HeaderMap, HandlerFn, HandlerResult, RouteBuilder, Server};
 
@@ -52,6 +52,25 @@ async fn adder() {
         let call = Call::new("add", ab.as_slice());
         let r: i32 = client.call(call).await.unwrap();
         assert_eq!((a + b), r);
+
+        // multicall
+        let call = Call::multicall(vec![
+            (String::from("add"), (1, 2)),
+            (String::from("add"), (-3, -5)),
+            (String::from("add"), (-1, 1)),
+            (String::from("sub"), (1, 2)),
+        ])
+        .unwrap();
+        let values = client.multicall(call).await.unwrap();
+        assert_eq!(
+            values,
+            vec![
+                Ok(Value::i4(3)),
+                Ok(Value::i4(-8)),
+                Ok(Value::i4(0)),
+                Err(Fault::new(404, String::from("Unknown method.")))
+            ]
+        );
 
         // argument number mismatch
         let (a, b, c) = (2i32, 3i32, 4i32);

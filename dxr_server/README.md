@@ -11,3 +11,5 @@ This crate contains a building blocks for writing XML-RPC servers based on `dxr`
 
 It also includes a complete XML-RPC server implementation based on the `axum` web framework, which
 is disabled by default. To enable the `axum` support, enable the `"axum"` feature of this crate.
+
+To enable "system.multicall" support, enable the `multicall` feature.

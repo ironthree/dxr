@@ -11,3 +11,5 @@ This crate contains a building blocks for writing XML-RPC clients based on `dxr`
 
 It also includes an implementation of an `async` XML-RPC client using `reqwest`, which is disabled
 by default. To enable the `reqwest` support, enable the `"reqwest"` feature of this crate.
+
+To enable convenience functionality for "system.multicall" support, enable the `multicall` feature.
