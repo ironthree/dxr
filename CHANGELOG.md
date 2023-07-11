@@ -1,3 +1,46 @@
+## Release 0.6.0-beta.1
+
+The relationship between the crates in this project has been simplified. The top-level
+meta-crate was removed, and the `axum` support was merged into the `dxr_server` crate
+and hidden behind a feature flag. Additionally, the `dxr_client` and `dxr_server` crates
+have been refactored to support different HTTP libraries (though only `reqwest` and
+`axum` are currently supported).
+
+**Changed**:
+
+- Functions in the `dxr_client` and `dxr_server` crates that can fail now return concrete
+  error types instead of a generic `anyhow::Error`.
+- Initialization of servers in `dxr_server` was refactored to avoid calling APIs that
+  can panic.
+- The `dateTime.iso8601` XML-RPC type is now represented by `chrono::NaiveDateTime`
+  to better match semantics of XML-RPC, where this type is explicitly timezone-unaware.
+- The `Value::string()` constructor for `<string>` values now takes an owned `String`
+  instead of a `&str` slice and immediately converting to an owned `String` internally.
+
+**Added**:
+
+- `TryFromValue` and `TryToValue` are now implemented for `Arc<T>` and `Rc<T>` for all
+  inner types `T` which already implement these traits.
+- Support and helper functionality for the `system.multicall` extension was implemented
+  in both `dxr_client` and `dxr_server` and can be enabled with the `multicall` feature.
+
+**Fixed**:
+
+- XML-RPC values without an explicit type are now correctly deserialized as strings.
+
+**Updated**:
+
+- `axum` dependency was updated from v0.5 to v0.6.
+- `base64` dependency was updated from v0.13 to v0.21.
+- `quick-xml` dependency was updated from v0.25 to v0.26.
+- `syn` dependency was updated from v1 to v2.
+
+## Release 0.5.4
+
+This release includes a fix for string-typed values, which were previously accidentally
+escaped (and unescaped) twice, resulting in XML that wasn't compatible with other
+XML-RPC implementations.
+
 ## Release 0.5.3
 
 This release adds feature flags for selecting a non-default TLS backend for `reqwest`
