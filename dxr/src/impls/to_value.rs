@@ -107,10 +107,13 @@ impl<'a> TryToValue for Cow<'a, str> {
             Cow::Owned(owned) => TryToValue::try_to_value(owned),
             Cow::Borrowed(borrowed) => TryToValue::try_to_value(borrowed),
         }
-    }    
+    }
 }
 
-impl<'a, T> TryToValue for Cow<'a, T> where T: TryToValue + Clone {
+impl<'a, T> TryToValue for Cow<'a, T>
+where
+    T: TryToValue + Clone,
+{
     fn try_to_value(&self) -> Result<Value, DxrError> {
         match self {
             Cow::Owned(owned) => TryToValue::try_to_value(owned),

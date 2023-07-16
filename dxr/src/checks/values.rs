@@ -174,7 +174,9 @@ fn roundtrip_struct_cow_str(string: String) -> bool {
         string: Cow<'a, str>,
     }
 
-    let expected = TestCow { string: Cow::Owned(string.trim().to_owned()) };
+    let expected = TestCow {
+        string: Cow::Owned(string.trim().to_owned()),
+    };
     let value = TestCow::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
 
     expected == value
@@ -188,7 +190,9 @@ fn roundtrip_struct_cow_bytes(bytes: Vec<u8>) -> bool {
         bytes: Cow<'a, Vec<u8>>,
     }
 
-    let expected = TestCow { bytes: Cow::Owned(bytes) };
+    let expected = TestCow {
+        bytes: Cow::Owned(bytes),
+    };
     let value = TestCow::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
 
     expected == value
@@ -202,7 +206,9 @@ fn roundtrip_struct_cow_static_str(string: String) -> bool {
         string: Cow<'static, str>,
     }
 
-    let expected = TestCow { string: Cow::Owned(string.trim().to_owned()) };
+    let expected = TestCow {
+        string: Cow::Owned(string.trim().to_owned()),
+    };
     let value = TestCow::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
 
     expected == value

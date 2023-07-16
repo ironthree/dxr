@@ -25,7 +25,7 @@ fn from_value_ref() {
     let value = Value::i4(42);
     let expected = vec![Value::i4(42)];
 
-    assert_eq!(<&Value>::try_to_params(&&value).unwrap(),expected);
+    assert_eq!(<&Value>::try_to_params(&&value).unwrap(), expected);
 }
 
 #[test]
@@ -197,7 +197,9 @@ fn to_nil_some() {
 #[test]
 fn to_nil_fail() {
     let value = vec![Value::i4(1), Value::i4(2)];
-    assert!(<Option<i32>>::try_from_params(&value).unwrap_err().is_parameter_mismatch());
+    assert!(<Option<i32>>::try_from_params(&value)
+        .unwrap_err()
+        .is_parameter_mismatch());
 }
 
 #[cfg(feature = "nil")]
@@ -215,7 +217,7 @@ fn from_nil_none_ref() {
     let value: Option<NaiveDateTime> = None;
     let expected = vec![Value::nil()];
 
-    assert_eq!(<&Option<NaiveDateTime>>::try_to_params(&&value).unwrap(),expected);
+    assert_eq!(<&Option<NaiveDateTime>>::try_to_params(&&value).unwrap(), expected);
 }
 
 #[cfg(feature = "nil")]
@@ -262,7 +264,7 @@ fn from_hashmap() {
 
     let mut value = HashMap::new();
     value.insert("foo", -12);
-    let expected = vec![Test { foo: -12}.try_to_value().unwrap()];
+    let expected = vec![Test { foo: -12 }.try_to_value().unwrap()];
 
     assert_eq!(value.try_to_params().unwrap(), expected);
 }
@@ -355,7 +357,12 @@ fn from_tuple_3() {
 
 #[test]
 fn to_tuple_4() {
-    let value = vec![Value::boolean(true), Value::i4(1), Value::double(2.5), Value::string(String::from("HELLO"))];
+    let value = vec![
+        Value::boolean(true),
+        Value::i4(1),
+        Value::double(2.5),
+        Value::string(String::from("HELLO")),
+    ];
     let expected = (true, 1, 2.5, String::from("HELLO"));
 
     assert_eq!(<(bool, i32, f64, String)>::try_from_params(&value).unwrap(), expected);
@@ -364,71 +371,166 @@ fn to_tuple_4() {
 #[test]
 fn from_tuple_4() {
     let value = (true, 1, 2.5, String::from("HELLO"));
-    let expected = vec![Value::boolean(true), Value::i4(1), Value::double(2.5), Value::string(String::from("HELLO"))];
+    let expected = vec![
+        Value::boolean(true),
+        Value::i4(1),
+        Value::double(2.5),
+        Value::string(String::from("HELLO")),
+    ];
 
     assert_eq!(value.try_to_params().unwrap(), expected);
 }
 
 #[test]
 fn to_tuple_5() {
-    let value = vec![Value::boolean(true), Value::i4(1), Value::double(2.5), Value::string(String::from("HELLO")), Value::boolean(false)];
+    let value = vec![
+        Value::boolean(true),
+        Value::i4(1),
+        Value::double(2.5),
+        Value::string(String::from("HELLO")),
+        Value::boolean(false),
+    ];
     let expected = (true, 1, 2.5, String::from("HELLO"), false);
 
-    assert_eq!(<(bool, i32, f64, String, bool)>::try_from_params(&value).unwrap(), expected);
+    assert_eq!(
+        <(bool, i32, f64, String, bool)>::try_from_params(&value).unwrap(),
+        expected
+    );
 }
 
 #[test]
 fn from_tuple_5() {
     let value = (true, 1, 2.5, String::from("HELLO"), false);
-    let expected = vec![Value::boolean(true), Value::i4(1), Value::double(2.5), Value::string(String::from("HELLO")), Value::boolean(false)];
+    let expected = vec![
+        Value::boolean(true),
+        Value::i4(1),
+        Value::double(2.5),
+        Value::string(String::from("HELLO")),
+        Value::boolean(false),
+    ];
 
     assert_eq!(value.try_to_params().unwrap(), expected);
 }
 
 #[test]
 fn to_tuple_6() {
-    let value = vec![Value::boolean(true), Value::i4(1), Value::double(2.5), Value::string(String::from("HELLO")), Value::boolean(false), Value::i4(2)];
+    let value = vec![
+        Value::boolean(true),
+        Value::i4(1),
+        Value::double(2.5),
+        Value::string(String::from("HELLO")),
+        Value::boolean(false),
+        Value::i4(2),
+    ];
     let expected = (true, 1, 2.5, String::from("HELLO"), false, 2);
 
-    assert_eq!(<(bool, i32, f64, String, bool, i32)>::try_from_params(&value).unwrap(), expected);
+    assert_eq!(
+        <(bool, i32, f64, String, bool, i32)>::try_from_params(&value).unwrap(),
+        expected
+    );
 }
 
 #[test]
 fn from_tuple_6() {
     let value = (true, 1, 2.5, String::from("HELLO"), false, 2);
-    let expected = vec![Value::boolean(true), Value::i4(1), Value::double(2.5), Value::string(String::from("HELLO")), Value::boolean(false), Value::i4(2)];
+    let expected = vec![
+        Value::boolean(true),
+        Value::i4(1),
+        Value::double(2.5),
+        Value::string(String::from("HELLO")),
+        Value::boolean(false),
+        Value::i4(2),
+    ];
 
     assert_eq!(value.try_to_params().unwrap(), expected);
 }
 
 #[test]
 fn to_tuple_7() {
-    let value = vec![Value::boolean(true), Value::i4(1), Value::double(2.5), Value::string(String::from("HELLO")), Value::boolean(false), Value::i4(2), Value::double(-1.5)];
+    let value = vec![
+        Value::boolean(true),
+        Value::i4(1),
+        Value::double(2.5),
+        Value::string(String::from("HELLO")),
+        Value::boolean(false),
+        Value::i4(2),
+        Value::double(-1.5),
+    ];
     let expected = (true, 1, 2.5, String::from("HELLO"), false, 2, -1.5);
 
-    assert_eq!(<(bool, i32, f64, String, bool, i32, f64)>::try_from_params(&value).unwrap(), expected);
+    assert_eq!(
+        <(bool, i32, f64, String, bool, i32, f64)>::try_from_params(&value).unwrap(),
+        expected
+    );
 }
 
 #[test]
 fn from_tuple_7() {
     let value = (true, 1, 2.5, String::from("HELLO"), false, 2, -1.5);
-    let expected = vec![Value::boolean(true), Value::i4(1), Value::double(2.5), Value::string(String::from("HELLO")), Value::boolean(false), Value::i4(2), Value::double(-1.5)];
+    let expected = vec![
+        Value::boolean(true),
+        Value::i4(1),
+        Value::double(2.5),
+        Value::string(String::from("HELLO")),
+        Value::boolean(false),
+        Value::i4(2),
+        Value::double(-1.5),
+    ];
 
     assert_eq!(value.try_to_params().unwrap(), expected);
 }
 
 #[test]
 fn to_tuple_8() {
-    let value = vec![Value::boolean(true), Value::i4(1), Value::double(2.5), Value::string(String::from("HELLO")), Value::boolean(false), Value::i4(2), Value::double(-1.5), Value::string(String::from("WORLD"))];
-    let expected = (true, 1, 2.5, String::from("HELLO"), false, 2, -1.5, String::from("WORLD"));
+    let value = vec![
+        Value::boolean(true),
+        Value::i4(1),
+        Value::double(2.5),
+        Value::string(String::from("HELLO")),
+        Value::boolean(false),
+        Value::i4(2),
+        Value::double(-1.5),
+        Value::string(String::from("WORLD")),
+    ];
+    let expected = (
+        true,
+        1,
+        2.5,
+        String::from("HELLO"),
+        false,
+        2,
+        -1.5,
+        String::from("WORLD"),
+    );
 
-    assert_eq!(<(bool, i32, f64, String, bool, i32, f64, String)>::try_from_params(&value).unwrap(), expected);
+    assert_eq!(
+        <(bool, i32, f64, String, bool, i32, f64, String)>::try_from_params(&value).unwrap(),
+        expected
+    );
 }
 
 #[test]
 fn from_tuple_8() {
-    let value = (true, 1, 2.5, String::from("HELLO"), false, 2, -1.5, String::from("WORLD"));
-    let expected = vec![Value::boolean(true), Value::i4(1), Value::double(2.5), Value::string(String::from("HELLO")), Value::boolean(false), Value::i4(2), Value::double(-1.5), Value::string(String::from("WORLD"))];
+    let value = (
+        true,
+        1,
+        2.5,
+        String::from("HELLO"),
+        false,
+        2,
+        -1.5,
+        String::from("WORLD"),
+    );
+    let expected = vec![
+        Value::boolean(true),
+        Value::i4(1),
+        Value::double(2.5),
+        Value::string(String::from("HELLO")),
+        Value::boolean(false),
+        Value::i4(2),
+        Value::double(-1.5),
+        Value::string(String::from("WORLD")),
+    ];
 
     assert_eq!(value.try_to_params().unwrap(), expected);
 }

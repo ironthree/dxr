@@ -101,7 +101,10 @@ impl TryFromValue for Cow<'_, str> {
     }
 }
 
-impl<T> TryFromValue for Cow<'_, T> where T: TryFromValue + Clone {
+impl<T> TryFromValue for Cow<'_, T>
+where
+    T: TryFromValue + Clone,
+{
     fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         Ok(Cow::Owned(T::try_from_value(value)?))
     }
