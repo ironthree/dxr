@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -96,6 +97,24 @@ where
             T::try_to_value(value)
         } else {
             Ok(Value::nil())
+        }
+    }
+}
+
+impl<'a> TryToValue for Cow<'a, str> {
+    fn try_to_value(&self) -> Result<Value, DxrError> {
+        match self {
+            Cow::Owned(owned) => TryToValue::try_to_value(owned),
+            Cow::Borrowed(borrowed) => TryToValue::try_to_value(borrowed),
+        }
+    }    
+}
+
+impl<'a, T> TryToValue for Cow<'a, T> where T: TryToValue + Clone {
+    fn try_to_value(&self) -> Result<Value, DxrError> {
+        match self {
+            Cow::Owned(owned) => TryToValue::try_to_value(owned),
+            Cow::Borrowed(borrowed) => TryToValue::try_to_value(*borrowed),
         }
     }
 }
