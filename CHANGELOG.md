@@ -1,3 +1,19 @@
+## Release 0.6.0-beta.2
+
+**Changed**:
+
+- A custom `PartialEq` implementation for `<struct>` was added, which now properly
+  ignores the order of struct members.
+- The number of closures was reduced by replacing with plain functions, where possible.
+- The implementation of `TryFromValue` and `TryToValue` for `Cow<'a, T>` was fixed for
+  `T = str`, which previously was not covered.
+
+**Internal changes**:
+
+- The script for generating the test coverage report now also runs the example binaries.
+- The test suite is now much more comprehensive, resulting in >95% test coverage for
+  the `dxr` crate.
+
 ## Release 0.6.0-beta.1
 
 The relationship between the crates in this project has been simplified. The top-level
