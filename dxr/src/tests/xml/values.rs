@@ -62,6 +62,13 @@ fn from_boolean() {
 }
 
 #[test]
+fn from_boolean_fail() {
+    let value = "<value><boolean>hello</boolean></value>";
+
+    assert!(from_str::<Value>(&value).unwrap_err().to_string().contains("Unsupported boolean value"));
+}
+
+#[test]
 fn to_str() {
     let value = Value::string(String::from("Hello, World!"));
     let expected = "<value><string>Hello, World!</string></value>";
@@ -161,6 +168,16 @@ fn from_datetime() {
     let expected = Value::datetime(datetime);
 
     assert_eq!(from_str::<Value>(&value).unwrap(), expected);
+}
+
+#[test]
+fn from_datetime_fail() {
+    let datetime = Utc::now().round_subsecs(0).naive_utc();
+    let datetime_str = datetime.format( "%Y%Y%Y").to_string();
+
+    let value = format!("<value><dateTime.iso8601>{datetime_str}</dateTime.iso8601></value>");
+
+    assert!(from_str::<Value>(&value).unwrap_err().to_string().contains("Invalid date format"));
 }
 
 #[test]
