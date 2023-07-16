@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use quick_xml::escape::escape;
 use quick_xml::{de::from_str, se::to_string};
 use quickcheck::TestResult;
@@ -115,6 +117,14 @@ fn roundtrip_option_some(a: i32) -> bool {
 }
 
 #[quickcheck]
+fn roundtrip_cow_string(string: String) -> bool {
+    let expected: Cow<str> = Cow::Owned(string.trim().to_owned());
+    let value = <Cow<str>>::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
+
+    expected == value
+}
+
+#[quickcheck]
 fn roundtrip_array(a: i32, b: i32) -> bool {
     let value = vec![a, b];
     <Vec<i32>>::try_from_value(&value.try_to_value().unwrap()).unwrap() == value
@@ -154,4 +164,46 @@ fn roundtrip_struct(int: i32, string: String, boolean: bool, optional: Option<f6
         optional,
     };
     TestResult::from_bool(Test::try_from_value(&value.try_to_value().unwrap()).unwrap() == value)
+}
+
+#[cfg(feature = "derive")]
+#[quickcheck]
+fn roundtrip_struct_cow_str(string: String) -> bool {
+    #[derive(Debug, Eq, PartialEq, TryFromValue, TryToValue)]
+    struct TestCow<'a> {
+        string: Cow<'a, str>,
+    }
+
+    let expected = TestCow { string: Cow::Owned(string.trim().to_owned()) };
+    let value = TestCow::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
+
+    expected == value
+}
+
+#[cfg(feature = "derive")]
+#[quickcheck]
+fn roundtrip_struct_cow_bytes(bytes: Vec<u8>) -> bool {
+    #[derive(Debug, Eq, PartialEq, TryFromValue, TryToValue)]
+    struct TestCow<'a> {
+        bytes: Cow<'a, Vec<u8>>,
+    }
+
+    let expected = TestCow { bytes: Cow::Owned(bytes) };
+    let value = TestCow::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
+
+    expected == value
+}
+
+#[cfg(feature = "derive")]
+#[quickcheck]
+fn roundtrip_struct_cow_static_str(string: String) -> bool {
+    #[derive(Debug, Eq, PartialEq, TryFromValue, TryToValue)]
+    struct TestCow {
+        string: Cow<'static, str>,
+    }
+
+    let expected = TestCow { string: Cow::Owned(string.trim().to_owned()) };
+    let value = TestCow::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
+
+    expected == value
 }

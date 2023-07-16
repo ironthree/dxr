@@ -144,7 +144,7 @@ where
             t => Err(DxrError::wrong_type(t.name(), "array")),
         };
 
-        values?.iter().map(|value| T::try_from_value(value)).collect()
+        values?.iter().map(T::try_from_value).collect()
     }
 }
 
@@ -160,7 +160,7 @@ where
 
         let mapped: Vec<T> = values
             .iter()
-            .map(|value| T::try_from_value(value))
+            .map(T::try_from_value)
             .collect::<Result<Vec<T>, DxrError>>()?;
         let len = mapped.len();
 
@@ -192,6 +192,7 @@ where
 }
 
 // some implementations for exact numbers of values (with possibly different types)
+
 impl TryFromValue for () {
     fn try_from_value(value: &Value) -> Result<Self, DxrError> {
         match value.inner() {

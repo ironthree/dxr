@@ -156,7 +156,7 @@ impl Type {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename = "struct")]
 pub(crate) struct Struct {
     #[serde(default, rename = "member")]
@@ -164,8 +164,27 @@ pub(crate) struct Struct {
 }
 
 impl Struct {
-    pub(crate) fn new(members: Vec<Member>) -> Struct {
+    pub(crate) fn new(mut members: Vec<Member>) -> Struct {
+        members.sort_by(|a, b| a.name.name.cmp(&b.name.name));
         Struct { members }
+    }
+}
+
+// custom PartialEq impl: the order of struct members is irrelevant
+impl PartialEq for Struct {
+    fn eq(&self, other: &Self) -> bool {
+        // fast path: different numbers of members
+        if self.members.len() != other.members.len() {
+            return false;
+        }
+
+        // sort members by name before comparing
+        let mut self_members: Vec<&Member> = self.members.iter().map(|m| m).collect();
+        let mut other_members: Vec<&Member> = other.members.iter().map(|m| m).collect();
+        self_members.sort_by(|a, b| a.name.name.cmp(&b.name.name));
+        other_members.sort_by(|a, b| a.name.name.cmp(&b.name.name));
+
+        self_members == other_members
     }
 }
 
