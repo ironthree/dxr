@@ -11,6 +11,7 @@ cargo build --workspace --all-features
 
 cargo test --workspace --all-features
 cargo run --all-features --example server > /dev/null &
+sleep 2
 cargo run --all-features --example client > /dev/null
 cargo run --all-features --example koji > /dev/null
 kill -INT $!

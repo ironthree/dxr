@@ -1,4 +1,3 @@
-use std::borrow::Cow;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -92,15 +91,6 @@ where
         } else {
             Ok(Some(T::try_from_value(value)?))
         }
-    }
-}
-
-impl<T> TryFromValue for Cow<'_, T>
-where
-    T: TryFromValue + Clone,
-{
-    fn try_from_value(value: &Value) -> Result<Self, DxrError> {
-        Ok(Cow::Owned(T::try_from_value(value)?))
     }
 }
 
