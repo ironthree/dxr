@@ -44,7 +44,7 @@ dxr_client = { workspace = true, features = ["multicall", "reqwest"] }
 dxr_server = { workspace = true, features = ["multicall", "axum"] }
 
 chrono = { version = "0.4.19", features = ["clock"], default-features = false }
-tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "time"] }
+tokio = { version = "1.14", features = ["macros", "rt-multi-thread", "signal", "time"] }
 
 [package.metadata.docs.rs]
 all-features = true

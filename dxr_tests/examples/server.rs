@@ -69,7 +69,13 @@ async fn main() {
         .add_method("add", Box::new(adder_handler as HandlerFn))
         .build();
 
-    let server = Server::from_route(route);
+    let mut server = Server::from_route(route);
+    let barrier = server.shutdown_trigger();
+
+    tokio::spawn(async move {
+        tokio::signal::ctrl_c().await.unwrap();
+        barrier.notify_one();
+    });
 
     server
         .serve("0.0.0.0:3000".parse().unwrap())

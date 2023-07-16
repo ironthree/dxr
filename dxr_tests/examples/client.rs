@@ -13,9 +13,15 @@ async fn main() -> Result<(), String> {
 
     let request = Call::new("hello", "DXR");
     let result: String = client.call(request).await.map_err(|error| error.to_string())?;
+    println!("Server message: {result}");
 
-    // print query result
-    println!("{result}");
+    let request = Call::new("countme", ());
+    let result: i32 = client.call(request).await.map_err(|error| error.to_string())?;
+    println!("Server counter: {result}");
+
+    let request = Call::new("add", (1, 2));
+    let result: i32 = client.call(request).await.map_err(|error| error.to_string())?;
+    println!("1 + 2 = {result}");
 
     Ok(())
 }
