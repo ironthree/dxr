@@ -179,8 +179,8 @@ impl PartialEq for Struct {
         }
 
         // sort members by name before comparing
-        let mut self_members: Vec<&Member> = self.members.iter().map(|m| m).collect();
-        let mut other_members: Vec<&Member> = other.members.iter().map(|m| m).collect();
+        let mut self_members: Vec<&Member> = self.members.iter().collect();
+        let mut other_members: Vec<&Member> = other.members.iter().collect();
         self_members.sort_by(|a, b| a.name.name.cmp(&b.name.name));
         other_members.sort_by(|a, b| a.name.name.cmp(&b.name.name));
 

@@ -288,9 +288,7 @@ fn from_vec() {
 #[test]
 fn to_unit() {
     let value = Vec::new();
-    let expected = ();
-
-    assert_eq!(<()>::try_from_params(&value).unwrap(), expected);
+    <()>::try_from_params(&value).unwrap();
 }
 
 #[test]
@@ -301,10 +299,8 @@ fn to_unit_fail() {
 
 #[test]
 fn from_unit() {
-    let value = ();
     let expected = Vec::new();
-
-    assert_eq!(value.try_to_params().unwrap(), expected);
+    assert_eq!(().try_to_params().unwrap(), expected);
 }
 
 #[test]

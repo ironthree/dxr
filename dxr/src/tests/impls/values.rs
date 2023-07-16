@@ -388,18 +388,14 @@ fn from_hashmap_fail() {
 #[test]
 fn from_unit() {
     let value = Vec::<Value>::new().try_to_value().unwrap();
-    let expected = ();
-
-    assert_eq!(<()>::try_from_value(&value).unwrap(), expected);
+    <()>::try_from_value(&value).unwrap();
 }
 
 #[cfg(feature = "nil")]
 #[test]
 fn from_unit_nil() {
     let value = Value::nil();
-    let expected = ();
-
-    assert_eq!(<()>::try_from_value(&value).unwrap(), expected);
+    <()>::try_from_value(&value).unwrap();
 }
 
 #[cfg(feature = "nil")]

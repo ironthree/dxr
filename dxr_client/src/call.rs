@@ -40,7 +40,7 @@ where
         Call {
             method,
             params,
-            retype: PhantomData::default(),
+            retype: PhantomData,
         }
     }
 

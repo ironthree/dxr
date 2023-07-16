@@ -65,7 +65,7 @@ fn from_boolean() {
 fn from_boolean_fail() {
     let value = "<value><boolean>hello</boolean></value>";
 
-    assert!(from_str::<Value>(&value)
+    assert!(from_str::<Value>(value)
         .unwrap_err()
         .to_string()
         .contains("Unsupported boolean value"));
