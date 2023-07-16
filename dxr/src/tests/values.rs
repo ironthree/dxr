@@ -166,7 +166,6 @@ fn from_datetime() {
 #[test]
 fn to_base64() {
     let contents = b"you can't read this!";
-    #[allow(deprecated)]
     let encoded = base64::encode(contents);
 
     let value = Value::base64(contents.to_vec());
@@ -178,7 +177,6 @@ fn to_base64() {
 #[test]
 fn from_base64() {
     let contents = b"you can't read this!";
-    #[allow(deprecated)]
     let encoded = base64::encode(contents);
 
     let value = format!("<value><base64>{encoded}</base64></value>");
