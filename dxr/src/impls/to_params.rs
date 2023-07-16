@@ -154,6 +154,12 @@ where
 
 // treat tuples as collections of values of different types
 
+impl TryToParams for () {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(Vec::new())
+    }
+}
+
 impl<T> TryToParams for (T,)
 where
     T: TryToValue,
