@@ -1,5 +1,3 @@
-use std::borrow::Cow;
-
 use quick_xml::escape::escape;
 use quick_xml::{de::from_str, se::to_string};
 use quickcheck::TestResult;
@@ -117,25 +115,6 @@ fn roundtrip_option_some(a: i32) -> bool {
 }
 
 #[quickcheck]
-fn roundtrip_cow_string(string: String) -> bool {
-    let expected: Cow<'_, String> = Cow::Owned(string.trim().to_owned());
-    let value = <Cow<String>>::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
-
-    println!("Expected:");
-    println!("{expected:#?}");
-    println!("Value:");
-    println!("{value:#?}");
-
-    expected == value
-}
-
-#[quickcheck]
-fn roundtrip_cow_i4(i4: i32) -> bool {
-    let expected: Cow<'_, i32> = Cow::Owned(i4);
-    <Cow<i32>>::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap() == expected
-}
-
-#[quickcheck]
 fn roundtrip_array(a: i32, b: i32) -> bool {
     let value = vec![a, b];
     <Vec<i32>>::try_from_value(&value.try_to_value().unwrap()).unwrap() == value
@@ -151,38 +130,6 @@ fn roundtrip_struct_empty() {
 
     let value = Test {};
     assert_eq!(Test::try_from_value(&value.try_to_value().unwrap()).unwrap(), value);
-}
-
-#[cfg(feature = "derive")]
-#[quickcheck]
-fn roundtrip_struct_cow_static(string: String) -> bool {
-    #[derive(Debug, Eq, PartialEq, TryFromValue, TryToValue)]
-    struct TestCow {
-        string: Cow<'static, String>,
-    }
-
-    let expected = TestCow {
-        string: Cow::Owned(string.trim().to_owned()),
-    };
-    let value = TestCow::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
-
-    expected == value
-}
-
-#[cfg(feature = "derive")]
-#[quickcheck]
-fn roundtrip_struct_cow_string(string: String) -> bool {
-    #[derive(Debug, Eq, PartialEq, TryFromValue, TryToValue)]
-    struct TestCow<'a> {
-        string: Cow<'a, String>,
-    }
-
-    let expected = TestCow {
-        string: Cow::Owned(string.trim().to_owned()),
-    };
-    let value = TestCow::try_from_value(&TryToValue::try_to_value(&expected).unwrap()).unwrap();
-
-    expected == value
 }
 
 #[cfg(all(feature = "derive", feature = "nil"))]

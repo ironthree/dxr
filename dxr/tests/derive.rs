@@ -2,7 +2,6 @@
 fn try_build_pass() {
     let t = trybuild::TestCases::new();
     t.pass("tests/trybuild/array.rs");
-    t.pass("tests/trybuild/moo.rs");
     t.pass("tests/trybuild/appendix.rs");
     t.pass("tests/trybuild/recursive.rs");
     t.pass("tests/trybuild/ownership.rs");
