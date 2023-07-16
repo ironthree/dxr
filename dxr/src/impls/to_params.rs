@@ -110,7 +110,7 @@ where
     T: TryToValue,
 {
     fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
-        self.iter().map(|v| v.try_to_value()).collect()
+        self.iter().map(TryToValue::try_to_value).collect()
     }
 }
 
@@ -119,7 +119,7 @@ where
     T: TryToValue,
 {
     fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
-        self.iter().map(|v| v.try_to_value()).collect()
+        self.iter().map(TryToValue::try_to_value).collect()
     }
 }
 
@@ -128,7 +128,7 @@ where
     T: TryToValue,
 {
     fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
-        self.iter().map(|v| v.try_to_value()).collect()
+        self.iter().map(TryToValue::try_to_value).collect()
     }
 }
 

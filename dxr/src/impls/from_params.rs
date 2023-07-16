@@ -93,7 +93,7 @@ where
     T: TryFromValue,
 {
     fn try_from_params(values: &[Value]) -> Result<Self, DxrError> {
-        values.iter().map(|v| T::try_from_value(v)).collect()
+        values.iter().map(T::try_from_value).collect()
     }
 }
 
