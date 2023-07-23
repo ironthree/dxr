@@ -1,11 +1,10 @@
 use std::borrow::Cow;
 
-use quick_xml::escape::escape;
-use quick_xml::{de::from_str, se::to_string};
 use quickcheck::TestResult;
 use quickcheck_macros::quickcheck;
 
 use crate::values::Value;
+use crate::xml::{deserialize_xml as from_str, serialize_xml as to_string};
 use crate::{TryFromValue, TryToValue};
 
 #[quickcheck]
@@ -56,7 +55,7 @@ fn from_to_boolean(boolean: bool) -> bool {
 fn to_from_string(string: String) -> bool {
     // This creates a new <string> value on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
-    let string = escape(string.trim()).to_string();
+    let string = quick_xml::escape::escape(string.trim()).to_string();
     let value = Value::string(string);
 
     value == from_str::<Value>(&to_string(&value).unwrap()).unwrap()
@@ -66,7 +65,7 @@ fn to_from_string(string: String) -> bool {
 fn from_to_string(string: String) -> bool {
     // This creates a new <string> value on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
-    let string = escape(string.trim()).to_string();
+    let string = quick_xml::escape::escape(string.trim()).to_string();
     let value = format!("<value><string>{string}</string></value>");
 
     value == to_string(&from_str::<Value>(&value).unwrap()).unwrap()

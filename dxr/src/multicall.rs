@@ -91,7 +91,9 @@ pub fn into_multicall_response(results: Vec<Result<Value, Fault>>) -> Value {
 mod tests {
     #![allow(clippy::unwrap_used)]
     use super::*;
-    use crate::MethodCall;
+
+    use crate::values::MethodCall;
+    use crate::xml::deserialize_xml;
 
     #[test]
     fn from_multicall() {
@@ -152,7 +154,7 @@ mod tests {
     </params>
 </methodCall>";
 
-        let call: MethodCall = quick_xml::de::from_str(string).unwrap();
+        let call: MethodCall = deserialize_xml(string).unwrap();
 
         let params = from_multicall_params(call.params()).unwrap();
 

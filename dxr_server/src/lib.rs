@@ -54,7 +54,7 @@ pub async fn server(handlers: HandlerMap, body: &str, headers: HeaderMap) -> (St
         return fault_to_response(411, "Content-Length header missing.");
     }
 
-    let call: MethodCall = match quick_xml::de::from_str(body) {
+    let call: MethodCall = match dxr::deserialize_xml(body) {
         Ok(call) => call,
         Err(error) => {
             let e = DxrError::invalid_data(error.to_string());
@@ -123,7 +123,7 @@ fn response_headers() -> HeaderMap {
 fn success_to_response(value: Value) -> (StatusCode, HeaderMap, String) {
     let response = MethodResponse::new(value);
 
-    match quick_xml::se::to_string(&response) {
+    match dxr::serialize_xml(&response) {
         Ok(success) => (StatusCode::OK, response_headers(), success),
         Err(error) => (StatusCode::INTERNAL_SERVER_ERROR, response_headers(), error.to_string()),
     }
@@ -133,7 +133,7 @@ fn fault_to_response(code: i32, string: &str) -> (StatusCode, HeaderMap, String)
     let fault = Fault::new(code, string.to_owned());
     let response: FaultResponse = fault.into();
 
-    match quick_xml::se::to_string(&response) {
+    match dxr::serialize_xml(&response) {
         Ok(fault) => (StatusCode::OK, response_headers(), fault),
         Err(error) => (StatusCode::INTERNAL_SERVER_ERROR, response_headers(), error.to_string()),
     }

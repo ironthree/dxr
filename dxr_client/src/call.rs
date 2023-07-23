@@ -81,7 +81,7 @@ mod tests {
     #[test]
     fn to_multicall() {
         let call = Call::multicall(vec![(String::from("add"), (1, 2)), (String::from("sub"), (2, 1))]).unwrap();
-        let string = quick_xml::se::to_string(&call.as_xml_rpc().unwrap()).unwrap();
+        let string = dxr::serialize_xml(&call.as_xml_rpc().unwrap()).unwrap();
 
         let expected = "\
 <methodCall>

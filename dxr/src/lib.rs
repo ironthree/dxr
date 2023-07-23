@@ -83,6 +83,9 @@ pub use traits::*;
 mod values;
 pub use values::*;
 
+mod xml;
+pub use xml::*;
+
 // property-based tests
 #[cfg(test)]
 mod checks;

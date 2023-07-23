@@ -176,6 +176,7 @@ pub(crate) mod value {
                                 #[cfg(feature = "nil")]
                                 "nil" => Ok(Field::Nil),
                                 "$value" => Ok(Field::String),
+                                "$text" => Ok(Field::String),
                                 _ => Err(de::Error::unknown_field(value, FIELDS)),
                             }
                         }

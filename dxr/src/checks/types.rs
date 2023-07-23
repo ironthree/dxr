@@ -1,9 +1,8 @@
-use quick_xml::escape::escape;
-use quick_xml::{de::from_str, se::to_string};
 use quickcheck::TestResult;
 use quickcheck_macros::quickcheck;
 
 use crate::values::Type;
+use crate::xml::{deserialize_xml as from_str, serialize_xml as to_string};
 
 #[quickcheck]
 fn to_from_i4(int: i32) -> bool {
@@ -53,7 +52,7 @@ fn from_to_boolean(boolean: bool) -> bool {
 fn to_from_string(string: String) -> bool {
     // This creates a new <string> type on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
-    let string = escape(string.trim()).to_string();
+    let string = quick_xml::escape::escape(string.trim()).to_string();
     let value = Type::String(string);
 
     value == from_str::<Type>(&to_string(&value).unwrap()).unwrap()
@@ -63,7 +62,7 @@ fn to_from_string(string: String) -> bool {
 fn from_to_string(string: String) -> bool {
     // This creates a new <string> type on a code path that does no XML escaping,
     // so the string needs to be trimmed and XML-escaped first.
-    let string = escape(string.trim()).to_string();
+    let string = quick_xml::escape::escape(string.trim()).to_string();
     let value = format!("<string>{string}</string>");
 
     value == to_string(&from_str::<Type>(&value).unwrap()).unwrap()

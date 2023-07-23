@@ -1,3 +1,21 @@
+## Unreleased
+
+**Internal changes**:
+
+This version introduces new helper functions for serializing and deserializing XML in an effort
+to produce consistent output that is compatible with the widest range of other XML-RPC
+implementations (some of which don't support self-closing XML tags).
+
+Notably, `quick-xml` versions before 0.27 produced self-closing tags only in some circumstances
+(like `<nil/>` values), but not others (like empty string values:
+`<value><string></string></value>`). Versions 0.27 and newer fixed this issue by consistently
+writing self-closing tags. Version 0.30 added a custom deserializer setting to expand these tags
+instead of writing self-closing tags, which is what the newly introduced helper function uses.
+
+**Updated**:
+
+- `quick-xml` dependency was updated from v0.25 to v0.30.
+
 ## Release 0.6.0-beta.2
 
 **Changed**:

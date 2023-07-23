@@ -14,7 +14,6 @@ repository.workspace = true
 [dependencies]
 dxr.workspace = true
 log = "0.4.13"
-quick-xml = { version = "0.26" , features = ["serialize"] }
 
 # reqwest support
 http = { version = "0.2.6", optional = true }

@@ -180,7 +180,7 @@ impl Client {
 fn request_to_body(call: &MethodCall) -> Result<String, DxrError> {
     let body = [
         r#"<?xml version="1.0"?>"#,
-        quick_xml::se::to_string(&call)
+        dxr::serialize_xml(&call)
             .map_err(|error| DxrError::invalid_data(error.to_string()))?
             .as_str(),
         "",
@@ -194,7 +194,7 @@ fn response_to_result(contents: &str) -> Result<MethodResponse, ClientError> {
     // need to check for FaultResponse first:
     // - a missing <params> tag is ambiguous (can be either an empty response, or a fault response)
     // - a present <fault> tag is unambiguous
-    let error2 = match quick_xml::de::from_str(contents) {
+    let error2 = match dxr::deserialize_xml(contents) {
         Ok(fault) => {
             let response: FaultResponse = fault;
             return match Fault::try_from(response) {
@@ -207,7 +207,7 @@ fn response_to_result(contents: &str) -> Result<MethodResponse, ClientError> {
         Err(error) => error.to_string(),
     };
 
-    let error1 = match quick_xml::de::from_str(contents) {
+    let error1 = match dxr::deserialize_xml(contents) {
         Ok(response) => return Ok(response),
         Err(error) => error.to_string(),
     };

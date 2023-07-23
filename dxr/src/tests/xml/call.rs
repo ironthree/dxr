@@ -1,6 +1,5 @@
-use quick_xml::{de::from_str, se::to_string};
-
 use crate::values::{MethodCall, Value};
+use crate::xml::{deserialize_xml as from_str, serialize_xml as to_string};
 
 #[test]
 fn to_method_call_no_args() {

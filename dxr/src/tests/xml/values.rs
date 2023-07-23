@@ -1,7 +1,7 @@
 use chrono::{SubsecRound, Utc};
-use quick_xml::{de::from_str, se::to_string};
 
 use crate::values::{Value, XML_RPC_DATE_FORMAT};
+use crate::xml::{deserialize_xml as from_str, serialize_xml as to_string};
 
 #[test]
 fn to_i4() {
@@ -212,7 +212,7 @@ fn from_base64() {
 #[test]
 fn to_nil() {
     let value = Value::nil();
-    let expected = "<value><nil/></value>";
+    let expected = "<value><nil></nil></value>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
 }
