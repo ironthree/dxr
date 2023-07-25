@@ -1,8 +1,6 @@
-use std::collections::HashMap;
-
 use chrono::{NaiveDateTime, SubsecRound, Utc};
 
-use crate::{TryFromParams, TryToParams, TryToValue, Value};
+use crate::{TryFromParams, TryToParams, Value};
 
 #[test]
 fn to_value() {
@@ -243,6 +241,9 @@ fn from_nil_some_ref() {
 #[cfg(feature = "derive")]
 #[test]
 fn to_hashmap() {
+    use crate::TryToValue;
+    use std::collections::HashMap;
+
     #[derive(TryToValue)]
     struct Test {
         foo: i32,
@@ -255,8 +256,12 @@ fn to_hashmap() {
     assert_eq!(HashMap::try_from_params(&value).unwrap(), expected);
 }
 
+#[cfg(feature = "derive")]
 #[test]
 fn from_hashmap() {
+    use crate::TryToValue;
+    use std::collections::HashMap;
+
     #[derive(TryToValue)]
     struct Test {
         foo: i32,
