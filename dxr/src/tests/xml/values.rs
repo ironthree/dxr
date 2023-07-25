@@ -189,7 +189,7 @@ fn from_datetime_fail() {
 #[test]
 fn to_base64() {
     let contents = b"you can't read this!";
-    let encoded = base64::encode(contents);
+    let encoded = crate::base64::encode(contents);
 
     let value = Value::base64(contents.to_vec());
     let expected = format!("<value><base64>{encoded}</base64></value>");
@@ -200,7 +200,7 @@ fn to_base64() {
 #[test]
 fn from_base64() {
     let contents = b"you can't read this!";
-    let encoded = base64::encode(contents);
+    let encoded = crate::base64::encode(contents);
 
     let value = format!("<value><base64>{encoded}</base64></value>");
     let expected = Value::base64(contents.to_vec());

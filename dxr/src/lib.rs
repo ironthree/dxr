@@ -64,6 +64,8 @@ pub use chrono;
 #[cfg(feature = "derive")]
 pub use dxr_derive::{TryFromValue, TryToValue};
 
+mod base64;
+
 mod error;
 pub use error::*;
 
