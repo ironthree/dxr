@@ -1,4 +1,6 @@
-## Unreleased
+## Release 0.6.0
+
+This release includes changes from v0.6.0-beta.1 and v0.6.0-beta.2.
 
 **Internal changes**:
 
