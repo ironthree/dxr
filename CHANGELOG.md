@@ -1,3 +1,9 @@
+## Release 0.6.1
+
+This release slightly improves interoperability with other XML-RPC implementations.
+Some implementations line-wrap base64-encoded strings in the `<base64>` type, which is now
+supported. Previous releases of `dxr` rejected base64 values that included any whitespace.
+
 ## Release 0.6.0
 
 This release includes changes from v0.6.0-beta.1 and v0.6.0-beta.2.
