@@ -137,7 +137,7 @@ pub fn try_from_value(input: TokenStream) -> TokenStream {
     };
 
     let mut fields = TokenStream2::new();
-    fields.extend(field_impls.into_iter());
+    fields.extend(field_impls);
 
     let impl_block = quote! {
         impl #impl_generics #dxr::TryFromValue for #name #ty_generics #where_clause {
@@ -246,7 +246,7 @@ pub fn try_to_value(input: TokenStream) -> TokenStream {
     }
 
     let mut fields = TokenStream2::new();
-    fields.extend(field_impls.into_iter());
+    fields.extend(field_impls);
 
     let impl_block = quote! {
         impl #impl_generics #dxr::TryToValue for #name #ty_generics #where_clause {
