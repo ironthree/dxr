@@ -63,7 +63,10 @@ pub(crate) mod base64 {
     use serde::{Deserialize, Deserializer, Serializer};
 
     pub(crate) fn from_str(s: &str) -> Result<Vec<u8>, base64::DecodeError> {
-        crate::base64::decode(s)
+        // filter out optional whitespace from input string:
+        // some XML-RPC implementations line-wrap base64 encoded strings
+        let stripped: String = s.chars().filter(|c| !c.is_ascii_whitespace()).collect();
+        crate::base64::decode(stripped)
     }
 
     pub(crate) fn serialize<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error>
