@@ -1,6 +1,7 @@
 //! This file implements a test that launches a simple echo server, which is then used for roundtrip
 //! tests with different types of values, including custom structs.
 
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::time::Duration;
 
@@ -158,6 +159,80 @@ async fn echo() {
         let call = Call::new("echo", value);
         let r: Octuple = client.call(call).await.unwrap();
         assert_eq!(value, r);
+
+        // missing field
+        {
+            #[derive(TryToValue)]
+            struct Params {
+                foo: i32,
+                bar: i32,
+            }
+            #[allow(dead_code)]
+            #[derive(TryFromValue, Debug)]
+            struct Response {
+                foo: i32,
+                baz: i32,
+            }
+            let value = Params { foo: 1, bar: 2 };
+            let call: Call<'_, _, (Response,)> = Call::new("echo", (value,));
+            assert!(matches!(
+                client.call(call).await.unwrap_err(),
+                ClientError::RPC {
+                    error: DxrError::MissingField {
+                        name: Cow::Borrowed("Response"),
+                        field: Cow::Borrowed("baz")
+                    }
+                }
+            ));
+        }
+
+        // escaped field in params
+        {
+            #[derive(TryToValue)]
+            struct Params {
+                r#foo: i32,
+            }
+            #[derive(Eq, PartialEq, TryFromValue, Debug)]
+            struct Response {
+                foo: i32,
+            }
+            let value = Params { foo: 1 };
+            let call = Call::new("echo", (value,));
+            let r: (Response,) = client.call(call).await.unwrap();
+            assert_eq!(r, (Response { foo: 1 },));
+        }
+
+        // escaped field in response
+        {
+            #[derive(TryToValue)]
+            struct Params {
+                foo: i32,
+            }
+            #[derive(Eq, PartialEq, TryFromValue, Debug)]
+            struct Response {
+                r#foo: i32,
+            }
+            let value = Params { foo: 1 };
+            let call = Call::new("echo", (value,));
+            let r: (Response,) = client.call(call).await.unwrap();
+            assert_eq!(r, (Response { foo: 1 },));
+        }
+
+        // escaped field in params & response
+        {
+            #[derive(TryToValue)]
+            struct Params {
+                r#type: i32,
+            }
+            #[derive(Eq, PartialEq, TryFromValue, Debug)]
+            struct Response {
+                r#type: i32,
+            }
+            let value = Params { r#type: 1 };
+            let call = Call::new("echo", (value,));
+            let r: (Response,) = client.call(call).await.unwrap();
+            assert_eq!(r, (Response { r#type: 1 },));
+        }
 
         // type mismatch
         let value = -12i32;
