@@ -102,6 +102,10 @@ pub fn try_from_value(input: TokenStream) -> TokenStream {
                         }.into(),
                     };
                         let ident_str = ident.to_string();
+                        let ident_str = match ident_str.strip_prefix("r#") {
+                            Some(s) => s,
+                            None => ident_str.as_str(),
+                        };
                         field_impls.push(quote! {
                             #ident: <#stype as TryFromValue>::try_from_value(map.get(#ident_str)
                                 .ok_or_else(|| #dxr::DxrError::missing_field(#name_str, #ident_str))?)?,
@@ -213,6 +217,10 @@ pub fn try_to_value(input: TokenStream) -> TokenStream {
                             },
                         };
                     let ident_str = ident.to_string();
+                    let ident_str = match ident_str.strip_prefix("r#") {
+                        Some(s) => s,
+                        None => ident_str.as_str(),
+                    };
                     field_impls.push(quote! {
                         map.insert(String::from(#ident_str), <#stype as TryToValue>::try_to_value(&self.#ident)?);
                     });
