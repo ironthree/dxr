@@ -1,3 +1,11 @@
+## Release 0.6.2
+
+This release introduces support for serializing / deserializing XML-RPC structs that have
+members with names that are reserved keywords in Rust (using the standard raw identifier
+syntax).
+
+The oldest supported Rust version was bumped to 1.67.0 to match the `time` crate.
+
 ## Release 0.6.1
 
 This release slightly improves interoperability with other XML-RPC implementations.
