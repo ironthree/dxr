@@ -105,13 +105,13 @@ pub(crate) mod value {
     impl<'de> Visitor<'de> for ValueVisitor {
         type Value = Value;
 
-        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
             formatter.write_str("a valid XML-RPC scalar value")
         }
 
         fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
         where
-            A: serde::de::MapAccess<'de>,
+            A: de::MapAccess<'de>,
         {
             const FIELDS: &[&str] = &[
                 "i4",

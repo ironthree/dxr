@@ -159,7 +159,7 @@ pub fn try_from_value(input: TokenStream) -> TokenStream {
         }
     };
 
-    proc_macro::TokenStream::from(impl_block)
+    TokenStream::from(impl_block)
 }
 
 /// Procedural macro for deriving an implementation of the `TryToValue` trait for structs.
@@ -272,5 +272,5 @@ pub fn try_to_value(input: TokenStream) -> TokenStream {
         }
     };
 
-    proc_macro::TokenStream::from(impl_block)
+    TokenStream::from(impl_block)
 }
