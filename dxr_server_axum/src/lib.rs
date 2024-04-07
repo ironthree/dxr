@@ -12,7 +12,7 @@
 #![warn(clippy::unwrap_used)]
 
 #![deprecated(
-    since = "0.5.4",
+    since = "0.5.5",
     note = "The dxr_server_axum crate was merged into the dxr_server crate with version 0.6.0."
 )]
 

@@ -1,3 +1,8 @@
+## Release 0.5.5
+
+This release includes no changes compared to 0.5.4 other than deprecation warnings
+for two crates that were removed and / or renamed with version 0.6.0.
+
 ## Release 0.5.4
 
 This release includes a fix for string-typed values, which were previously accidentally
