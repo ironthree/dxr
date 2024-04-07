@@ -5,6 +5,8 @@
 [![crates.io](https://img.shields.io/crates/l/dxr_shared.svg)](https://crates.io/crates/dxr_shared/)
 [![docs.rs](https://docs.rs/dxr_shared/badge.svg)](https://docs.rs/dxr_shared/)
 
+**WARNING**: This crate has been renamed to `dxr` as of version 0.6.0.
+
 The dxr project provides crates for writing XML-RPC API clients and servers in Rust.
 
 This crate contains implementations of type conversions between XML strings, XML-RPC values, and

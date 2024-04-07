@@ -11,6 +11,11 @@
 #![warn(unreachable_pub)]
 #![warn(clippy::unwrap_used)]
 
+#![deprecated(
+    since = "0.5.4",
+    note = "The dxr_server_axum crate was merged into the dxr_server crate with version 0.6.0."
+)]
+
 //! # dxr_server_axum
 //!
 //! This crate provides an XML-RPC server implementation for the `dxr` crate based on [`axum`].
