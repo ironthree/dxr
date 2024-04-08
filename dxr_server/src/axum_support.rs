@@ -19,7 +19,7 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
-use std::net::{SocketAddr, TcpListener};
+use std::net::SocketAddr;
 use std::sync::Arc;
 
 use axum::http::HeaderMap;
@@ -27,6 +27,7 @@ use axum::routing::post;
 use axum::Router;
 
 use thiserror::Error;
+use tokio::net::TcpListener;
 use tokio::sync::Notify;
 
 use crate::{server, Handler, DEFAULT_SERVER_ROUTE};
@@ -135,7 +136,7 @@ impl Server {
     /// Requests with invalid input, calls of unknown methods, and failed methods are converted
     /// into fault responses.
     pub async fn serve(self, addr: SocketAddr) -> Result<(), ServerError> {
-        let listener = TcpListener::bind(addr)?;
+        let listener = TcpListener::bind(addr).await?;
         self.serve_listener(listener).await
     }
 
@@ -145,15 +146,12 @@ impl Server {
     /// Requests with invalid input, calls of unknown methods, and failed methods are converted
     /// into fault responses.
     pub async fn serve_listener(self, listener: TcpListener) -> Result<(), ServerError> {
-        if let Some(barrier) = &self.barrier {
-            Ok(axum::Server::from_tcp(listener)?
-                .serve(self.route.into_make_service())
-                .with_graceful_shutdown(barrier.notified())
+        if let Some(barrier) = self.barrier {
+            Ok(axum::serve(listener, self.route.into_make_service())
+                .with_graceful_shutdown(async move { barrier.notified().await })
                 .await?)
         } else {
-            Ok(axum::Server::from_tcp(listener)?
-                .serve(self.route.into_make_service())
-                .await?)
+            Ok(axum::serve(listener, self.route.into_make_service()).await?)
         }
     }
 }
