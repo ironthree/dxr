@@ -5,6 +5,7 @@ fn try_build_pass() {
     t.pass("tests/trybuild/moo.rs");
     t.pass("tests/trybuild/appendix.rs");
     t.pass("tests/trybuild/recursive.rs");
+    t.pass("tests/trybuild/custom_result_type.rs");
     t.pass("tests/trybuild/ownership.rs");
     t.pass("tests/trybuild/collections.rs");
 }
