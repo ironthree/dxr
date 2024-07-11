@@ -145,7 +145,7 @@ pub fn try_from_value(input: TokenStream) -> TokenStream {
 
     let impl_block = quote! {
         impl #impl_generics #dxr::TryFromValue for #name #ty_generics #where_clause {
-            fn try_from_value(value: &#dxr::Value) -> Result<#name #ty_generics, #dxr::DxrError> {
+            fn try_from_value(value: &#dxr::Value) -> ::std::result::Result<#name #ty_generics, #dxr::DxrError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
                 use #dxr::{Value, DxrError};
@@ -258,7 +258,7 @@ pub fn try_to_value(input: TokenStream) -> TokenStream {
 
     let impl_block = quote! {
         impl #impl_generics #dxr::TryToValue for #name #ty_generics #where_clause {
-            fn try_to_value(&self) -> Result<#dxr::Value, #dxr::DxrError> {
+            fn try_to_value(&self) -> ::std::result::Result<#dxr::Value, #dxr::DxrError> {
                 use ::std::collections::HashMap;
                 use ::std::string::String;
                 use #dxr::Value;
