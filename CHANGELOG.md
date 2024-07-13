@@ -1,3 +1,10 @@
+## Release 0.6.3
+
+This release contains a fix for a compilation failure when using the derive macros for
+`TryToValue` and `TryFromValue` and a custom `Result` type is in scope.
+
+The oldest supported Rust version was bumped to 1.70.0 to match crate dependencies.
+
 ## Release 0.6.2
 
 This release introduces support for serializing / deserializing XML-RPC structs that have
