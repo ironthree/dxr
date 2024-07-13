@@ -93,7 +93,7 @@ pub(crate) mod base64 {
 /// `<value><string>foo</string></value>` (which are both valid XML-RPC).
 pub(crate) mod value {
     use serde::{
-        de::{self, Deserializer, Visitor},
+        de::{self, Deserializer, IgnoredAny, Visitor},
         Deserialize,
     };
     use std::fmt;
@@ -129,6 +129,7 @@ pub(crate) mod value {
                 "nil",
             ];
 
+            #[derive(Debug)]
             enum Field {
                 I4,
                 #[cfg(feature = "i8")]
@@ -187,7 +188,7 @@ pub(crate) mod value {
                 }
             }
 
-            if let Some(key) = map.next_key()? {
+            let value = if let Some(key) = map.next_key::<Field>()? {
                 match key {
                     Field::I4 => {
                         let value = map.next_value()?;
@@ -233,11 +234,20 @@ pub(crate) mod value {
                         Ok(Value::array(value))
                     },
                     #[cfg(feature = "nil")]
-                    Field::Nil => Ok(Value::nil()),
+                    Field::Nil => {
+                        let _: IgnoredAny = map.next_value()?;
+                        Ok(Value::nil())
+                    },
                 }
             } else {
                 // <value></value>
-                Ok(Value::string(String::new()))
+                return Ok(Value::string(String::new()));
+            };
+
+            if let Some(key) = map.next_key::<Field>()? {
+                Err(de::Error::custom(format!("Unexpected key: {:?}", key)))
+            } else {
+                value
             }
         }
     }
