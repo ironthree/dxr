@@ -10,11 +10,21 @@ fn try_build_pass() {
     t.pass("tests/trybuild/collections.rs");
 }
 
+#[rustversion::stable]
 #[test]
 fn try_build_fail() {
     let t = trybuild::TestCases::new();
     t.compile_fail("tests/trybuild/slice.rs");
     t.compile_fail("tests/trybuild/toref.rs");
+    t.compile_fail("tests/trybuild/tuple.rs");
+    t.compile_fail("tests/trybuild/enum.rs");
+}
+
+#[rustversion::nightly]
+#[test]
+fn try_build_fail() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/trybuild/slice.rs");
     t.compile_fail("tests/trybuild/tuple.rs");
     t.compile_fail("tests/trybuild/enum.rs");
 }

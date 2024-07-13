@@ -239,6 +239,7 @@ dependencies = [
  "quick-xml",
  "quickcheck",
  "quickcheck_macros",
+ "rustversion",
  "serde",
  "thiserror",
  "trybuild",

@@ -29,6 +29,7 @@ thiserror = "1.0.30"
 chrono = { version = "0.4.19", features = ["clock", "std"], default-features = false }
 quickcheck = "1.0"
 quickcheck_macros = "1.0"
+rustversion = "1"
 trybuild = "1"
 
 [features]
