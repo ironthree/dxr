@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 #[cfg(feature = "multicall")]
 use std::collections::HashMap;
 
@@ -5,11 +6,10 @@ use http::header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT}
 use thiserror::Error;
 use url::Url;
 
-#[cfg(feature = "multicall")]
 use dxr::Value;
 use dxr::{DxrError, Fault, FaultResponse, MethodCall, MethodResponse, TryFromValue, TryToParams};
 
-use crate::{Call, DEFAULT_USER_AGENT};
+use crate::DEFAULT_USER_AGENT;
 
 /// Error type for XML-RPC clients based on [`reqwest`].
 #[derive(Debug, Error)]
@@ -35,6 +35,21 @@ pub enum ClientError {
         #[from]
         error: reqwest::Error,
     },
+}
+
+#[allow(unused)]
+impl ClientError {
+    fn fault(fault: Fault) -> Self {
+        ClientError::Fault { fault }
+    }
+
+    fn rpc(error: DxrError) -> Self {
+        ClientError::RPC { error }
+    }
+
+    fn net(error: reqwest::Error) -> Self {
+        ClientError::Net { error }
+    }
 }
 
 /// Builder that takes parameters for constructing a [`Client`] based on [`reqwest::Client`].
@@ -100,7 +115,7 @@ impl ClientBuilder {
 /// # XML-RPC client implementation
 ///
 /// This type provides a very simple XML-RPC client implementation based on [`reqwest`]. Initialize
-/// the [`Client`], submit a [`Call`], get a result (or a fault).
+/// the [`Client`], submit a call, get a result (or a fault).
 #[derive(Debug)]
 pub struct Client {
     url: Url,
@@ -117,9 +132,17 @@ impl Client {
     ///
     /// Fault responses from the XML-RPC server are transparently converted into [`Fault`] errors.
     /// Invalid XML-RPC responses or faults will result in an appropriate [`DxrError`].
-    pub async fn call<P: TryToParams, R: TryFromValue>(&self, call: Call<'_, P, R>) -> Result<R, ClientError> {
+    pub async fn call<P: TryToParams, R: TryFromValue>(&self, method: &str, args: P) -> Result<R, ClientError> {
+        let params = args.try_to_params()?;
+        let result = self.call_inner(Cow::Borrowed(method), params).await?;
+
+        // extract return value
+        Ok(R::try_from_value(&result)?)
+    }
+
+    async fn call_inner(&self, method: Cow<'_, str>, params: Vec<Value>) -> Result<Value, ClientError> {
         // serialize XML-RPC method call
-        let request = call.as_xml_rpc()?;
+        let request = MethodCall::new(method, params);
         let body = request_to_body(&request)?;
 
         // construct request and send to server
@@ -130,8 +153,7 @@ impl Client {
         let contents = response.text().await?;
         let result = response_to_result(&contents)?;
 
-        // extract return value
-        Ok(R::try_from_value(&result.inner())?)
+        Ok(result.inner())
     }
 
     /// Asynchronous method for handling "system.multicall" calls.
@@ -139,21 +161,22 @@ impl Client {
     /// *Note*: This method does not check if the number of method calls matches the number of
     /// returned results.
     #[cfg(feature = "multicall")]
-    pub async fn multicall<P: TryToParams>(
+    pub async fn multicall<'a, P: TryToParams>(
         &self,
-        call: Call<'_, P, Vec<Value>>,
+        calls: Vec<(String, P)>,
     ) -> Result<Vec<Result<Value, Fault>>, ClientError> {
-        let response = self.call(call).await?;
+        let calls = dxr::into_multicall_params(calls)?;
+        let response: Vec<Value> =
+            TryFromValue::try_from_value(&self.call_inner(Cow::Borrowed("system.multicall"), vec![calls]).await?)?;
 
         let mut results = Vec::new();
         for result in response {
             // return values for successful calls are arrays that contain a single value
-            if let Ok((value,)) = <(Value,)>::try_from_value(&result) {
+            if let Ok([value]) = <[Value; 1]>::try_from_value(&result) {
                 results.push(Ok(value));
-            };
-
+            }
             // return values for failed calls are structs with two members
-            if let Ok(mut value) = <HashMap<String, Value>>::try_from_value(&result) {
+            else if let Ok(mut value) = <HashMap<String, Value>>::try_from_value(&result) {
                 let code = match value.remove("faultCode") {
                     Some(code) => code,
                     None => return Err(DxrError::missing_field("Fault", "faultCode").into()),
@@ -170,6 +193,13 @@ impl Client {
 
                 let fault = Fault::new(i32::try_from_value(&code)?, String::try_from_value(&string)?);
                 results.push(Err(fault));
+            }
+            // return value does not match either expected format
+            else {
+                return Err(ClientError::rpc(DxrError::invalid_data(format!(
+                    "Invalid return value: '{:?}'",
+                    result
+                ))));
             }
         }
 

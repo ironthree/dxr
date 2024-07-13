@@ -2,7 +2,7 @@
 #![warn(clippy::unwrap_used)]
 
 use dxr::{TryFromValue, TryToValue, Value};
-use dxr_client::{Call, ClientBuilder, Url};
+use dxr_client::{ClientBuilder, Url};
 
 #[derive(Debug, TryFromValue, TryToValue)]
 pub struct Build {
@@ -40,17 +40,21 @@ async fn main() -> Result<(), String> {
 
     let client = ClientBuilder::new(url).user_agent("dxr-koji").build();
 
-    let request: Call<_, Build> = Call::new("getBuild", "syncthing-1.1.0-1.fc30");
-    let result = client.call(request).await.map_err(|error| error.to_string())?;
+    let result: Build = client
+        .call("getBuild", "syncthing-1.1.0-1.fc30")
+        .await
+        .map_err(|error| error.to_string())?;
 
     // print query result
-    println!("{result:#?}");
+    println!("{:#?}", result);
 
-    let request = Call::new("getPackage", ("syncthing", true));
-    let result: Value = client.call(request).await.map_err(|error| error.to_string())?;
+    let result: Value = client
+        .call("getPackage", ("syncthing", true))
+        .await
+        .map_err(|error| error.to_string())?;
 
     // print query result
-    println!("{result:#?}");
+    println!("{:#?}", result);
 
     Ok(())
 }

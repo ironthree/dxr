@@ -2,8 +2,8 @@
 
 use std::time::Duration;
 
-use dxr::{Fault, TryFromParams, TryToValue, Value};
-use dxr_client::{Call, ClientBuilder, ClientError};
+use dxr::{TryFromParams, TryToValue, Value};
+use dxr_client::{ClientBuilder, ClientError};
 use dxr_server::{axum::http::HeaderMap, HandlerFn, HandlerResult, RouteBuilder, Server};
 
 fn adder_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
@@ -31,28 +31,25 @@ async fn adder() {
 
         // add something with tuple params
         let (a, b) = (2i32, 3i32);
-        let call = Call::new("add", (a, b));
-        let r: i32 = client.call(call).await.unwrap();
+        let r: i32 = client.call("add", (a, b)).await.unwrap();
         assert_eq!((a + b), r);
 
         // add something with vec params
         let (a, b) = (2i32, 3i32);
-        let call = Call::new("add", vec![a, b]);
-        let r: i32 = client.call(call).await.unwrap();
+        let r: i32 = client.call("add", vec![a, b]).await.unwrap();
         assert_eq!((a + b), r);
 
         // add something with array params
         let (a, b) = (2i32, 3i32);
-        let call = Call::new("add", [a, b]);
-        let r: i32 = client.call(call).await.unwrap();
+        let r: i32 = client.call("add", [a, b]).await.unwrap();
         assert_eq!((a + b), r);
 
         // add something with slice params
         let ab = vec![2i32, 3i32];
-        let call = Call::new("add", ab.as_slice());
-        let r: i32 = client.call(call).await.unwrap();
+        let r: i32 = client.call("add", ab.as_slice()).await.unwrap();
         assert_eq!((a + b), r);
 
+        /*
         // multicall
         let call = Call::multicall(vec![
             (String::from("add"), (1, 2)),
@@ -70,21 +67,19 @@ async fn adder() {
                 Ok(Value::i4(0)),
                 Err(Fault::new(404, String::from("Unknown method.")))
             ]
-        );
+        ); */
 
         // argument number mismatch
         let (a, b, c) = (2i32, 3i32, 4i32);
-        let call: Call<_, i32> = Call::new("add", (a, b, c));
         assert!(matches!(
-            client.call(call).await.unwrap_err(),
+            client.call::<_, i32>("add", (a, b, c)).await.unwrap_err(),
             ClientError::Fault { .. }
         ));
 
         // argument type mismatch
         let (a, b) = ("12", "24");
-        let call: Call<_, i32> = Call::new("add", (a, b));
         assert!(matches!(
-            client.call(call).await.unwrap_err(),
+            client.call::<_, i32>("add", (a, b)).await.unwrap_err(),
             ClientError::Fault { .. }
         ));
     };

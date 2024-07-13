@@ -129,9 +129,8 @@ impl Server {
         barrier
     }
 
-    /// This method launches an [`axum::Server`] that listens at the specified socket address
-    /// with the configured route of the XML-RPC endpoint as the only route that will accept
-    /// requests.
+    /// This method launches a server that listens at the specified socket address with the
+    /// configured route of the XML-RPC endpoint as the only route that will accept requests.
     ///
     /// Requests with invalid input, calls of unknown methods, and failed methods are converted
     /// into fault responses.
@@ -140,8 +139,8 @@ impl Server {
         self.serve_listener(listener).await
     }
 
-    /// This method launches an [`axum::Server`] that uses the supplied [`TcpListener`] and with
-    /// the configured route of the XML-RPC endpoint as the only route that will accept requests.
+    /// This method launches a server  that uses the supplied [`TcpListener`] and with the
+    /// configured route of the XML-RPC endpoint as the only route that will accept requests.
     ///
     /// Requests with invalid input, calls of unknown methods, and failed methods are converted
     /// into fault responses.

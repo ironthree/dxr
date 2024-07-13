@@ -1,5 +1,7 @@
 //! definitions of XML-RPC data types with (de)serialization implementations
 
+use std::borrow::Cow;
+
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
@@ -258,18 +260,21 @@ impl ArrayData {
 /// paramters into [`Value`]s manually.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename = "methodCall")]
-pub struct MethodCall {
+pub struct MethodCall<'a> {
     #[serde(rename = "methodName")]
-    name: MethodName,
+    name: MethodName<'a>,
     #[serde(default, skip_serializing_if = "RequestParameters::is_empty")]
     params: RequestParameters,
 }
 
-impl MethodCall {
+impl<'a> MethodCall<'a> {
     /// constructor for `<methodCall>` values from method name and parameter list
-    pub fn new(name: String, params: Vec<Value>) -> MethodCall {
+    pub fn new<N>(name: N, params: Vec<Value>) -> MethodCall<'a>
+    where
+        N: Into<Cow<'a, str>>,
+    {
         MethodCall {
-            name: MethodName { name },
+            name: MethodName { name: name.into() },
             params: RequestParameters {
                 params: params.into_iter().map(|value| RequestParameter { value }).collect(),
             },
@@ -289,9 +294,9 @@ impl MethodCall {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename = "methodName")]
-struct MethodName {
+struct MethodName<'a> {
     #[serde(rename = "$value")]
-    name: String,
+    name: Cow<'a, str>,
 }
 
 /// # XML-RPC method response type

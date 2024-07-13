@@ -6,8 +6,8 @@ use std::collections::HashMap;
 use std::time::Duration;
 
 use dxr::chrono::{NaiveDateTime, SubsecRound, Utc};
-use dxr::{DxrError, TryFromValue, TryToValue, Value};
-use dxr_client::{Call, ClientBuilder, ClientError};
+use dxr::{DxrError, TryFromValue, TryToParams, TryToValue, Value};
+use dxr_client::{ClientBuilder, ClientError};
 use dxr_server::{axum::http::HeaderMap, HandlerFn, HandlerResult, RouteBuilder, Server};
 
 fn echo_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
@@ -25,7 +25,7 @@ struct TestStruct {
 }
 
 #[tokio::test]
-async fn echo() {
+async fn echo_any() {
     let route = RouteBuilder::new()
         .set_path("/")
         .add_method("echo", Box::new(echo_handler as HandlerFn))
@@ -44,64 +44,54 @@ async fn echo() {
 
         // i4
         let value = 42i32;
-        let call = Call::new("echo", (value,));
-        let r: (i32,) = client.call(call).await.unwrap();
+        let r: (i32,) = client.call("echo", (value,)).await.unwrap();
         assert_eq!((value,), r);
 
         // i8
         let value = 42i64;
-        let call = Call::new("echo", (value,));
-        let r: (i64,) = client.call(call).await.unwrap();
+        let r: (i64,) = client.call("echo", (value,)).await.unwrap();
         assert_eq!((value,), r);
 
         // double
         let value = 1.5f64;
-        let call = Call::new("echo", (value,));
-        let r: (f64,) = client.call(call).await.unwrap();
+        let r: (f64,) = client.call("echo", (value,)).await.unwrap();
         assert_eq!((value,), r);
 
         // boolean
         let value = true;
-        let call = Call::new("echo", (value,));
-        let r: (bool,) = client.call(call).await.unwrap();
+        let r: (bool,) = client.call("echo", (value,)).await.unwrap();
         assert_eq!((value,), r);
 
         // string
         let value = String::from("HELLO WORLD");
-        let call = Call::new("echo", (value.as_str(),));
-        let r: (String,) = client.call(call).await.unwrap();
+        let r: (String,) = client.call("echo", (value.as_str(),)).await.unwrap();
         assert_eq!((value,), r);
 
         // datetime
         let value = Utc::now().round_subsecs(0).naive_utc();
-        let call = Call::new("echo", (value,));
-        let r: (NaiveDateTime,) = client.call(call).await.unwrap();
+        let r: (NaiveDateTime,) = client.call("echo", (value,)).await.unwrap();
         assert_eq!((value,), r);
 
         // bytes
         let value = b"HELLOWORLD".to_vec();
-        let call = Call::new("echo", (value.as_slice(),));
-        let r: (Vec<u8>,) = client.call(call).await.unwrap();
+        let r: (Vec<u8>,) = client.call("echo", (value.as_slice(),)).await.unwrap();
         assert_eq!((value,), r);
 
         // array
         let value = vec![-12i32, 42i32];
-        let call = Call::new("echo", value.as_slice());
-        let r: Vec<i32> = client.call(call).await.unwrap();
+        let r: Vec<i32> = client.call("echo", value.as_slice()).await.unwrap();
         assert_eq!(value, r);
 
         // option
         let value = Some(42i32);
-        let call = Call::new("echo", (value,));
-        let r: (Option<i32>,) = client.call(call).await.unwrap();
+        let r: (Option<i32>,) = client.call("echo", (value,)).await.unwrap();
         assert_eq!((value,), r);
 
         // map
         let mut value: HashMap<String, Value> = HashMap::new();
         value.insert(String::from("foo"), Value::i4(21));
         value.insert(String::from("bar"), Value::i8(42));
-        let call = Call::new("echo", (value.clone(),));
-        let r: (HashMap<String, Value>,) = client.call(call).await.unwrap();
+        let r: (HashMap<String, Value>,) = client.call("echo", (value.clone(),)).await.unwrap();
         assert_eq!((value,), r);
 
         // struct
@@ -113,51 +103,43 @@ async fn echo() {
             list: vec![1.5, 2.5],
             option: Some(-21),
         };
-        let call = Call::new("echo", (value.clone(),));
-        let r: (TestStruct,) = client.call(call).await.unwrap();
+        let r: (TestStruct,) = client.call("echo", (value.clone(),)).await.unwrap();
         assert_eq!((value,), r);
 
         // tuples
         let value = (1, 2);
         type Pair = (i32, i32);
-        let call = Call::new("echo", value);
-        let r: Pair = client.call(call).await.unwrap();
+        let r: Pair = client.call("echo", value).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3);
         type Triple = (i32, i32, i32);
-        let call = Call::new("echo", value);
-        let r: Triple = client.call(call).await.unwrap();
+        let r: Triple = client.call("echo", value).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3, 4);
         type Quadruple = (i32, i32, i32, i32);
-        let call = Call::new("echo", value);
-        let r: Quadruple = client.call(call).await.unwrap();
+        let r: Quadruple = client.call("echo", value).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3, 4, 5);
         type Quintuple = (i32, i32, i32, i32, i32);
-        let call = Call::new("echo", value);
-        let r: Quintuple = client.call(call).await.unwrap();
+        let r: Quintuple = client.call("echo", value).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3, 4, 5, 6);
         type Sextuple = (i32, i32, i32, i32, i32, i32);
-        let call = Call::new("echo", value);
-        let r: Sextuple = client.call(call).await.unwrap();
+        let r: Sextuple = client.call("echo", value).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3, 4, 5, 6, 7);
         type Septuple = (i32, i32, i32, i32, i32, i32, i32);
-        let call = Call::new("echo", value);
-        let r: Septuple = client.call(call).await.unwrap();
+        let r: Septuple = client.call("echo", value).await.unwrap();
         assert_eq!(value, r);
 
         let value = (1, 2, 3, 4, 5, 6, 7, 8);
         type Octuple = (i32, i32, i32, i32, i32, i32, i32, i32);
-        let call = Call::new("echo", value);
-        let r: Octuple = client.call(call).await.unwrap();
+        let r: Octuple = client.call("echo", value).await.unwrap();
         assert_eq!(value, r);
 
         // missing field
@@ -174,9 +156,8 @@ async fn echo() {
                 baz: i32,
             }
             let value = Params { foo: 1, bar: 2 };
-            let call: Call<'_, _, (Response,)> = Call::new("echo", (value,));
             assert!(matches!(
-                client.call(call).await.unwrap_err(),
+                client.call::<_, (Response,)>("echo", (value,)).await.unwrap_err(),
                 ClientError::RPC {
                     error: DxrError::MissingField {
                         name: Cow::Borrowed("Response"),
@@ -197,8 +178,7 @@ async fn echo() {
                 foo: i32,
             }
             let value = Params { foo: 1 };
-            let call = Call::new("echo", (value,));
-            let r: (Response,) = client.call(call).await.unwrap();
+            let r: (Response,) = client.call("echo", (value,)).await.unwrap();
             assert_eq!(r, (Response { foo: 1 },));
         }
 
@@ -213,8 +193,7 @@ async fn echo() {
                 r#foo: i32,
             }
             let value = Params { foo: 1 };
-            let call = Call::new("echo", (value,));
-            let r: (Response,) = client.call(call).await.unwrap();
+            let r: (Response,) = client.call("echo", (value,)).await.unwrap();
             assert_eq!(r, (Response { foo: 1 },));
         }
 
@@ -229,16 +208,14 @@ async fn echo() {
                 r#type: i32,
             }
             let value = Params { r#type: 1 };
-            let call = Call::new("echo", (value,));
-            let r: (Response,) = client.call(call).await.unwrap();
+            let r: (Response,) = client.call("echo", (value,)).await.unwrap();
             assert_eq!(r, (Response { r#type: 1 },));
         }
 
         // type mismatch
         let value = -12i32;
-        let call: Call<(i32,), (String,)> = Call::new("echo", (value,));
         assert!(matches!(
-            client.call(call).await.unwrap_err(),
+            client.call::<(i32,), (String,)>("echo", (value,)).await.unwrap_err(),
             ClientError::RPC {
                 error: DxrError::WrongType { .. }
             }
@@ -246,13 +223,29 @@ async fn echo() {
 
         // parameter number mismatch
         let value = vec![2i32, 3i32];
-        let call: Call<Vec<i32>, (i32, i32, i32)> = Call::new("echo", value);
         assert!(matches!(
-            client.call(call).await.unwrap_err(),
+            client
+                .call::<Vec<i32>, (i32, i32, i32)>("echo", value)
+                .await
+                .unwrap_err(),
             ClientError::RPC {
                 error: DxrError::ParameterMismatch { .. }
             }
         ));
+
+        // multicall
+        let calls = vec![
+            ("echo".into(), (-12i32).try_to_params().unwrap()),
+            ("echo".into(), (0, 1, 2).try_to_params().unwrap()),
+        ];
+        let r = client.multicall(calls).await.unwrap();
+        assert_eq!(
+            r,
+            vec![
+                Ok(vec![-12].try_to_value().unwrap()),
+                Ok(vec![0, 1, 2].try_to_value().unwrap()),
+            ],
+        );
     };
 
     tokio::spawn(calls()).await.unwrap();

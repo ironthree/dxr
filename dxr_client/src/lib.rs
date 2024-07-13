@@ -15,9 +15,6 @@
 //!
 //! This crate provides generic XML-RPC client functionality based on [`dxr`].
 
-mod call;
-pub use call::*;
-
 #[cfg(feature = "reqwest")]
 mod reqwest_support;
 #[cfg(feature = "reqwest")]
