@@ -1,5 +1,5 @@
 use quick_xml::de::DeError;
-use quick_xml::se::Serializer;
+use quick_xml::se::{QuoteLevel, Serializer};
 
 use serde::{Deserialize, Serialize};
 
@@ -20,6 +20,7 @@ where
     // initialize custom serializer that expands empty elements
     let mut serializer = Serializer::new(&mut buf);
     serializer.expand_empty_elements(true);
+    serializer.set_quote_level(QuoteLevel::Full);
 
     value.serialize(serializer)?;
     Ok(buf)

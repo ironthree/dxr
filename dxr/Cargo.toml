@@ -21,7 +21,7 @@ required-features = ["derive", "i8", "nil"]
 dxr_derive = { workspace = true, optional = true }
 base64 = "0.22"
 chrono = { version = "0.4.19", features = ["std"], default-features = false }
-quick-xml = { version = "0.31", features = ["serialize"] }
+quick-xml = { version = "0.32", features = ["serialize"] }
 serde = { version = "1.0.104", features = ["derive"] }
 thiserror = "1.0.30"
 

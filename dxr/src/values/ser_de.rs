@@ -93,9 +93,12 @@ pub(crate) mod base64 {
 /// `<value><string>foo</string></value>` (which are both valid XML-RPC).
 pub(crate) mod value {
     use serde::{
-        de::{self, Deserializer, IgnoredAny, Visitor},
+        de::{self, Deserializer, Visitor},
         Deserialize,
     };
+    #[cfg(feature = "nil")]
+    use serde::de::IgnoredAny;
+
     use std::fmt;
 
     use crate::values::Value;

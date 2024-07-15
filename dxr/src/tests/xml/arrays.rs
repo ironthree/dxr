@@ -4,7 +4,7 @@ use crate::xml::{deserialize_xml as from_str, serialize_xml as to_string};
 #[test]
 fn to_array_empty() {
     let value = Array::new(vec![]);
-    let expected = "<array><data/></array>";
+    let expected = "<array><data></data></array>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
 }

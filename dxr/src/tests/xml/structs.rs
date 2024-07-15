@@ -20,7 +20,7 @@ fn from_member() {
 #[test]
 fn to_struct_empty() {
     let value = Struct::new(vec![]);
-    let expected = "<struct/>";
+    let expected = "<struct></struct>";
 
     assert_eq!(to_string(&value).unwrap(), expected);
 }

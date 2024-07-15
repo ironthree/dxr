@@ -53,18 +53,13 @@ fn from_to_boolean(boolean: bool) -> bool {
 
 #[quickcheck]
 fn to_from_string(string: String) -> bool {
-    // This creates a new <string> value on a code path that does no XML escaping,
-    // so the string needs to be trimmed and XML-escaped first.
-    let string = quick_xml::escape::escape(string.trim()).to_string();
-    let value = Value::string(string);
+    let value = Value::string(string.trim().to_string());
 
     value == from_str::<Value>(&to_string(&value).unwrap()).unwrap()
 }
 
 #[quickcheck]
 fn from_to_string(string: String) -> bool {
-    // This creates a new <string> value on a code path that does no XML escaping,
-    // so the string needs to be trimmed and XML-escaped first.
     let string = quick_xml::escape::escape(string.trim()).to_string();
     let value = format!("<value><string>{string}</string></value>");
 
