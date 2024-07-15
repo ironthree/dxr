@@ -45,6 +45,20 @@ i8 = []
 # support non-standard <nil> XML-RPC values
 nil = []
 
+[lints.rust]
+explicit_outlives_requirements = "warn"
+missing_copy_implementations = "warn"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+noop_method_call = "warn"
+unreachable_pub = "warn"
+unsafe_code = "deny"
+unused_import_braces = "warn"
+unused_qualifications = "warn"
+
+[lints.clippy]
+unwrap_used = "warn"
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]

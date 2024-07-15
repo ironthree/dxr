@@ -1,15 +1,5 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
-#![deny(unsafe_code)]
-#![warn(explicit_outlives_requirements)]
-#![warn(missing_copy_implementations)]
-#![warn(missing_docs)]
-#![warn(missing_debug_implementations)]
-#![warn(noop_method_call)]
-#![warn(unused_import_braces)]
-#![warn(unused_qualifications)]
-#![warn(unreachable_pub)]
-#![warn(clippy::unwrap_used)]
 
 //! # dxr_derive
 //!
