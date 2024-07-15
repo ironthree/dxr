@@ -92,12 +92,12 @@ pub(crate) mod base64 {
 /// without a `<type>` element, e.g. `<value>foo</value>` instead of
 /// `<value><string>foo</string></value>` (which are both valid XML-RPC).
 pub(crate) mod value {
+    #[cfg(feature = "nil")]
+    use serde::de::IgnoredAny;
     use serde::{
         de::{self, Deserializer, Visitor},
         Deserialize,
     };
-    #[cfg(feature = "nil")]
-    use serde::de::IgnoredAny;
 
     use std::fmt;
 
