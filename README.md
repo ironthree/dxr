@@ -25,14 +25,11 @@ let client: Client = ClientBuilder::new(url)
     .build();
 ```
 
-This client can then be used to issue Remote Procedure `dxr_client::Call`s:
+This client can then be used to issue remote procedure calls:
 
 ```rust
-use dxr_client::Call;
-
 // create an RPC request with one string argument and an expected string return value
-let request = Call::new("hello", "DXR");
-let result: String = client.call(request).await.unwrap();
+let result: String = client.call("hello", "DXR").await.unwrap();
 ```
 
 The `dxr_tests/examples/client.rs` file contains a complete implementation of a simple
