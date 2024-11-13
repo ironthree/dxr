@@ -26,4 +26,3 @@ dxr_server = { path = "./dxr_server", version = "0.7.0-dev" }
 codegen-units = 1
 lto = true
 opt-level = 3
-
