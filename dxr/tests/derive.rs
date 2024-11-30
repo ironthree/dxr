@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 #[test]
 fn try_build_pass() {
     let t = trybuild::TestCases::new();
