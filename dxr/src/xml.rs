@@ -1,5 +1,5 @@
 use quick_xml::de::DeError;
-use quick_xml::se::{QuoteLevel, Serializer};
+use quick_xml::se::{QuoteLevel, SeError, Serializer};
 
 use serde::{Deserialize, Serialize};
 
@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 /// implementations.
 ///
 /// This should be a drop-in replacement for [`quick_xml::se::to_string`].
-pub fn serialize_xml<T>(value: &T) -> Result<String, DeError>
+pub fn serialize_xml<T>(value: &T) -> Result<String, SeError>
 where
     T: Serialize,
 {
