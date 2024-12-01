@@ -1,3 +1,18 @@
+## Release 0.7.0
+
+This release includes a simplified client API that removes the unnecessary indirection
+caused by the `Call` struct, in addition to some notable dependency updates (hyper v1)
+that are part of the public API.
+
+Major dependency updates:
+
+- axum v0.6 → v0.7
+- base64 v0.21 → v0.22
+- hyper v0.14 → v1
+- proc-macro-crate v1 → v3
+- quick-xml v0.30 → 0.37
+- reqwest v0.11 → v0.12
+
 ## Release 0.6.3
 
 This release contains a fix for a compilation failure when using the derive macros for

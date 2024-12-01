@@ -240,7 +240,7 @@ dependencies = [
 
 [[package]]
 name = "dxr"
-version = "0.7.0-dev"
+version = "0.7.0"
 dependencies = [
  "base64",
  "chrono",
@@ -256,7 +256,7 @@ dependencies = [
 
 [[package]]
 name = "dxr_client"
-version = "0.7.0-dev"
+version = "0.7.0"
 dependencies = [
  "dxr",
  "http",
@@ -268,7 +268,7 @@ dependencies = [
 
 [[package]]
 name = "dxr_derive"
-version = "0.7.0-dev"
+version = "0.7.0"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -278,7 +278,7 @@ dependencies = [
 
 [[package]]
 name = "dxr_server"
-version = "0.7.0-dev"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "axum",
@@ -291,7 +291,7 @@ dependencies = [
 
 [[package]]
 name = "dxr_tests"
-version = "0.7.0-dev"
+version = "0.7.0"
 dependencies = [
  "chrono",
  "dxr",
