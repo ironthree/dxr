@@ -82,6 +82,7 @@ impl Value {
         Value::new(Type::Base64(value))
     }
 
+    /// constructor for nested structures
     pub fn structure(value: Struct) -> Value {
         Value::new(Type::Struct { members: value.members })
     }
@@ -158,6 +159,7 @@ impl Type {
     }
 }
 
+/// Nested structure
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename = "struct")]
 pub struct Struct {
@@ -171,6 +173,7 @@ impl Struct {
         Struct { members }
     }
 
+    /// Creates an empty struct with no members.
     pub fn empty() -> Struct {
         Struct { members: vec![]}
     }
