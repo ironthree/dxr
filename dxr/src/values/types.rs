@@ -82,7 +82,7 @@ impl Value {
         Value::new(Type::Base64(value))
     }
 
-    pub(crate) fn structure(value: Struct) -> Value {
+    pub fn structure(value: Struct) -> Value {
         Value::new(Type::Struct { members: value.members })
     }
 
@@ -160,7 +160,7 @@ impl Type {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename = "struct")]
-pub(crate) struct Struct {
+pub struct Struct {
     #[serde(default, rename = "member")]
     members: Vec<Member>,
 }
@@ -169,6 +169,10 @@ impl Struct {
     pub(crate) fn new(mut members: Vec<Member>) -> Struct {
         members.sort_by(|a, b| a.name.name.cmp(&b.name.name));
         Struct { members }
+    }
+
+    pub fn empty() -> Struct {
+        Struct { members: vec![]}
     }
 }
 
