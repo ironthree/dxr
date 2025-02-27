@@ -71,6 +71,7 @@ pub async fn server(handlers: HandlerMap, body: &str, headers: HeaderMap) -> (St
                     let handler = match handlers.get(name.as_str()) {
                         Some(handler) => handler,
                         None => {
+                            log::warn!("Missing rpc handler for {}", name);
                             results.push(Err(Fault::new(404, String::from("Unknown method."))));
                             continue;
                         },
@@ -93,7 +94,10 @@ pub async fn server(handlers: HandlerMap, body: &str, headers: HeaderMap) -> (St
 
     let handler = match handlers.get(call.name()) {
         Some(handler) => handler,
-        None => return fault_to_response(404, "Unknown method."),
+        None => {
+            log::warn!("Missing rpc handler for {}", call.name());
+            return fault_to_response(404, "Unknown method.");
+        },
     };
 
     let response = match handler.handle(&call.params(), headers).await {
