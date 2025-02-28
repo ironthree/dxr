@@ -15,11 +15,11 @@ repository.workspace = true
 dxr.workspace = true
 async-trait = "0.1.53"
 http = "1.0"
+log = "0.4"
 
 # axum support
 axum = { version = "0.7", optional = true }
 hyper = { version = "1.0", optional = true }
-log = "0.4"
 thiserror = { version = "1.0", optional = true }
 tokio = { version = "1.14", features = ["sync"], optional = true }
 
