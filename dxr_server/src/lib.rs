@@ -71,7 +71,7 @@ pub async fn server(handlers: HandlerMap, body: &str, headers: HeaderMap) -> (St
                     let handler = match handlers.get(name.as_str()) {
                         Some(handler) => handler,
                         None => {
-                            log::warn!("Missing rpc handler for {}", name);
+                            log_no_handler(&name);
                             results.push(Err(Fault::new(404, String::from("Unknown method."))));
                             continue;
                         },
@@ -95,7 +95,7 @@ pub async fn server(handlers: HandlerMap, body: &str, headers: HeaderMap) -> (St
     let handler = match handlers.get(call.name()) {
         Some(handler) => handler,
         None => {
-            log::warn!("Missing rpc handler for {}", call.name());
+            log_no_handler(call.name());
             return fault_to_response(404, "Unknown method.");
         },
     };
@@ -131,4 +131,9 @@ fn fault_to_response(code: i32, string: &str) -> (StatusCode, HeaderMap, String)
         Ok(fault) => (StatusCode::OK, response_headers(), fault),
         Err(error) => (StatusCode::INTERNAL_SERVER_ERROR, response_headers(), error.to_string()),
     }
+}
+
+/// Write a debug log on missing rpc handler.
+fn log_no_handler(method: &str) {
+    log::debug!("No handler registered for method: {method}")
 }
