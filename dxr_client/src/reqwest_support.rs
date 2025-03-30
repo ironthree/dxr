@@ -161,7 +161,7 @@ impl Client {
     /// *Note*: This method does not check if the number of method calls matches the number of
     /// returned results.
     #[cfg(feature = "multicall")]
-    pub async fn multicall<'a, P: TryToParams>(
+    pub async fn multicall<P: TryToParams>(
         &self,
         calls: Vec<(String, P)>,
     ) -> Result<Vec<Result<Value, Fault>>, ClientError> {

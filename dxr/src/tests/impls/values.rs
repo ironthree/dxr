@@ -244,6 +244,7 @@ fn to_cow_borrowed() {
 
 #[test]
 fn to_cow_owned_bytes() {
+    #[allow(clippy::owned_cow)]
     let value: Cow<'_, Vec<u8>> = Cow::Owned(b"123".to_vec());
     let expected = Value::base64(b"123".to_vec());
 

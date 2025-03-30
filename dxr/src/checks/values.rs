@@ -178,6 +178,7 @@ fn roundtrip_struct_cow_str(string: String) -> bool {
 #[cfg(feature = "derive")]
 #[quickcheck]
 fn roundtrip_struct_cow_bytes(bytes: Vec<u8>) -> bool {
+    #[allow(clippy::owned_cow)]
     #[derive(Debug, Eq, PartialEq, TryFromValue, TryToValue)]
     struct TestCow<'a> {
         bytes: Cow<'a, Vec<u8>>,
