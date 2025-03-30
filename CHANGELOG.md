@@ -1,3 +1,9 @@
+## Release 0.7.1
+
+This release contains only very minor changes - some additional logging in the
+axum server support code when encountering unknown method calls, and fixes for
+some harmless clippy warnings.
+
 ## Release 0.7.0
 
 This release includes a simplified client API that removes the unnecessary indirection
