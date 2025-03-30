@@ -1,0 +1,19 @@
+[advisories]
+unmaintained = "workspace"
+yanked = "deny"
+
+[bans]
+skip = [
+    { crate = "wasi", reason = "unavoidable transitive dependency" },
+]
+skip-tree = [
+    { crate = "windows-sys", reason = "unavoidable transitive dependency" },
+]
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Unicode-3.0",
+    "BSD-3-Clause",
+]
