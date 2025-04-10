@@ -24,7 +24,7 @@ use std::sync::Arc;
 
 use axum::http::HeaderMap;
 use axum::routing::post;
-use axum::serve::{Listener, ListenerExt};
+use axum::serve::Listener;
 use axum::Router;
 
 use thiserror::Error;
