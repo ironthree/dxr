@@ -9,7 +9,7 @@ members = [
 resolver = "2"
 
 [workspace.package]
-version = "0.7.1"
+version = "0.8.0-dev"
 edition = "2021"
 rust-version = "1.70.0"
 license = "MIT OR Apache-2.0"
@@ -17,10 +17,10 @@ authors = ["Fabio Valentini <decathorpe@gmail.com>"]
 repository = "https://github.com/ironthree/dxr"
 
 [workspace.dependencies]
-dxr =        { path = "./dxr",        version = "0.7.1" }
-dxr_derive = { path = "./dxr_derive", version = "0.7.1" }
-dxr_client = { path = "./dxr_client", version = "0.7.1" }
-dxr_server = { path = "./dxr_server", version = "0.7.1" }
+dxr =        { path = "./dxr",        version = "0.8.0-dev" }
+dxr_derive = { path = "./dxr_derive", version = "0.8.0-dev" }
+dxr_client = { path = "./dxr_client", version = "0.8.0-dev" }
+dxr_server = { path = "./dxr_server", version = "0.8.0-dev" }
 
 [profile.release]
 codegen-units = 1
