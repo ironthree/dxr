@@ -58,6 +58,8 @@ pub struct ClientBuilder {
     url: Url,
     headers: HeaderMap,
     user_agent: Option<&'static str>,
+    username: Option<String>,
+    password: Option<String>,
 }
 
 impl ClientBuilder {
@@ -72,12 +74,21 @@ impl ClientBuilder {
             url,
             headers: default_headers,
             user_agent: None,
+            username: None,
+            password: None,
         }
     }
 
     /// Method for overriding the default User-Agent header.
     pub fn user_agent(mut self, user_agent: &'static str) -> Self {
         self.user_agent = Some(user_agent);
+        self
+    }
+
+    /// Method for setting the username and password for basic authentication.
+    pub fn basic_auth(mut self, username: String, password: String) -> Self {
+        self.username = Some(username);
+        self.password = Some(password);
         self
     }
 
@@ -108,6 +119,8 @@ impl ClientBuilder {
         Client {
             url: builder.url,
             client,
+            username: builder.username,
+            password: builder.password,
         }
     }
 }
@@ -120,12 +133,19 @@ impl ClientBuilder {
 pub struct Client {
     url: Url,
     client: reqwest::Client,
+    username: Option<String>,
+    password: Option<String>,
 }
 
 impl Client {
     /// Constructor for a [`Client`] from a [`reqwest::Client`] that was already initialized.
-    pub fn with_client(url: Url, client: reqwest::Client) -> Self {
-        Client { url, client }
+    pub fn with_client(url: Url, client: reqwest::Client, username: Option<String>, password: Option<String>) -> Self {
+        Client {
+            url,
+            client,
+            username,
+            password,
+        }
     }
 
     /// Asynchronous method for handling remote procedure calls with XML-RPC.
@@ -146,7 +166,14 @@ impl Client {
         let body = request_to_body(&request)?;
 
         // construct request and send to server
-        let request = self.client.post(self.url.clone()).body(body).build()?;
+        let request = {
+            let mut builder = self.client.post(self.url.clone()).body(body);
+            if let Some(username) = &self.username {
+                builder = builder.basic_auth(username, self.password.clone())
+            }
+
+            builder.build()?
+        };
         let response = self.client.execute(request).await?;
 
         // deserialize XML-RPC method response
