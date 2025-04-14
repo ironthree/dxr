@@ -86,9 +86,9 @@ impl ClientBuilder {
     }
 
     /// Method for setting the username and password for basic authentication.
-    pub fn basic_auth(mut self, username: String, password: String) -> Self {
+    pub fn basic_auth(mut self, username: String, password: Option<String>) -> Self {
         self.username = Some(username);
-        self.password = Some(password);
+        self.password = password;
         self
     }
 
@@ -139,7 +139,22 @@ pub struct Client {
 
 impl Client {
     /// Constructor for a [`Client`] from a [`reqwest::Client`] that was already initialized.
-    pub fn with_client(url: Url, client: reqwest::Client, username: Option<String>, password: Option<String>) -> Self {
+    pub fn with_client(url: Url, client: reqwest::Client) -> Self {
+        Client {
+            url,
+            client,
+            username: None,
+            password: None,
+        }
+    }
+
+    /// Constructor with basic authentication.
+    pub fn with_client_basic_auth(
+        url: Url,
+        client: reqwest::Client,
+        username: Option<String>,
+        password: Option<String>,
+    ) -> Self {
         Client {
             url,
             client,
@@ -169,7 +184,7 @@ impl Client {
         let request = {
             let mut builder = self.client.post(self.url.clone()).body(body);
             if let Some(username) = &self.username {
-                builder = builder.basic_auth(username, self.password.clone())
+                builder = builder.basic_auth(username, self.password.as_ref());
             }
 
             builder.build()?
