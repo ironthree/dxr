@@ -239,8 +239,7 @@ impl Client {
             // return value does not match either expected format
             else {
                 return Err(ClientError::rpc(DxrError::invalid_data(format!(
-                    "Invalid return value: '{:?}'",
-                    result
+                    "Invalid return value: '{result:?}'"
                 ))));
             }
         }
@@ -286,7 +285,7 @@ fn response_to_result(contents: &str) -> Result<MethodResponse, ClientError> {
 
     // log errors if the contents could not be deserialized as either response or fault
     log::debug!("Failed to deserialize response as either value or fault.");
-    log::debug!("Response failed with: {}; Fault failed with: {}", error1, error2);
+    log::debug!("Response failed with: {error1}; Fault failed with: {error2}");
 
     // malformed response: return DxrError::InvalidData
     Err(DxrError::invalid_data(contents.to_owned()).into())

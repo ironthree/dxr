@@ -46,7 +46,7 @@ async fn main() -> Result<(), String> {
         .map_err(|error| error.to_string())?;
 
     // print query result
-    println!("{:#?}", result);
+    println!("{result:#?}");
 
     let result: Value = client
         .call("getPackage", ("syncthing", true))
@@ -54,7 +54,7 @@ async fn main() -> Result<(), String> {
         .map_err(|error| error.to_string())?;
 
     // print query result
-    println!("{:#?}", result);
+    println!("{result:#?}");
 
     Ok(())
 }
