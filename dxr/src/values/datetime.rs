@@ -182,7 +182,7 @@ impl Parser<&str, u8, ContextError> for MinuteParser {
             .parse_to()
             .try_map(|minute| {
                 if minute > 59 {
-                    Err(DateTimeParseError::InvalidHour(minute))
+                    Err(DateTimeParseError::InvalidMinutes(minute))
                 } else {
                     Ok(minute)
                 }
@@ -200,7 +200,7 @@ impl Parser<&str, u8, ContextError> for SecondParser {
             .parse_to()
             .try_map(|second| {
                 if second > 59 {
-                    Err(DateTimeParseError::InvalidHour(second))
+                    Err(DateTimeParseError::InvalidSeconds(second))
                 } else {
                     Ok(second)
                 }
