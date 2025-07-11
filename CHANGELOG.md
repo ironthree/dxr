@@ -1,3 +1,15 @@
+## Unreleased
+
+**Changed**:
+
+- The implementation of the `dateTime.iso8601` value type is now based on a custom
+  minimal `DateTime` type, dropping the unconditional dependency on `chrono`.
+
+**Added**:
+
+- Added optional support for converting to/from the date/time values from the `chrono`,
+  `jiff`, and `time` crates.
+
 ## Release 0.7.1
 
 This release contains only very minor changes - some additional logging in the

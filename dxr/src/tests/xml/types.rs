@@ -1,6 +1,4 @@
-use chrono::{SubsecRound, Utc};
-
-use crate::values::{Type, XML_RPC_DATE_FORMAT};
+use crate::values::Type;
 use crate::xml::{deserialize_xml as from_str, serialize_xml as to_string};
 
 #[test]
@@ -93,10 +91,14 @@ fn from_double() {
     assert_eq!(from_str::<Type>(value).unwrap(), expected);
 }
 
+#[cfg(feature = "chrono")]
 #[test]
 fn to_datetime() {
-    let datetime = Utc::now().naive_utc();
-    let datetime_str = datetime.format(XML_RPC_DATE_FORMAT).to_string();
+    use crate::values::DateTime;
+    use chrono::Utc;
+
+    let datetime = DateTime::from(Utc::now().naive_utc());
+    let datetime_str = datetime.to_string();
 
     let value = Type::DateTime(datetime);
     let expected = format!("<dateTime.iso8601>{datetime_str}</dateTime.iso8601>");
@@ -104,10 +106,14 @@ fn to_datetime() {
     assert_eq!(to_string(&value).unwrap(), expected);
 }
 
+#[cfg(feature = "chrono")]
 #[test]
 fn from_datetime() {
-    let datetime = Utc::now().round_subsecs(0).naive_utc();
-    let datetime_str = datetime.format(XML_RPC_DATE_FORMAT).to_string();
+    use crate::values::DateTime;
+    use chrono::{SubsecRound, Utc};
+
+    let datetime = DateTime::from(Utc::now().round_subsecs(0).naive_utc());
+    let datetime_str = datetime.to_string();
 
     let value = format!("<dateTime.iso8601>{datetime_str}</dateTime.iso8601>");
     let expected = Type::DateTime(datetime);

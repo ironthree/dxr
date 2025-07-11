@@ -3,11 +3,9 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use chrono::NaiveDateTime;
-
 use crate::error::DxrError;
 use crate::traits::TryToValue;
-use crate::values::{Array, Member, Struct, Value};
+use crate::values::{Array, DateTime, Member, Struct, Value};
 
 use super::utils::*;
 
@@ -63,9 +61,30 @@ impl TryToValue for f64 {
     }
 }
 
-impl TryToValue for NaiveDateTime {
+impl TryToValue for DateTime {
     fn try_to_value(&self) -> Result<Value, DxrError> {
         Ok(Value::datetime(*self))
+    }
+}
+
+#[cfg(feature = "chrono")]
+impl TryToValue for chrono::NaiveDateTime {
+    fn try_to_value(&self) -> Result<Value, DxrError> {
+        Ok(Value::datetime((*self).into()))
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl TryToValue for jiff::civil::DateTime {
+    fn try_to_value(&self) -> Result<Value, DxrError> {
+        Ok(Value::datetime((*self).into()))
+    }
+}
+
+#[cfg(feature = "time")]
+impl TryToValue for time::PrimitiveDateTime {
+    fn try_to_value(&self) -> Result<Value, DxrError> {
+        Ok(Value::datetime((*self).into()))
     }
 }
 

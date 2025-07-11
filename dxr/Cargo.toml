@@ -20,10 +20,15 @@ required-features = ["derive", "i8", "nil"]
 [dependencies]
 dxr_derive = { workspace = true, optional = true }
 base64 = "0.22"
-chrono = { version = "0.4.19", features = ["std"], default-features = false }
 quick-xml = { version = "0.37", features = ["serialize"] }
 serde = { version = "1.0.104", features = ["derive"] }
 thiserror = "1.0.30"
+winnow = "0.7"
+
+# optional datetime crate integrations
+chrono = { version = "0.4", features = ["std"], default-features = false, optional = true }
+jiff = { version = "0.2", default-features = false, optional = true }
+time = { version = "0.3", default-features = false, optional = true }
 
 [dev-dependencies]
 chrono = { version = "0.4.19", features = ["clock", "std"], default-features = false }

@@ -4,10 +4,11 @@
 use std::collections::HashMap;
 use std::time::Duration;
 
-use dxr::chrono::{NaiveDateTime, SubsecRound, Utc};
 use dxr::{DxrError, TryFromParams, TryFromValue, TryToParams, TryToValue, Value};
 use dxr_client::{ClientBuilder, ClientError};
 use dxr_server::{axum::http::HeaderMap, HandlerFn, HandlerResult, RouteBuilder, Server};
+
+use chrono::{NaiveDateTime, SubsecRound, Utc};
 
 fn echo_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let value: Value = Value::try_from_params(params)?;

@@ -1,25 +1,23 @@
 pub(crate) mod datetime {
-    use chrono::NaiveDateTime;
+    use crate::values::DateTime;
     use serde::{Deserialize, Deserializer, Serializer};
 
-    use crate::values::XML_RPC_DATE_FORMAT;
-
-    pub(crate) fn from_str(s: &str) -> Result<NaiveDateTime, String> {
-        match NaiveDateTime::parse_from_str(s, XML_RPC_DATE_FORMAT) {
+    pub(crate) fn from_str(s: &str) -> Result<DateTime, String> {
+        match s.parse() {
             Ok(date) => Ok(date),
-            Err(error) => Err(format!("Invalid date format: {}", error)),
+            Err(error) => Err(error.to_string()),
         }
     }
 
-    pub(crate) fn serialize<S>(datetime: &NaiveDateTime, serializer: S) -> Result<S::Ok, S::Error>
+    pub(crate) fn serialize<S>(datetime: &DateTime, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        let string = datetime.format(XML_RPC_DATE_FORMAT).to_string();
+        let string = datetime.to_string();
         serializer.serialize_str(&string)
     }
 
-    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error>
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<DateTime, D::Error>
     where
         D: Deserializer<'de>,
     {
@@ -35,7 +33,7 @@ pub(crate) mod boolean {
         match s {
             "1" => Ok(true),
             "0" => Ok(false),
-            _ => Err(format!("Unsupported boolean value: {}", s)),
+            _ => Err(format!("Unsupported boolean value: {s}")),
         }
     }
 
@@ -248,7 +246,7 @@ pub(crate) mod value {
             };
 
             if let Some(key) = map.next_key::<Field>()? {
-                Err(de::Error::custom(format!("Unexpected key: {:?}", key)))
+                Err(de::Error::custom(format!("Unexpected key: {key:?}")))
             } else {
                 value
             }

@@ -48,9 +48,6 @@
 #[cfg(doc)]
 use std::{borrow::Cow, collections::HashMap, rc::Rc, sync::Arc};
 
-// re-export chrono: DateTime / Utc are part of the public API
-pub use chrono;
-
 #[cfg(feature = "derive")]
 pub use dxr_derive::{TryFromValue, TryToValue};
 

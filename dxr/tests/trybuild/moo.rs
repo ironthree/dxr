@@ -1,7 +1,6 @@
 use std::borrow::Cow;
 
-use dxr::chrono::NaiveDateTime;
-use dxr::{TryFromValue, TryToValue};
+use dxr::{DateTime, TryFromValue, TryToValue};
 
 #[derive(Clone, TryFromValue, TryToValue)]
 pub struct Moo<'a> {
@@ -13,7 +12,7 @@ pub struct Moo<'a> {
     double: Cow<'a, f64>,
     tuple: (Cow<'a, String>, Cow<'a, i32>),
     byte_vec: Cow<'a, Vec<u8>>,
-    datetime: Cow<'a, NaiveDateTime>,
+    datetime: Cow<'a, DateTime>,
     ref_option: Cow<'a, Option<i32>>,
     option_ref: Option<Cow<'a, i32>>,
     recursive: Box<Cow<'a, Moo<'a>>>,

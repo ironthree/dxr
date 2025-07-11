@@ -1,10 +1,8 @@
 use std::collections::HashMap;
 
-use chrono::NaiveDateTime;
-
 use crate::error::DxrError;
 use crate::traits::{TryFromParams, TryFromValue};
-use crate::values::Value;
+use crate::values::{DateTime, Value};
 
 use super::utils::*;
 
@@ -53,10 +51,34 @@ impl TryFromParams for f64 {
     }
 }
 
-impl TryFromParams for NaiveDateTime {
+impl TryFromParams for DateTime {
     fn try_from_params(values: &[Value]) -> Result<Self, DxrError> {
         let (value,): (Self,) = TryFromParams::try_from_params(values)?;
         Ok(value)
+    }
+}
+
+#[cfg(feature = "chrono")]
+impl TryFromParams for chrono::NaiveDateTime {
+    fn try_from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (DateTime,) = TryFromParams::try_from_params(values)?;
+        Ok(value.into())
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl TryFromParams for jiff::civil::DateTime {
+    fn try_from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (DateTime,) = TryFromParams::try_from_params(values)?;
+        Ok(value.into())
+    }
+}
+
+#[cfg(feature = "time")]
+impl TryFromParams for time::PrimitiveDateTime {
+    fn try_from_params(values: &[Value]) -> Result<Self, DxrError> {
+        let (value,): (DateTime,) = TryFromParams::try_from_params(values)?;
+        Ok(value.into())
     }
 }
 

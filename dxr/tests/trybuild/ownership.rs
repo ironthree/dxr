@@ -1,8 +1,7 @@
 use std::rc::Rc;
 use std::sync::Arc;
 
-use dxr::chrono::NaiveDateTime;
-use dxr::{TryFromValue, TryToValue};
+use dxr::{DateTime, TryFromValue, TryToValue};
 
 #[derive(TryFromValue, TryToValue)]
 pub struct Ownership {
@@ -13,7 +12,7 @@ pub struct Ownership {
     double: f64,
     tuple: (String, i32, i64, bool, f64, Vec<u8>),
     byte_vec: Vec<u8>,
-    datetime: NaiveDateTime,
+    datetime: DateTime,
     option: Option<i32>,
     recursive: Box<Ownership>,
     counted: Rc<String>,

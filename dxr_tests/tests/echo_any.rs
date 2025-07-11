@@ -5,10 +5,11 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use std::time::Duration;
 
-use dxr::chrono::{NaiveDateTime, SubsecRound, Utc};
 use dxr::{DxrError, TryFromValue, TryToParams, TryToValue, Value};
 use dxr_client::{ClientBuilder, ClientError};
 use dxr_server::{axum::http::HeaderMap, HandlerFn, HandlerResult, RouteBuilder, Server};
+
+use chrono::{NaiveDateTime, SubsecRound, Utc};
 
 fn echo_handler(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     Ok(params.try_to_value()?)

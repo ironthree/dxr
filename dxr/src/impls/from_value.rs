@@ -3,11 +3,9 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use chrono::NaiveDateTime;
-
 use crate::error::DxrError;
 use crate::traits::TryFromValue;
-use crate::values::{Type, Value};
+use crate::values::{DateTime, Type, Value};
 
 use super::utils::*;
 
@@ -63,10 +61,40 @@ impl TryFromValue for f64 {
     }
 }
 
-impl TryFromValue for NaiveDateTime {
-    fn try_from_value(value: &Value) -> Result<NaiveDateTime, DxrError> {
+impl TryFromValue for DateTime {
+    fn try_from_value(value: &Value) -> Result<DateTime, DxrError> {
         match value.inner() {
             Type::DateTime(date) => Ok(*date),
+            t => Err(DxrError::wrong_type(t.name(), "dateTime.iso8861")),
+        }
+    }
+}
+
+#[cfg(feature = "chrono")]
+impl TryFromValue for chrono::NaiveDateTime {
+    fn try_from_value(value: &Value) -> Result<chrono::NaiveDateTime, DxrError> {
+        match value.inner() {
+            Type::DateTime(date) => Ok((*date).into()),
+            t => Err(DxrError::wrong_type(t.name(), "dateTime.iso8861")),
+        }
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl TryFromValue for jiff::civil::DateTime {
+    fn try_from_value(value: &Value) -> Result<jiff::civil::DateTime, DxrError> {
+        match value.inner() {
+            Type::DateTime(date) => Ok((*date).into()),
+            t => Err(DxrError::wrong_type(t.name(), "dateTime.iso8861")),
+        }
+    }
+}
+
+#[cfg(feature = "time")]
+impl TryFromValue for time::PrimitiveDateTime {
+    fn try_from_value(value: &Value) -> Result<time::PrimitiveDateTime, DxrError> {
+        match value.inner() {
+            Type::DateTime(date) => Ok((*date).into()),
             t => Err(DxrError::wrong_type(t.name(), "dateTime.iso8861")),
         }
     }

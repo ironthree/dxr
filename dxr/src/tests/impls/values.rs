@@ -2,8 +2,6 @@ use std::borrow::Cow;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use chrono::{NaiveDateTime, Utc};
-
 use crate::traits::{TryFromValue, TryToValue};
 use crate::values::Value;
 
@@ -120,9 +118,13 @@ fn from_double_fail() {
     assert!(f64::try_from_value(&value).unwrap_err().is_wrong_type());
 }
 
+#[cfg(feature = "chrono")]
 #[test]
 fn to_datetime() {
-    let now = Utc::now().naive_utc();
+    use crate::values::DateTime;
+    use chrono::Utc;
+
+    let now = DateTime::from(Utc::now().naive_utc());
 
     let value = now;
     let expected = Value::datetime(now);
@@ -130,20 +132,27 @@ fn to_datetime() {
     assert_eq!(value.try_to_value().unwrap(), expected);
 }
 
+#[cfg(feature = "chrono")]
 #[test]
 fn from_datetime() {
-    let now = Utc::now().naive_utc();
+    use crate::values::DateTime;
+    use chrono::Utc;
+
+    let now = DateTime::from(Utc::now().naive_utc());
 
     let value = Value::datetime(now);
     let expected = now;
 
-    assert_eq!(NaiveDateTime::try_from_value(&value).unwrap(), expected);
+    assert_eq!(DateTime::try_from_value(&value).unwrap(), expected);
 }
 
+#[cfg(feature = "chrono")]
 #[test]
 fn from_datetime_fail() {
+    use crate::values::DateTime;
+
     let value = Value::boolean(false);
-    assert!(NaiveDateTime::try_from_value(&value).unwrap_err().is_wrong_type());
+    assert!(DateTime::try_from_value(&value).unwrap_err().is_wrong_type());
 }
 
 #[test]

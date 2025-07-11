@@ -38,7 +38,7 @@ path = "tests/echo_one.rs"
 [dependencies]
 
 [dev-dependencies]
-dxr = { workspace = true, features = ["derive", "multicall", "i8", "nil"] }
+dxr = { workspace = true, features = ["derive", "multicall", "i8", "nil", "chrono"] }
 dxr_derive.workspace = true
 dxr_client = { workspace = true, features = ["multicall", "reqwest"] }
 dxr_server = { workspace = true, features = ["multicall", "axum"] }

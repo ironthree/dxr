@@ -2,10 +2,10 @@
 
 use std::borrow::Cow;
 
-use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 use crate::fault::Fault;
+use crate::values::DateTime;
 
 // imports for intra-doc links
 #[cfg(doc)]
@@ -73,7 +73,7 @@ impl Value {
     ///
     /// Note that the date & time format used by XML-RPC does not include sub-second precision, nor
     /// any timezone information.
-    pub fn datetime(value: NaiveDateTime) -> Value {
+    pub fn datetime(value: DateTime) -> Value {
         Value::new(Type::DateTime(value))
     }
 
@@ -121,7 +121,7 @@ pub(crate) enum Type {
     #[serde(rename = "double")]
     Double(#[serde(rename = "$value")] f64),
     #[serde(rename = "dateTime.iso8601", with = "super::ser_de::datetime")]
-    DateTime(#[serde(rename = "$value")] NaiveDateTime),
+    DateTime(#[serde(rename = "$value")] DateTime),
     #[serde(rename = "base64", with = "super::ser_de::base64")]
     Base64(#[serde(rename = "$value")] Vec<u8>),
     #[serde(rename = "struct")]

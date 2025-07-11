@@ -1,10 +1,8 @@
 use std::collections::HashMap;
 
-use chrono::NaiveDateTime;
-
 use crate::error::DxrError;
 use crate::traits::{TryToParams, TryToValue};
-use crate::values::Value;
+use crate::values::{DateTime, Value};
 
 use super::utils::*;
 
@@ -59,7 +57,28 @@ impl TryToParams for f64 {
     }
 }
 
-impl TryToParams for NaiveDateTime {
+impl TryToParams for DateTime {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
+    }
+}
+
+#[cfg(feature = "chrono")]
+impl TryToParams for chrono::NaiveDateTime {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl TryToParams for jiff::civil::DateTime {
+    fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
+        Ok(vec![self.try_to_value()?])
+    }
+}
+
+#[cfg(feature = "time")]
+impl TryToParams for time::PrimitiveDateTime {
     fn try_to_params(&self) -> Result<Vec<Value>, DxrError> {
         Ok(vec![self.try_to_value()?])
     }

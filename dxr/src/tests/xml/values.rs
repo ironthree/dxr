@@ -1,6 +1,4 @@
-use chrono::{SubsecRound, Utc};
-
-use crate::values::{Value, XML_RPC_DATE_FORMAT};
+use crate::values::Value;
 use crate::xml::{deserialize_xml as from_str, serialize_xml as to_string};
 
 #[test]
@@ -151,10 +149,14 @@ fn from_double() {
     assert_eq!(from_str::<Value>(value).unwrap(), expected);
 }
 
+#[cfg(feature = "chrono")]
 #[test]
 fn to_datetime() {
-    let datetime = Utc::now().naive_utc();
-    let datetime_str = datetime.format(XML_RPC_DATE_FORMAT).to_string();
+    use crate::values::DateTime;
+    use chrono::Utc;
+
+    let datetime = DateTime::from(Utc::now().naive_utc());
+    let datetime_str = datetime.to_string();
 
     let value = Value::datetime(datetime);
     let expected = format!("<value><dateTime.iso8601>{datetime_str}</dateTime.iso8601></value>");
@@ -162,10 +164,14 @@ fn to_datetime() {
     assert_eq!(to_string(&value).unwrap(), expected);
 }
 
+#[cfg(feature = "chrono")]
 #[test]
 fn from_datetime() {
-    let datetime = Utc::now().round_subsecs(0).naive_utc();
-    let datetime_str = datetime.format(XML_RPC_DATE_FORMAT).to_string();
+    use crate::values::DateTime;
+    use chrono::{SubsecRound, Utc};
+
+    let datetime = DateTime::from(Utc::now().round_subsecs(0).naive_utc());
+    let datetime_str = datetime.to_string();
 
     let value = format!("<value><dateTime.iso8601>{datetime_str}</dateTime.iso8601></value>");
     let expected = Value::datetime(datetime);
@@ -175,15 +181,11 @@ fn from_datetime() {
 
 #[test]
 fn from_datetime_fail() {
-    let datetime = Utc::now().round_subsecs(0).naive_utc();
-    let datetime_str = datetime.format("%Y%Y%Y").to_string();
-
-    let value = format!("<value><dateTime.iso8601>{datetime_str}</dateTime.iso8601></value>");
-
-    assert!(from_str::<Value>(&value)
+    let value = "<value><dateTime.iso8601>202520252025</dateTime.iso8601></value>";
+    assert!(from_str::<Value>(value)
         .unwrap_err()
         .to_string()
-        .contains("Invalid date format"));
+        .contains("Invalid dateTime.iso8601 value"));
 }
 
 #[test]

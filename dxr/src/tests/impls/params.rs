@@ -1,5 +1,3 @@
-use chrono::{NaiveDateTime, SubsecRound, Utc};
-
 use crate::{TryFromParams, TryToParams, Value};
 
 #[test]
@@ -116,17 +114,25 @@ fn from_double() {
     assert_eq!(value.try_to_params().unwrap(), expected);
 }
 
+#[cfg(feature = "chrono")]
 #[test]
 fn to_datetime() {
-    let expected = Utc::now().round_subsecs(0).naive_utc();
+    use crate::DateTime;
+    use chrono::{SubsecRound, Utc};
+
+    let expected = DateTime::from(Utc::now().round_subsecs(0).naive_utc());
     let value = vec![Value::datetime(expected)];
 
-    assert_eq!(NaiveDateTime::try_from_params(&value).unwrap(), expected);
+    assert_eq!(DateTime::try_from_params(&value).unwrap(), expected);
 }
 
+#[cfg(feature = "chrono")]
 #[test]
 fn from_from_datetimedouble() {
-    let value = Utc::now().round_subsecs(0).naive_utc();
+    use crate::DateTime;
+    use chrono::{SubsecRound, Utc};
+
+    let value = DateTime::from(Utc::now().round_subsecs(0).naive_utc());
     let expected = vec![Value::datetime(value)];
 
     assert_eq!(value.try_to_params().unwrap(), expected);
@@ -203,7 +209,9 @@ fn to_nil_fail() {
 #[cfg(feature = "nil")]
 #[test]
 fn from_nil_none() {
-    let value: Option<NaiveDateTime> = None;
+    use crate::DateTime;
+
+    let value: Option<DateTime> = None;
     let expected = vec![Value::nil()];
 
     assert_eq!(value.try_to_params().unwrap(), expected);
@@ -212,30 +220,40 @@ fn from_nil_none() {
 #[cfg(feature = "nil")]
 #[test]
 fn from_nil_none_ref() {
-    let value: Option<NaiveDateTime> = None;
+    use crate::DateTime;
+
+    let value: Option<DateTime> = None;
     let expected = vec![Value::nil()];
 
-    assert_eq!(<&Option<NaiveDateTime>>::try_to_params(&&value).unwrap(), expected);
+    assert_eq!(<&Option<DateTime>>::try_to_params(&&value).unwrap(), expected);
 }
 
+#[cfg(feature = "chrono")]
 #[cfg(feature = "nil")]
 #[test]
 fn from_nil_some() {
-    let dt = Utc::now().round_subsecs(0).naive_utc();
-    let value: Option<NaiveDateTime> = Some(dt);
+    use crate::DateTime;
+    use chrono::{SubsecRound, Utc};
+
+    let dt = DateTime::from(Utc::now().round_subsecs(0).naive_utc());
+    let value: Option<DateTime> = Some(dt);
     let expected = vec![Value::datetime(dt)];
 
     assert_eq!(value.try_to_params().unwrap(), expected);
 }
 
+#[cfg(feature = "chrono")]
 #[cfg(feature = "nil")]
 #[test]
 fn from_nil_some_ref() {
-    let dt = Utc::now().round_subsecs(0).naive_utc();
-    let value: Option<NaiveDateTime> = Some(dt);
+    use crate::DateTime;
+    use chrono::{SubsecRound, Utc};
+
+    let dt = DateTime::from(Utc::now().round_subsecs(0).naive_utc());
+    let value: Option<DateTime> = Some(dt);
     let expected = vec![Value::datetime(dt)];
 
-    assert_eq!(<&Option<NaiveDateTime>>::try_to_params(&&value).unwrap(), expected);
+    assert_eq!(<&Option<DateTime>>::try_to_params(&&value).unwrap(), expected);
 }
 
 #[cfg(feature = "derive")]
